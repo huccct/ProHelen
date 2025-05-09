@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 import { FaGithub, FaMicrosoft } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
 
