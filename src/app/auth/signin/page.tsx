@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { FaApple, FaGithub } from 'react-icons/fa'
+import { useState } from 'react'
+import { FaGithub, FaMicrosoft } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
 
 const fadeIn = {
@@ -34,7 +35,6 @@ const buttonVariants = {
 
 export default function SignIn() {
   const router = useRouter()
-
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Navigation Bar */}
@@ -94,9 +94,10 @@ export default function SignIn() {
               >
                 <Button
                   variant="outline"
-                  className="w-full h-12 bg-white text-black hover:bg-gray-100 border-none transition-all duration-200 cursor-pointer"
+                  className="flex justify-start items-center gap-2 w-full h-12 bg-white text-black hover:bg-gray-100 border-none transition-all duration-200 cursor-pointer"
                   onClick={() => signIn('google', { callbackUrl: '/' })}
                 >
+                  <span className="w-8" />
                   <FcGoogle className="mr-2 h-5 w-5" />
                   Continue with Google
                 </Button>
@@ -108,9 +109,10 @@ export default function SignIn() {
               >
                 <Button
                   variant="outline"
-                  className="w-full h-12 bg-[#24292F] text-white hover:bg-[#2d333b] border-none transition-all duration-200 cursor-pointer"
+                  className="flex justify-start items-center gap-2 w-full h-12 bg-[#24292F] text-white hover:bg-[#2d333b] border-none transition-all duration-200 cursor-pointer"
                   onClick={() => signIn('github', { callbackUrl: '/' })}
                 >
+                  <span className="w-8" />
                   <FaGithub className="mr-2 h-5 w-5" />
                   Continue with GitHub
                 </Button>
@@ -122,13 +124,49 @@ export default function SignIn() {
               >
                 <Button
                   variant="outline"
-                  className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-white/20 transition-all duration-200 cursor-pointer"
-                  onClick={() => signIn('apple', { callbackUrl: '/' })}
+                  className="flex justify-start items-center gap-2 w-full h-12 bg-[#2F2F2F] text-white hover:bg-[#3b3b3b] border-none transition-all duration-200 cursor-pointer"
+                  onClick={() => signIn('azure-ad', { callbackUrl: '/' })}
                 >
-                  <FaApple className="mr-2 h-5 w-5" />
-                  Continue with Apple
+                  <span className="w-8" />
+                  <FaMicrosoft className="mr-2 h-5 w-5" />
+                  Continue with Microsoft
                 </Button>
               </motion.div>
+
+              {/* <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="flex justify-start items-center gap-2 w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-white/20 transition-all duration-200 cursor-pointer"
+                  >
+                    <span className="w-8" />
+                    <MdEmail className="mr-2 h-5 w-5" />
+                    Continue with Email
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Sign in with Email</DialogTitle>
+                  </DialogHeader>
+                  <Input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    className="mb-4"
+                  />
+                  <DialogFooter>
+                    <Button
+                      onClick={async () => {
+                        await signIn('email', { email, callbackUrl: '/' })
+                        // 你可以加个 toast
+                      }}
+                    >
+                      Send Magic Link
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog> */}
             </motion.div>
 
             <motion.p

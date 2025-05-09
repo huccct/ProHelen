@@ -1,9 +1,18 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { motion } from 'framer-motion'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import React from 'react'
 import { IoArrowForward } from 'react-icons/io5'
 
 const fadeIn = {
@@ -85,14 +94,44 @@ export default function Home() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.3 }}
+                      className="flex items-center gap-2 relative"
                     >
-                      <Button
-                        variant="ghost"
-                        className="text-white hover:text-gray-200 hover:bg-transparent transition-colors duration-200 cursor-pointer"
-                        onClick={() => router.push('/dashboard')}
-                      >
-                        Dashboard
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <div className="flex items-center gap-2 cursor-pointer">
+                            {session.user?.image && (
+                              <img
+                                src={session.user.image}
+                                alt={session.user.name || 'avatar'}
+                                className="w-8 h-8 rounded-full border"
+                              />
+                            )}
+                            <span className="font-medium">{session.user?.name}</span>
+                          </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="min-w-[160px] bg-zinc-900 text-white border-zinc-800 dark:bg-zinc-900 dark:text-white dark:border-zinc-800"
+                        >
+                          <DropdownMenuLabel>
+                            {session.user?.name}
+                            <div className="text-xs text-gray-500">{session.user?.email}</div>
+                          </DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => router.push('/dashboard')}
+                            className="cursor-pointer"
+                          >
+                            Dashboard
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => signOut({ callbackUrl: '/' })}
+                            className="cursor-pointer text-red-600"
+                          >
+                            Logout
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </motion.div>
                   )}
             </div>
@@ -190,7 +229,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            © 2024 ProHelen. All rights reserved.
+            © 2025 ProHelen. All rights reserved.
           </motion.div>
         </div>
       </div>
