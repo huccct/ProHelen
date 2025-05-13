@@ -18,15 +18,15 @@ export function PromptPreview({ className }: PromptPreviewProps) {
 
         <div className="space-y-2">
           <Button
-            variant="secondary"
-            className="w-full border border-gray-800 hover:border-gray-600 text-white transition-all duration-200"
+            variant="outline"
+            className="w-full cursor-pointer bg-transparent hover:bg-white hover:text-black text-white border-white/20 hover:border-white transition-all duration-200"
             onClick={() => navigator.clipboard.writeText('Your prompt here')}
           >
             Copy to Clipboard
           </Button>
           <Button
-            variant="secondary"
-            className="w-full border border-gray-800 hover:border-gray-600 text-white transition-all duration-200"
+            variant="outline"
+            className="w-full cursor-pointer bg-transparent hover:bg-white hover:text-black text-white border-white/20 hover:border-white transition-all duration-200"
           >
             Save Template
           </Button>
