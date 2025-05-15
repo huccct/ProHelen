@@ -37,19 +37,6 @@ export function NavBar() {
             ProHelen
           </motion.div>
 
-          {/* Navigation Links */}
-          <div className="hidden md:flex space-x-6">
-            <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">
-              Dashboard
-            </Link>
-            <Link href="/templates" className="text-gray-300 hover:text-white transition-colors">
-              Templates
-            </Link>
-            <Link href="/builder" className="text-gray-300 hover:text-white transition-colors">
-              Builder
-            </Link>
-          </div>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -85,9 +72,9 @@ export function NavBar() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-gray-300 hover:text-white cursor-pointer"
-                        onClick={() => router.push('/profile')}
+                        onClick={() => router.push('/my-instructions')}
                       >
-                        Profile
+                        My Instructions
                       </DropdownMenuItem>
                       <DropdownMenuSeparator className="bg-gray-800" />
                       <DropdownMenuItem

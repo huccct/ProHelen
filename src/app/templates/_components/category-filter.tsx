@@ -31,3 +31,4 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
     </div>
   )
 }
+ 
