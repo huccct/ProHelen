@@ -3,7 +3,7 @@
 import { FlowCanvas } from '@/components/flow-canvas'
 import { NavBar } from '@/components/nav-bar'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { mockInstructions } from '../my-instructions/_components/instruction-grid'
 import { templateData } from '../templates/_components/template-list'
 import { NodeSidebar } from './_components/node-sidebar'
@@ -18,7 +18,7 @@ interface BuilderState {
   sourceId: string | null
 }
 
-export default function BuilderPage() {
+function BuilderContent() {
   const searchParams = useSearchParams()
   const templateId = searchParams.get('template')
   const instructionId = searchParams.get('instruction')
@@ -93,5 +93,13 @@ export default function BuilderPage() {
         />
       </div>
     </div>
+  )
+}
+
+export default function BuilderPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BuilderContent />
+    </Suspense>
   )
 }
