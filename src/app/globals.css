@@ -120,3 +120,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 transparent;
+  }
+  .scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+  }
+  .scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
