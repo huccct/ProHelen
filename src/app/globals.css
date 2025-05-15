@@ -117,7 +117,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-black text-foreground;
   }
 }
 
@@ -136,5 +136,22 @@
   }
   .scrollbar::-webkit-scrollbar-track {
     background: transparent;
+  }
+}
+
+@keyframes cyberpunk-dash {
+  to {
+    stroke-dashoffset: -200;
+  }
+}
+.cyberpunk-dash {
+  stroke-dasharray: 80 20;
+  stroke-dashoffset: 0;
+  animation: cyberpunk-dash 3s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -100;
   }
 }
