@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { motion } from 'framer-motion'
 import { signOut, useSession } from 'next-auth/react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 export function NavBar() {
