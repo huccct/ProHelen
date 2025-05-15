@@ -11,13 +11,12 @@ import { RelatedTemplates } from './_components/related-templates'
 import { TemplateDetails } from './_components/template-details'
 import { TemplatePreview } from './_components/template-preview'
 
-export default function TemplateDetailPage({ params }: { params: { id: string } }) {
-  const unwrappedParams = React.use(params as any) as { id: string }
-  const id = unwrappedParams.id
-
+export default function TemplateDetailPage({ params }: { params: any }) {
   const router = useRouter()
   const [template, setTemplate] = useState<Template | null>(null)
   const [loading, setLoading] = useState(true)
+  const unwrappedParams = React.use(params) as { id: string }
+  const id = unwrappedParams.id
 
   useEffect(() => {
     setLoading(true)
