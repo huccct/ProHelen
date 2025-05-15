@@ -1,11 +1,15 @@
 'use client'
 
 import { NavBar } from '@/components/nav-bar'
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 import { RecentInstructions } from './_components/recent-instructions'
 import { StatsOverview } from './_components/stats-overview'
 import { TemplateGrid } from './_components/template-grid'
 
 export default function DashboardPage() {
+  const router = useRouter()
+
   return (
     <div className="min-h-screen bg-black text-white">
       <NavBar />
@@ -24,8 +28,17 @@ export default function DashboardPage() {
         </section>
 
         {/* Template Suggestions Section */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-6">Suggested Templates</h2>
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold">Suggested Templates</h2>
+            <Button
+              variant="outline"
+              className="border-gray-700 text-gray-300 hover:text-white hover:border-gray-600"
+              onClick={() => router.push('/templates')}
+            >
+              View All Templates
+            </Button>
+          </div>
           <TemplateGrid />
         </section>
       </main>

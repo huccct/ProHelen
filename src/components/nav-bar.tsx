@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { motion } from 'framer-motion'
 import { signOut, useSession } from 'next-auth/react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 export function NavBar() {
@@ -35,69 +36,78 @@ export function NavBar() {
           >
             ProHelen
           </motion.div>
-          <div>
-            {!session
+
+          {/* Navigation Links */}
+          <div className="hidden md:flex space-x-6">
+            <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">
+              Dashboard
+            </Link>
+            <Link href="/templates" className="text-gray-300 hover:text-white transition-colors">
+              Templates
+            </Link>
+            <Link href="/builder" className="text-gray-300 hover:text-white transition-colors">
+              Builder
+            </Link>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            {session
               ? (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Button
-                      variant="ghost"
-                      className="text-white hover:text-gray-200 hover:bg-transparent transition-colors duration-200 cursor-pointer"
-                      onClick={() => router.push('/auth/signin')}
-                    >
-                      Login
-                    </Button>
-                  </motion.div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="rounded-full w-8 h-8 p-0 cursor-pointer">
+                        <span className="sr-only">Open user menu</span>
+                        <div className="rounded-full bg-gray-700 w-8 h-8 flex items-center justify-center text-sm font-medium uppercase">
+                          {session.user?.name?.charAt(0) || 'U'}
+                        </div>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56 bg-zinc-900 border-gray-800">
+                      <DropdownMenuLabel className="text-gray-400">
+                        {session.user?.name || 'User'}
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator className="bg-gray-800" />
+                      <DropdownMenuItem
+                        className="text-gray-300 hover:text-white cursor-pointer"
+                        onClick={() => router.push('/dashboard')}
+                      >
+                        Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-gray-300 hover:text-white cursor-pointer"
+                        onClick={() => router.push('/templates')}
+                      >
+                        Templates
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-gray-300 hover:text-white cursor-pointer"
+                        onClick={() => router.push('/profile')}
+                      >
+                        Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-gray-800" />
+                      <DropdownMenuItem
+                        className="text-gray-300 hover:text-white cursor-pointer"
+                        onClick={() => signOut()}
+                      >
+                        Sign out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )
               : (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="flex items-center gap-2 relative"
+                  <Button
+                    onClick={() => router.push('/auth/signin')}
+                    className="cursor-pointer"
                   >
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <div className="flex items-center gap-2 cursor-pointer">
-                          {session.user?.image && (
-                            <img
-                              src={session.user.image}
-                              alt={session.user.name || 'avatar'}
-                              className="w-8 h-8 rounded-full border"
-                            />
-                          )}
-                          <span className="font-medium">{session.user?.name}</span>
-                        </div>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        align="end"
-                        className="min-w-[160px] bg-zinc-900 text-white border-zinc-800 dark:bg-zinc-900 dark:text-white dark:border-zinc-800"
-                      >
-                        <DropdownMenuLabel>
-                          {session.user?.name}
-                          <div className="text-xs text-gray-500">{session.user?.email}</div>
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => router.push('/dashboard')}
-                          className="cursor-pointer"
-                        >
-                          Dashboard
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => signOut({ callbackUrl: '/' })}
-                          className="cursor-pointer text-red-600"
-                        >
-                          Logout
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </motion.div>
+                    Sign in
+                  </Button>
                 )}
-          </div>
+          </motion.div>
         </div>
       </div>
     </motion.nav>
