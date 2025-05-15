@@ -2,7 +2,7 @@
 
 import { NavBar } from '@/components/nav-bar'
 import { Button } from '@/components/ui/button'
-import { motion, useAnimation } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { IoArrowForward } from 'react-icons/io5'
