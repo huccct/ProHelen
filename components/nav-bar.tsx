@@ -87,7 +87,7 @@ export function NavBar() {
                 )
               : (
                   <Button
-                    onClick={() => router.push('/auth/signin')}
+                    onClick={() => router.push('/signin')}
                     className="cursor-pointer"
                   >
                     Sign in
