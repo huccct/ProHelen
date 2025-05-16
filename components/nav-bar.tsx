@@ -12,6 +12,7 @@ import {
 import { motion } from 'framer-motion'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface NavBarProps {
   hideSignIn?: boolean
@@ -20,6 +21,12 @@ interface NavBarProps {
 export function NavBar({ hideSignIn = false }: NavBarProps) {
   const { data: session } = useSession()
   const router = useRouter()
+
+  const handleSignOut = () => {
+    signOut({ redirect: false })
+    toast.success('Signed out successfully')
+    router.push('/sign-in')
+  }
 
   return (
     <motion.nav
@@ -82,7 +89,7 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
                       <DropdownMenuSeparator className="bg-gray-800" />
                       <DropdownMenuItem
                         className="text-gray-300 hover:text-white cursor-pointer"
-                        onClick={() => signOut()}
+                        onClick={handleSignOut}
                       >
                         Sign out
                       </DropdownMenuItem>

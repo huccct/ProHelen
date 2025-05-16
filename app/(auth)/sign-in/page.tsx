@@ -11,6 +11,7 @@ import { useState } from 'react'
 import { FaGithub, FaMicrosoft } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5'
+import { toast } from 'sonner'
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -54,19 +55,28 @@ export default function SignIn() {
         redirect: false,
       })
       if (result?.error) {
-        // Handle error
-        console.error(result.error)
+        if (result.error === 'Invalid credentials')
+          toast.error('Invalid email or password')
+        else
+          toast.error('Something went wrong')
       }
       else {
+        toast.success('Signed in successfully')
         router.push('/')
       }
     }
     catch (error) {
+      toast.error('Failed to sign in')
       console.error(error)
     }
     finally {
       setIsLoading(false)
     }
+  }
+
+  const handleSocialSignIn = (provider: string) => {
+    toast.loading('Redirecting to provider...')
+    signIn(provider, { callbackUrl: '/' })
   }
 
   return (
@@ -171,7 +181,7 @@ export default function SignIn() {
                   <Button
                     variant="outline"
                     className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
-                    onClick={() => signIn('google', { callbackUrl: '/' })}
+                    onClick={() => handleSocialSignIn('google')}
                   >
                     <FcGoogle className="h-5 w-5" />
                   </Button>
@@ -180,7 +190,7 @@ export default function SignIn() {
                   <Button
                     variant="outline"
                     className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
-                    onClick={() => signIn('github', { callbackUrl: '/' })}
+                    onClick={() => handleSocialSignIn('github')}
                   >
                     <FaGithub className="h-5 w-5" />
                   </Button>
@@ -189,7 +199,7 @@ export default function SignIn() {
                   <Button
                     variant="outline"
                     className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
-                    onClick={() => signIn('azure-ad', { callbackUrl: '/' })}
+                    onClick={() => handleSocialSignIn('azure-ad')}
                   >
                     <FaMicrosoft className="h-5 w-5" />
                   </Button>
