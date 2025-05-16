@@ -1,0 +1,145 @@
+'use client'
+
+import { NavBar } from '@/components/nav-bar'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 },
+}
+
+export default function ForgotPassword() {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSent, setIsSent] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      // 这里添加发送重置密码邮件的逻辑
+      await new Promise(resolve => setTimeout(resolve, 1000)) // 模拟API调用
+      setIsSent(true)
+    }
+    catch (error) {
+      console.error(error)
+    }
+    finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <NavBar hideSignIn />
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
+          <motion.div
+            className="w-full max-w-md space-y-8"
+            variants={fadeIn}
+            initial="initial"
+            animate="animate"
+          >
+            <div className="text-center space-y-4">
+              <motion.h2
+                className="text-3xl sm:text-4xl font-bold tracking-tight"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              >
+                Reset your password
+              </motion.h2>
+              <motion.p
+                className="text-gray-400"
+                variants={fadeIn}
+              >
+                {!isSent
+                  ? 'Enter your email address and we\'ll send you instructions to reset your password.'
+                  : 'Check your email for a link to reset your password.'}
+              </motion.p>
+            </div>
+
+            <motion.div
+              className="space-y-6"
+              variants={fadeIn}
+            >
+              {!isSent
+                ? (
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email address</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={e => setEmail(e.target.value)}
+                          className="bg-[#2a2a2a] border-gray-700 text-white h-12"
+                          required
+                        />
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 mt-6 cursor-pointer"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? 'Sending reset link...' : 'Send reset link'}
+                      </Button>
+                    </form>
+                  )
+                : (
+                    <div className="space-y-4">
+                      <div className="bg-blue-500/10 text-blue-500 p-4 rounded-lg text-sm">
+                        We've sent a password reset link to
+                        {' '}
+                        <strong>{email}</strong>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
+                        onClick={() => {
+                          setIsSent(false)
+                          setEmail('')
+                        }}
+                      >
+                        Try another email
+                      </Button>
+                    </div>
+                  )}
+
+              <div className="text-center text-sm text-gray-400">
+                Remember your password?
+                {' '}
+                <button
+                  type="button"
+                  className="text-blue-500 hover:text-blue-400 cursor-pointer"
+                  onClick={() => router.push('/sign-in')}
+                >
+                  Sign in
+                </button>
+              </div>
+            </motion.div>
+
+            <motion.p
+              className="text-center text-sm text-gray-500"
+              variants={fadeIn}
+            >
+              By continuing, you agree to our Terms of Service and Privacy Policy
+            </motion.p>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  )
+}

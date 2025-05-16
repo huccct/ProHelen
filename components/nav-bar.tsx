@@ -13,7 +13,11 @@ import { motion } from 'framer-motion'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
-export function NavBar() {
+interface NavBarProps {
+  hideSignIn?: boolean
+}
+
+export function NavBar({ hideSignIn = false }: NavBarProps) {
   const { data: session } = useSession()
   const router = useRouter()
 
@@ -85,7 +89,7 @@ export function NavBar() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )
-              : (
+              : !hideSignIn && (
                   <Button
                     onClick={() => router.push('/sign-in')}
                     className="cursor-pointer"

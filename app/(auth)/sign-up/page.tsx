@@ -37,29 +37,39 @@ const buttonVariants = {
   },
 }
 
-export default function SignIn() {
+export default function SignUp() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      })
-      if (result?.error) {
-        // Handle error
-        console.error(result.error)
+      // 这里添加注册逻辑
+      if (formData.password !== formData.confirmPassword) {
+        // Handle password mismatch
+        console.error('Passwords do not match')
+        return
       }
-      else {
-        router.push('/')
-      }
+      // Call your registration API here
+      // 成功后跳转到登录页
+      router.push('/sign-in')
     }
     catch (error) {
       console.error(error)
@@ -88,13 +98,13 @@ export default function SignIn() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               >
-                Welcome Back
+                Create your account
               </motion.h2>
               <motion.p
                 className="text-gray-400"
                 variants={fadeIn}
               >
-                Sign in to continue building your AI assistant
+                Start building your personalized AI assistant
               </motion.p>
             </div>
 
@@ -102,39 +112,43 @@ export default function SignIn() {
               className="space-y-6"
               variants={fadeIn}
             >
-              <form onSubmit={handleEmailSignIn} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email address</Label>
+                  <Label htmlFor="name">Full Name</Label>
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="Enter your name"
+                    value={formData.name}
+                    onChange={handleChange}
                     className="bg-[#2a2a2a] border-gray-700 text-white h-12"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <button
-                      type="button"
-                      className="text-sm text-blue-500 hover:text-blue-400 cursor-pointer"
-                      onClick={() => {
-                        router.push('/forgot-password')
-                      }}
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
+                  <Label htmlFor="email">Email address</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="bg-[#2a2a2a] border-gray-700 text-white h-12"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Input
                       id="password"
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={e => setPassword(e.target.value)}
+                      placeholder="Create a password"
+                      value={formData.password}
+                      onChange={handleChange}
                       className="bg-[#2a2a2a] border-gray-700 text-white pr-10 h-12"
                       required
                     />
@@ -147,13 +161,35 @@ export default function SignIn() {
                     </button>
                   </div>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="Confirm your password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      className="bg-[#2a2a2a] border-gray-700 text-white pr-10 h-12"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white cursor-pointer"
+                    >
+                      {showConfirmPassword ? <IoEyeOffOutline className="h-5 w-5" /> : <IoEyeOutline className="h-5 w-5" />}
+                    </button>
+                  </div>
+                </div>
 
                 <Button
                   type="submit"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 mt-6 cursor-pointer"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Signing in...' : 'Sign in'}
+                  {isLoading ? 'Creating account...' : 'Create account'}
                 </Button>
               </form>
 
@@ -197,14 +233,14 @@ export default function SignIn() {
               </div>
 
               <div className="text-center text-sm text-gray-400">
-                Don't have an account?
+                Already have an account?
                 {' '}
                 <button
                   type="button"
                   className="text-blue-500 hover:text-blue-400 cursor-pointer"
-                  onClick={() => router.push('/sign-up')}
+                  onClick={() => router.push('/sign-in')}
                 >
-                  Sign up
+                  Sign in
                 </button>
               </div>
             </motion.div>
