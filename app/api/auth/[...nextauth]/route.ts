@@ -22,7 +22,7 @@ const handler = NextAuth({
 
   ],
   pages: {
-    signIn: '/signin',
+    signIn: '/sign-in',
   },
   callbacks: {
     async session({ session }) {
