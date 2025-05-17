@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -24,12 +25,25 @@ export default function ForgotPassword() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      // 这里添加发送重置密码邮件的逻辑
-      await new Promise(resolve => setTimeout(resolve, 1000)) // 模拟API调用
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok)
+        throw new Error(data.error)
+
       setIsSent(true)
+      toast.success('Reset link sent to your email')
     }
     catch (error) {
-      console.error(error)
+      console.error('Forgot password error:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to send reset link')
     }
     finally {
       setIsLoading(false)

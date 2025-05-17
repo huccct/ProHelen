@@ -35,11 +35,10 @@ function TypewriterEffect() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showCursor, setShowCursor] = useState(true)
 
-  // 光标闪烁效果
   useEffect(() => {
     const cursorInterval = setInterval(() => {
       setShowCursor(prev => !prev)
-    }, 530) // 光标闪烁间隔
+    }, 530)
 
     return () => clearInterval(cursorInterval)
   }, [])
@@ -57,7 +56,7 @@ function TypewriterEffect() {
         else {
           setTimeout(() => {
             setIsDeleting(true)
-          }, 4000) // 完整显示后停留4秒
+          }, 4000)
         }
       }
       else {
@@ -69,7 +68,7 @@ function TypewriterEffect() {
           setTimeout(() => {
             setIsDeleting(false)
             setCurrentVerb(prev => (prev + 1) % verbs.length)
-          }, 2000) // 删除完后停留2秒
+          }, 2000)
         }
       }
     }, isDeleting ? 100 : 150)
@@ -297,7 +296,7 @@ export default function Home() {
               >
                 <Button
                   size="lg"
-                  className="relative bg-white text-black hover:bg-gray-100 px-8 py-6 text-lg font-medium rounded-lg transition-all duration-300"
+                  className="relative bg-white text-black hover:bg-gray-100 px-8 py-6 text-lg font-medium rounded-lg transition-all duration-300 cursor-pointer"
                   onClick={() => router.push('/builder')}
                 >
                   Start Building
