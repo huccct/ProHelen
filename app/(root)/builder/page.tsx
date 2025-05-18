@@ -6,7 +6,6 @@ import { useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
 import { mockInstructions } from '../my-instructions/_components/instruction-grid'
 import { templateData } from '../templates/_components/template-list'
-import { NodeSidebar } from './_components/node-sidebar'
 import { PromptPreview } from './_components/prompt-preview'
 
 interface BuilderState {
@@ -20,9 +19,6 @@ interface BuilderState {
 
 function BuilderContent() {
   const searchParams = useSearchParams()
-  const templateId = searchParams.get('template')
-  const instructionId = searchParams.get('instruction')
-
   const [builderState, setBuilderState] = useState<BuilderState>({
     title: '',
     description: '',
@@ -32,38 +28,37 @@ function BuilderContent() {
     sourceId: null,
   })
 
-  // Load template or instruction data
   useEffect(() => {
+    const templateId = searchParams.get('template')
+    const instructionId = searchParams.get('instruction')
+
     if (templateId) {
       const template = templateData.find(t => t.id === templateId)
       if (template) {
         setBuilderState({
-          title: `${template.title} (Custom)`,
+          title: `Copy of ${template.title}`,
           description: template.description,
           content: template.content || '',
-          tags: template.useCases || [],
-          isTemplate: true,
+          tags: [],
+          isTemplate: false,
           sourceId: templateId,
         })
       }
     }
     else if (instructionId) {
-      // Check if mockInstructions is available
-      if (typeof mockInstructions !== 'undefined') {
-        const instruction = mockInstructions.find(i => i.id === instructionId)
-        if (instruction) {
-          setBuilderState({
-            title: instruction.title,
-            description: instruction.description,
-            content: instruction.content || '',
-            tags: instruction.tags || [],
-            isTemplate: false,
-            sourceId: instructionId,
-          })
-        }
+      const instruction = mockInstructions.find(i => i.id === instructionId)
+      if (instruction) {
+        setBuilderState({
+          title: `Copy of ${instruction.title}`,
+          description: instruction.description,
+          content: instruction.content,
+          tags: instruction.tags,
+          isTemplate: false,
+          sourceId: instructionId,
+        })
       }
     }
-  }, [templateId, instructionId])
+  }, [searchParams])
 
   return (
     <div className="flex flex-col min-h-screen h-screen overflow-hidden bg-black">
@@ -85,7 +80,6 @@ function BuilderContent() {
         />
       </div>
       <div className="flex flex-1 overflow-hidden">
-        <NodeSidebar className="w-64 border-r border-gray-800 overflow-y-auto" />
         <FlowCanvas className="flex-1 h-full" />
         <PromptPreview
           className="w-80 border-l border-gray-800 overflow-y-auto"
@@ -98,7 +92,7 @@ function BuilderContent() {
 
 export default function BuilderPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense>
       <BuilderContent />
     </Suspense>
   )

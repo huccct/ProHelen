@@ -5,8 +5,11 @@ import type {
   Edge,
   Node,
 } from '@xyflow/react'
-import { addEdge, Background, Controls, MiniMap, ReactFlow, useEdgesState, useNodesState } from '@xyflow/react'
-import { useCallback } from 'react'
+import { BlockPickerModal } from '@/app/(root)/builder/_components/block-picker-modal'
+import { addEdge, Background, Controls, MiniMap, Panel, ReactFlow, useEdgesState, useNodesState } from '@xyflow/react'
+import { Plus } from 'lucide-react'
+import { useCallback, useState } from 'react'
+import { Button } from './ui/button'
 import '@xyflow/react/dist/style.css'
 
 const initialNodes: Node[] = []
@@ -19,6 +22,7 @@ interface FlowCanvasProps {
 export function FlowCanvas({ className }: FlowCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  const [open, setOpen] = useState(false)
 
   const onConnect = useCallback(
     (params: Connection | Edge) => setEdges(eds => addEdge(params, eds)),
@@ -58,6 +62,7 @@ export function FlowCanvas({ className }: FlowCanvasProps) {
 
   return (
     <div className={className}>
+      <BlockPickerModal open={open} onOpenChange={setOpen} />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -74,6 +79,16 @@ export function FlowCanvas({ className }: FlowCanvasProps) {
           type: 'smoothstep',
         }}
       >
+        <Panel position="top-left" className="left-4 top-4">
+          <Button
+            variant="outline"
+            onClick={() => setOpen(true)}
+            className="bg-black border-gray-800 hover:bg-gray-900 hover:border-gray-700 text-gray-400 hover:text-white transition-colors cursor-pointer"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Block
+          </Button>
+        </Panel>
         <Controls className="border border-gray-800 rounded-lg fill-gray-400 hover:fill-white bg-black" />
         <MiniMap
           className="border border-gray-800 rounded-lg bg-black"
