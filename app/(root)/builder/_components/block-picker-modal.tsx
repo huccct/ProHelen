@@ -53,12 +53,18 @@ const blockTypes: BlockType[] = [
 interface BlockPickerModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onAddNode: (type: string) => void
 }
 
-export function BlockPickerModal({ open, onOpenChange }: BlockPickerModalProps) {
+export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerModalProps) {
   const handleDragStart = (event: React.DragEvent, type: string) => {
     event.dataTransfer.setData('application/reactflow', type)
     event.dataTransfer.effectAllowed = 'move'
+  }
+
+  const handleClick = (type: string) => {
+    onAddNode(type)
+    onOpenChange(false)
   }
 
   return (
@@ -71,10 +77,10 @@ export function BlockPickerModal({ open, onOpenChange }: BlockPickerModalProps) 
           {blockTypes.map(block => (
             <div
               key={block.type}
-              className="flex flex-col items-center gap-2 p-4 border border-gray-800 rounded-lg hover:bg-gray-900 hover:border-gray-700 cursor-move transition-all duration-200"
+              className="flex flex-col items-center gap-2 p-4 border border-gray-800 rounded-lg hover:bg-gray-900 hover:border-gray-700 cursor-pointer transition-all duration-200"
               draggable
               onDragStart={e => handleDragStart(e, block.type)}
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleClick(block.type)}
             >
               <div className="text-gray-400 hover:text-white transition-colors">
                 {block.icon}
