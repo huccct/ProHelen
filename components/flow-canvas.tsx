@@ -77,6 +77,9 @@ export function FlowCanvas({ className }: FlowCanvasProps) {
           onDragOver={onDragOver}
           nodeTypes={nodeTypes}
           fitView
+          proOptions={{
+            hideAttribution: true,
+          }}
           className="bg-black"
           nodeOrigin={[0.5, 0.5]}
           defaultEdgeOptions={{

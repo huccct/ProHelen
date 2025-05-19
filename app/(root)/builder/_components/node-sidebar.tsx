@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { useBuilderStore } from '@/store/builder'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { BlockPickerModal } from './block-picker-modal'
@@ -11,6 +12,8 @@ interface NodeSidebarProps {
 
 export function NodeSidebar({ className }: NodeSidebarProps) {
   const [open, setOpen] = useState(false)
+
+  const addNode = useBuilderStore(state => state.addNode)
 
   return (
     <aside className={className}>
@@ -28,7 +31,7 @@ export function NodeSidebar({ className }: NodeSidebarProps) {
             </Button>
             <span className="text-sm text-gray-400">Add a new block</span>
           </div>
-          <BlockPickerModal open={open} onOpenChange={setOpen} />
+          <BlockPickerModal open={open} onOpenChange={setOpen} onAddNode={addNode} />
         </div>
       </div>
     </aside>
