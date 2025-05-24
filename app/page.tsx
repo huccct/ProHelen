@@ -100,50 +100,72 @@ export default function Home() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden">
-      <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-black text-white overflow-hidden relative">
+      <div className="relative z-20">
+        <NavBar />
+      </div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Animated Gradient Blobs - 极简柔和色块 */}
+        <motion.div
+          className="absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-gradient-to-tr from-blue-900 via-gray-800 to-gray-900 opacity-30 blur-3xl z-0"
+          animate={{
+            x: [0, 60, 0],
+            y: [0, 40, 0],
+            scale: [1, 1.08, 1],
+          }}
+          transition={{
+            duration: 14,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute -bottom-32 -right-32 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-gray-800 via-blue-800 to-gray-900 opacity-20 blur-2xl z-0"
+          animate={{
+            x: [0, -40, 0],
+            y: [0, -30, 0],
+            scale: [1, 1.06, 1],
+          }}
+          transition={{
+            duration: 16,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 2,
+          }}
+        />
+        {/* 去掉神经网络线条SVG */}
+        <div>
+          <svg width="100%" height="100%" viewBox="0 0 1440 800" className="opacity-50">
+            <defs>
+              <linearGradient id="grid-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#fff" stopOpacity="0.2" />
+                <stop offset="50%" stopColor="#fff" stopOpacity="0.1" />
+                <stop offset="100%" stopColor="#fff" stopOpacity="0.2" />
+              </linearGradient>
+              <pattern id="grid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="url(#grid-gradient)" strokeWidth="0.8" />
+              </pattern>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <rect
+              x="0"
+              y="0"
+              width="100%"
+              height="100%"
+              fill="url(#grid)"
+            />
+          </svg>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-90" />
+      </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="min-h-[calc(100vh-4rem)] flex flex-col relative">
-          {/* Animated Background */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.5 }}
-            >
-              <svg width="100%" height="100%" viewBox="0 0 1440 800" className="opacity-30">
-                <defs>
-                  <linearGradient id="grid-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#fff" stopOpacity="0.2" />
-                    <stop offset="50%" stopColor="#fff" stopOpacity="0.1" />
-                    <stop offset="100%" stopColor="#fff" stopOpacity="0.2" />
-                  </linearGradient>
-                  <pattern id="grid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-                    <path d="M 60 0 L 0 0 0 60" fill="none" stroke="url(#grid-gradient)" strokeWidth="0.8" />
-                  </pattern>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                    <feMerge>
-                      <feMergeNode in="coloredBlur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-                <motion.rect
-                  x="0"
-                  y="0"
-                  width="100%"
-                  height="100%"
-                  fill="url(#grid)"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 2 }}
-                />
-              </svg>
-            </motion.div>
-            <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-90" />
-          </div>
-
           {/* Hero Section */}
           <motion.div
             className="flex-1 flex flex-col justify-center items-center text-center space-y-12 py-16"
