@@ -83,10 +83,10 @@ export function InstructionGrid({ searchQuery }: InstructionGridProps) {
       {filteredInstructions.length > 0
         ? (
             filteredInstructions.map(instruction => (
-              <Card key={instruction.id} className="bg-zinc-900 border-gray-800 hover:border-blue-500 hover:shadow-md hover:shadow-blue-900/20 transition-all duration-200">
+              <Card key={instruction.id} className="bg-zinc-900 border-gray-800 hover:border-gray-300 hover:shadow-md hover:shadow-gray-900/20 transition-all duration-200">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
-                    <h3 className="text-xl font-semibold text-white cursor-pointer hover:text-blue-400 transition-colors" onClick={() => router.push(`/builder?instruction=${instruction.id}`)}>
+                    <h3 className="text-xl font-semibold text-white cursor-pointer hover:text-gray-200 transition-colors" onClick={() => router.push(`/builder?instruction=${instruction.id}`)}>
                       {instruction.title}
                     </h3>
                     <DropdownMenu>

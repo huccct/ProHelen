@@ -89,7 +89,7 @@ function TypewriterEffect() {
       <motion.span
         animate={{ opacity: showCursor ? 1 : 0 }}
         transition={{ duration: 0.3 }}
-        className="inline-block w-[3px] h-[1em] translate-y-[2px] mx-[2px] bg-blue-400 rounded-full"
+        className="inline-block w-[3px] h-[1em] translate-y-[2px] mx-[2px] bg-gray-400 rounded-full"
       />
       <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-gray-500"> Your</span>
     </>
@@ -105,7 +105,6 @@ export default function Home() {
         <NavBar />
       </div>
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        {/* Animated Gradient Blobs - 极简柔和色块 */}
         <motion.div
           className="absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-gradient-to-tr from-blue-900 via-gray-800 to-gray-900 opacity-30 blur-3xl z-0"
           animate={{
@@ -133,7 +132,6 @@ export default function Home() {
             delay: 2,
           }}
         />
-        {/* 去掉神经网络线条SVG */}
         <div>
           <svg width="100%" height="100%" viewBox="0 0 1440 800" className="opacity-50">
             <defs>

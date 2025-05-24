@@ -24,7 +24,7 @@ export default function MyInstructionsPage() {
             <h1 className="text-3xl font-bold">My Instructions</h1>
             <Button
               onClick={() => router.push('/builder')}
-              className="cursor-pointer hover:bg-blue-600"
+              className="bg-white text-black font-semibold shadow-sm hover:bg-gray-100 cursor-pointer"
             >
               Create New Instruction
             </Button>
@@ -36,7 +36,7 @@ export default function MyInstructionsPage() {
               <input
                 type="text"
                 placeholder="Search instructions..."
-                className="bg-zinc-900 border border-gray-800 rounded-md py-2 pl-10 pr-4 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                className="bg-zinc-900 border border-gray-800 rounded-md py-2 pl-10 pr-4 w-full focus:outline-none focus:ring-1 focus:ring-gray-200 text-white"
                 value={searchQuery}
                 onChange={handleSearch}
               />
@@ -44,13 +44,13 @@ export default function MyInstructionsPage() {
             <div className="ml-4 space-x-2">
               <Button
                 variant="outline"
-                className="border-gray-700 text-white hover:text-white hover:border-blue-500 hover:bg-zinc-800 cursor-pointer"
+                className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer"
               >
                 Date Created
               </Button>
               <Button
                 variant="outline"
-                className="border-gray-700 text-white hover:text-white hover:border-blue-500 hover:bg-zinc-800 cursor-pointer"
+                className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer"
               >
                 Most Used
               </Button>

@@ -226,7 +226,7 @@ function ResetPasswordForm() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 mt-6 cursor-pointer"
+                  className="w-full bg-white text-black hover:bg-gray-100 h-12 mt-6 cursor-pointer"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Resetting password...' : 'Reset password'}
@@ -238,7 +238,7 @@ function ResetPasswordForm() {
                 {' '}
                 <button
                   type="button"
-                  className="text-blue-500 hover:text-blue-400 cursor-pointer"
+                  className="text-[#FAFAFA] hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-in')}
                 >
                   Sign in

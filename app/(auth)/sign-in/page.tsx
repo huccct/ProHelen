@@ -130,7 +130,7 @@ export default function SignIn() {
                     <Label htmlFor="password">Password</Label>
                     <button
                       type="button"
-                      className="text-sm text-blue-500 hover:text-blue-400 cursor-pointer"
+                      className="text-sm text-[#FAFAFA] hover:underline cursor-pointer"
                       onClick={() => {
                         router.push('/forgot-password')
                       }}
@@ -160,7 +160,7 @@ export default function SignIn() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 mt-6 cursor-pointer"
+                  className="w-full bg-white text-black hover:bg-gray-100 h-12 mt-6 cursor-pointer"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Signing in...' : 'Sign in'}
@@ -211,7 +211,7 @@ export default function SignIn() {
                 {' '}
                 <button
                   type="button"
-                  className="text-blue-500 hover:text-blue-400 cursor-pointer"
+                  className="text-[#FAFAFA] hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-up')}
                 >
                   Sign up
@@ -223,7 +223,27 @@ export default function SignIn() {
               className="text-center text-sm text-gray-500"
               variants={fadeIn}
             >
-              By continuing, you agree to our Terms of Service and Privacy Policy
+              By continuing, you agree to our
+              {' '}
+              <a
+                href="/terms"
+                className="underline text-[#FAFAFA] hover:text-[#e5e5e5] transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Terms of Service
+              </a>
+              {' '}
+              and
+              {' '}
+              <a
+                href="/privacy"
+                className="underline text-[#FAFAFA] hover:text-[#e5e5e5] transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Privacy Policy
+              </a>
             </motion.p>
           </motion.div>
         </div>

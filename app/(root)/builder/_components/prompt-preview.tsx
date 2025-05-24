@@ -49,14 +49,14 @@ ${preview.assistant}`
         <div className="space-y-2">
           <Button
             variant="outline"
-            className="w-full cursor-pointer bg-transparent hover:bg-blue-500 hover:text-white text-white border-white/20 hover:border-blue-500 transition-all duration-200"
+            className="w-full cursor-pointer bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-all duration-200"
             onClick={handleCopy}
           >
             {copied ? 'Copied!' : 'Copy to Clipboard'}
           </Button>
           <Button
             variant="outline"
-            className="w-full cursor-pointer bg-transparent hover:bg-blue-500 hover:text-white text-white border-white/20 hover:border-blue-500 transition-all duration-200"
+            className="w-full cursor-pointer bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-all duration-200"
           >
             Save Template
           </Button>

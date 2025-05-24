@@ -28,7 +28,7 @@ export function TemplateDetails({ template }: TemplateDetailsProps) {
             <ul className="space-y-2">
               {template.features.map((feature, index) => (
                 <li key={index} className="flex items-start">
-                  <span className="text-blue-400 mr-2">•</span>
+                  <span className="text-gray-400 mr-2">•</span>
                   <span className="text-gray-300">{feature}</span>
                 </li>
               ))}

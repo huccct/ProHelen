@@ -25,7 +25,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         type="text"
         value={localQuery}
         onChange={handleChange}
-        className="w-full p-3 pl-10 text-sm bg-zinc-900 border border-gray-800 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-400"
+        className="w-full p-3 pl-10 text-sm bg-zinc-900 border border-gray-800 rounded-lg focus:ring-gray-200 focus:border-gray-200 text-white placeholder-gray-400"
         placeholder="Search templates..."
       />
     </div>

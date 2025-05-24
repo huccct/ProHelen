@@ -104,7 +104,7 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
               : !hideSignIn && (
                   <Button
                     onClick={() => router.push('/sign-in')}
-                    className="cursor-pointer"
+                    className="bg-white text-black hover:bg-gray-100 cursor-pointer"
                   >
                     Sign in
                   </Button>

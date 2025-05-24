@@ -293,7 +293,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
               >
                 <Card className="h-full bg-zinc-900/50 border-gray-800 hover:border-gray-700 transition-colors cursor-pointer" onClick={() => router.push(`/templates/${template.id}`)}>
                   <CardHeader>
-                    <div className="text-sm font-medium text-blue-400 mb-1">{template.category}</div>
+                    <div className="text-sm font-medium text-gray-200 mb-1">{template.category}</div>
                     <CardTitle className="text-xl font-bold text-white">{template.title}</CardTitle>
                     <CardDescription className="text-base text-gray-300 mt-2">
                       {template.description}
@@ -316,7 +316,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
 
                       <div className="pt-2 flex gap-2">
                         <Button
-                          className="w-full cursor-pointer"
+                          className="w-full bg-white text-black font-semibold shadow-sm hover:bg-gray-100 cursor-pointer"
                           onClick={(e) => {
                             e.stopPropagation()
                             router.push(`/builder?template=${template.id}`)
@@ -326,7 +326,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                         </Button>
                         <Button
                           variant="outline"
-                          className="border-gray-700 text-gray-300 cursor-pointer"
+                          className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer"
                           onClick={(e) => {
                             e.stopPropagation()
                             router.push(`/templates/${template.id}`)

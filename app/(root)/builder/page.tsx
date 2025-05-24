@@ -95,7 +95,7 @@ function BuilderContent() {
         <div className="flex items-center space-x-4">
           <Link
             href="/"
-            className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-800 cursor-pointer"
+            className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-zinc-800 cursor-pointer"
           >
             <ArrowLeft size={18} />
           </Link>

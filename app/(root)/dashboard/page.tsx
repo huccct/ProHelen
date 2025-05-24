@@ -32,8 +32,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-semibold">Suggested Templates</h2>
             <Button
-              variant="outline"
-              className="border-gray-700 text-gray-300 hover:text-white hover:border-gray-600"
+              className="bg-white text-black font-semibold shadow-sm hover:bg-gray-100 cursor-pointer"
               onClick={() => router.push('/templates')}
             >
               View All Templates

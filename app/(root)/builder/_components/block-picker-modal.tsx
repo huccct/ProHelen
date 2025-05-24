@@ -77,7 +77,7 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
           {blockTypes.map(block => (
             <div
               key={block.type}
-              className="flex flex-col items-center gap-2 p-4 border border-gray-800 rounded-lg hover:bg-gray-900 hover:border-gray-700 cursor-pointer transition-all duration-200"
+              className="flex flex-col items-center gap-2 p-4 border border-gray-800 rounded-lg hover:bg-zinc-800 hover:border-gray-700 cursor-pointer transition-all duration-200"
               draggable
               onDragStart={e => handleDragStart(e, block.type)}
               onClick={() => handleClick(block.type)}

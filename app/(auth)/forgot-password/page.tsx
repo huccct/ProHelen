@@ -104,7 +104,7 @@ export default function ForgotPassword() {
 
                       <Button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 mt-6 cursor-pointer"
+                        className="w-full bg-white text-black hover:bg-gray-100 h-12 mt-6 cursor-pointer"
                         disabled={isLoading}
                       >
                         {isLoading ? 'Sending reset link...' : 'Send reset link'}
@@ -113,7 +113,7 @@ export default function ForgotPassword() {
                   )
                 : (
                     <div className="space-y-4">
-                      <div className="bg-blue-500/10 text-blue-500 p-4 rounded-lg text-sm">
+                      <div className="bg-white/10 text-white p-4 rounded-lg text-sm">
                         We've sent a password reset link to
                         {' '}
                         <strong>{email}</strong>
@@ -137,7 +137,7 @@ export default function ForgotPassword() {
                 {' '}
                 <button
                   type="button"
-                  className="text-blue-500 hover:text-blue-400 cursor-pointer"
+                  className="text-[#FAFAFA] hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-in')}
                 >
                   Sign in
@@ -149,7 +149,27 @@ export default function ForgotPassword() {
               className="text-center text-sm text-gray-500"
               variants={fadeIn}
             >
-              By continuing, you agree to our Terms of Service and Privacy Policy
+              By continuing, you agree to our
+              {' '}
+              <a
+                href="/terms"
+                className="underline text-[#FAFAFA] hover:text-[#e5e5e5] transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Terms of Service
+              </a>
+              {' '}
+              and
+              {' '}
+              <a
+                href="/privacy"
+                className="underline text-[#FAFAFA] hover:text-[#e5e5e5] transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Privacy Policy
+              </a>
             </motion.p>
           </motion.div>
         </div>

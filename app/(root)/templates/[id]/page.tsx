@@ -70,7 +70,7 @@ export default function TemplateDetailPage({ params }: { params: any }) {
                         Share
                       </Button>
                       <Button
-                        className="cursor-pointer"
+                        className="bg-white text-black hover:bg-gray-100 cursor-pointer"
                         onClick={() => router.push(`/builder?template=${template.id}`)}
                       >
                         Use Template

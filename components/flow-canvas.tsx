@@ -92,7 +92,7 @@ export function FlowCanvas({ className }: FlowCanvasProps) {
             <Button
               variant="outline"
               onClick={() => setOpen(true)}
-              className="bg-black border-gray-800 hover:bg-gray-900 hover:border-gray-700 text-gray-400 hover:text-white transition-colors cursor-pointer"
+              className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-colors cursor-pointer"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Block
