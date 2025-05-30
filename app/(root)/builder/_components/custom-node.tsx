@@ -16,7 +16,7 @@ export function CustomNode({ data, isConnectable }: NodeProps<CustomNodeType>) {
       <Handle
         type="target"
         position={Position.Top}
-        className="!bg-gray-700 !border-gray-600 !w-3 !h-3 hover:!bg-blue-500 hover:!border-blue-400"
+        className="!bg-gray-700 !border-gray-600 !w-3 !h-3 hover:!bg-gray-200 hover:!border-gray-100"
         isConnectable={isConnectable}
       />
 
@@ -40,7 +40,7 @@ export function CustomNode({ data, isConnectable }: NodeProps<CustomNodeType>) {
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!bg-gray-700 !border-gray-600 !w-3 !h-3 hover:!bg-blue-500 hover:!border-blue-400"
+        className="!bg-gray-700 !border-gray-600 !w-3 !h-3 hover:!bg-gray-200 hover:!border-gray-100"
         isConnectable={isConnectable}
       />
     </div>

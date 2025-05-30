@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { useBuilderStore } from '@/store/builder'
-import { useState } from 'react'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/shallow'
 
 interface PromptPreviewProps {
@@ -17,7 +17,6 @@ function selector(state: any) {
 }
 
 export function PromptPreview({ className, style }: PromptPreviewProps) {
-  const [copied, setCopied] = useState(false)
   const { preview } = useBuilderStore(useShallow(selector))
 
   const content = `# System Instructions
@@ -31,8 +30,7 @@ ${preview.assistant}`
 
   const handleCopy = () => {
     navigator.clipboard.writeText(content)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    toast.success('Copied to clipboard')
   }
 
   return (
@@ -52,7 +50,7 @@ ${preview.assistant}`
             className="w-full cursor-pointer bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-all duration-200"
             onClick={handleCopy}
           >
-            {copied ? 'Copied!' : 'Copy to Clipboard'}
+            Copy to Clipboard
           </Button>
           <Button
             variant="outline"
