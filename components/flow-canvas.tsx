@@ -83,8 +83,7 @@ export function FlowCanvas({ className }: FlowCanvasProps) {
           className="bg-black"
           nodeOrigin={[0.5, 0.5]}
           defaultEdgeOptions={{
-            style: { stroke: '#1f2937' },
-            type: 'smoothstep',
+            style: { stroke: '#6b7280', strokeWidth: 2 },
             animated: true,
           }}
         >

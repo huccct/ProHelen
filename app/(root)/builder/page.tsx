@@ -127,7 +127,7 @@ function BuilderContent() {
           onMouseDown={handleMouseDown}
         />
         <PromptPreview
-          className="overflow-y-auto border-l border-gray-800"
+          className="overflow-y-hidden border-l border-gray-800"
           style={{ width: previewWidth }}
         />
       </div>
