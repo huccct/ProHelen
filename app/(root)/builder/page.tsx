@@ -1,12 +1,12 @@
 'use client'
 
 import { FlowCanvas } from '@/components/flow-canvas'
+import { useBuilderStore } from '@/store/builder'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import { mockInstructions } from '../my-instructions/_components/instruction-grid'
-import { templateData } from '../templates/_components/template-list'
 import { PromptPreview } from './_components/prompt-preview'
 import { Toolbar } from './_components/toolbar'
 
@@ -21,6 +21,9 @@ interface BuilderState {
 
 function BuilderContent() {
   const searchParams = useSearchParams()
+  const importFlowData = useBuilderStore(state => state.importFlowData)
+  const setTitle = useBuilderStore(state => state.setTitle)
+  const setDescription = useBuilderStore(state => state.setDescription)
   const [builderState, setBuilderState] = useState<BuilderState>({
     title: '',
     description: '',
@@ -63,17 +66,32 @@ function BuilderContent() {
     const instructionId = searchParams.get('instruction')
 
     if (templateId) {
-      const template = templateData.find(t => t.id === templateId)
-      if (template) {
-        setBuilderState({
-          title: `Copy of ${template.title}`,
-          description: template.description,
-          content: template.content || '',
-          tags: [],
-          isTemplate: false,
-          sourceId: templateId,
+      // Fetch template from API
+      fetch(`/api/templates/${templateId}`)
+        .then(res => res.json())
+        .then((template) => {
+          if (template) {
+            // Update builder state
+            setBuilderState({
+              title: `Copy of ${template.title}`,
+              description: template.description,
+              content: template.content || '',
+              tags: [],
+              isTemplate: false,
+              sourceId: templateId,
+            })
+
+            // Update store with title and description
+            setTitle(`Copy of ${template.title}`)
+            setDescription(template.description)
+
+            // Import flow data if available
+            if (template.flowData) {
+              importFlowData(template.flowData)
+            }
+          }
         })
-      }
+        .catch(console.error)
     }
     else if (instructionId) {
       const instruction = mockInstructions.find(i => i.id === instructionId)
@@ -86,9 +104,13 @@ function BuilderContent() {
           isTemplate: false,
           sourceId: instructionId,
         })
+
+        // Update store
+        setTitle(`Copy of ${instruction.title}`)
+        setDescription(instruction.description)
       }
     }
-  }, [searchParams])
+  }, [searchParams, importFlowData, setTitle, setDescription])
 
   return (
     <div className="flex flex-col min-h-screen h-screen overflow-hidden bg-black">

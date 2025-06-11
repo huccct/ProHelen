@@ -34,6 +34,9 @@ interface BuilderActions {
   setIsTemplate: (isTemplate: boolean) => void
   setSourceId: (sourceId: string | null) => void
   updatePreview: () => void
+  exportFlowData: () => { nodes: Node<CustomNodeData>[], edges: Edge[] }
+  importFlowData: (flowData: { nodes: Node<CustomNodeData>[], edges: Edge[] }) => void
+  resetFlow: () => void
 }
 
 export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) => ({
@@ -336,5 +339,30 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
         assistant: assistantPrompt || '',
       },
     })
+  },
+
+  exportFlowData: () => {
+    const { nodes, edges } = get()
+    return { nodes, edges }
+  },
+
+  importFlowData: (flowData) => {
+    const { nodes, edges } = flowData
+    set({ nodes, edges })
+    get().updatePreview()
+  },
+
+  resetFlow: () => {
+    set({
+      nodes: [],
+      edges: [],
+      title: '',
+      description: '',
+      content: '',
+      tags: [],
+      isTemplate: false,
+      sourceId: null,
+    })
+    get().updatePreview()
   },
 }))

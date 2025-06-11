@@ -26,6 +26,9 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
+  templates     Template[]
+  reviews       TemplateReview[]
+  favorites     UserFavoriteTemplate[]
 }
 
 model Account {
@@ -62,4 +65,75 @@ model VerificationToken {
   isUsed     Boolean  @default(false)
 
   @@unique([identifier, token])
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String
+  useCases    String[] // Array of strings for use cases
+  content     String   @db.Text // The actual prompt content
+  overview    String?  @db.Text
+  features    String[] // Array of features
+  isPublic    Boolean  @default(false)
+  isPremium   Boolean  @default(false)
+  tags        String[] // Searchable tags
+  flowData    Json?    // React Flow nodes and edges data
+  
+  // Analytics
+  usageCount  Int      @default(0)
+  rating      Float?   // Average rating from 1-5
+  ratingCount Int      @default(0)
+  
+  // Ownership
+  createdBy   String?  // User ID, null for system templates
+  creator     User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  examples    TemplateExample[]
+  reviews     TemplateReview[]
+  favorites   UserFavoriteTemplate[]
+  
+  @@index([category])
+  @@index([isPublic])
+  @@index([createdBy])
+}
+
+model TemplateExample {
+  id         String   @id @default(cuid())
+  title      String
+  content    String   @db.Text
+  templateId String
+  template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  
+  createdAt  DateTime @default(now())
+}
+
+model TemplateReview {
+  id         String   @id @default(cuid())
+  rating     Int      // 1-5 stars
+  comment    String?  @db.Text
+  templateId String
+  template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt  DateTime @default(now())
+  
+  @@unique([templateId, userId]) // One review per user per template
+}
+
+model UserFavoriteTemplate {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateId String
+  template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  
+  createdAt  DateTime @default(now())
+  
+  @@unique([userId, templateId])
 }

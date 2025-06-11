@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { notFound, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import { templateData } from '../_components/template-list'
 import { RelatedTemplates } from './_components/related-templates'
 import { TemplateDetails } from './_components/template-details'
 import { TemplatePreview } from './_components/template-preview'
@@ -15,23 +14,56 @@ export default function TemplateDetailPage({ params }: { params: any }) {
   const router = useRouter()
   const [template, setTemplate] = useState<Template | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const unwrappedParams = React.use(params) as { id: string }
   const id = unwrappedParams.id
 
   useEffect(() => {
-    setLoading(true)
+    const fetchTemplate = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/templates/${id}`)
 
-    const foundTemplate = templateData.find(t => t.id === id)
+        if (!response.ok) {
+          if (response.status === 404) {
+            notFound()
+            return
+          }
+          throw new Error('Failed to fetch template')
+        }
 
-    if (foundTemplate) {
-      setTemplate(foundTemplate)
+        const templateData = await response.json()
+        setTemplate(templateData)
+      }
+      catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load template')
+      }
+      finally {
+        setLoading(false)
+      }
     }
 
-    setLoading(false)
+    fetchTemplate()
   }, [id])
 
-  if (!loading && !template) {
+  if (!loading && !template && !error) {
     notFound()
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white">
+        <NavBar />
+        <main className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <p className="text-red-400 mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Try Again
+            </Button>
+          </div>
+        </main>
+      </div>
+    )
   }
 
   return (

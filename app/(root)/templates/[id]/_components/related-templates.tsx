@@ -3,7 +3,14 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
-import { templateData } from '../../_components/template-list'
+import { useEffect, useState } from 'react'
+
+interface Template {
+  id: string
+  title: string
+  description: string
+  category: string
+}
 
 interface RelatedTemplatesProps {
   currentTemplateId: string
@@ -12,10 +19,20 @@ interface RelatedTemplatesProps {
 
 export function RelatedTemplates({ currentTemplateId, category }: RelatedTemplatesProps) {
   const router = useRouter()
+  const [relatedTemplates, setRelatedTemplates] = useState<Template[]>([])
 
-  const relatedTemplates = templateData
-    .filter(template => template.category === category && template.id !== currentTemplateId)
-    .slice(0, 3)
+  useEffect(() => {
+    fetch('/api/templates')
+      .then(res => res.json())
+      .then((data) => {
+        const templates = data.templates || []
+        const filtered = templates
+          .filter((template: Template) => template.category === category && template.id !== currentTemplateId)
+          .slice(0, 3)
+        setRelatedTemplates(filtered)
+      })
+      .catch(console.error)
+  }, [currentTemplateId, category])
 
   if (relatedTemplates.length === 0) {
     return null
