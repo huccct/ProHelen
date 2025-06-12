@@ -86,6 +86,8 @@ export async function POST(request: NextRequest) {
       overview,
       examples,
       isPublic = false,
+      flowData,
+      createdBy,
     } = body
 
     const template = await prisma.template.create({
@@ -99,6 +101,8 @@ export async function POST(request: NextRequest) {
         tags,
         overview,
         isPublic,
+        flowData,
+        createdBy,
         examples: examples
           ? {
               create: examples,

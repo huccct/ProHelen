@@ -1,11 +1,13 @@
 'use client'
 
+import type { TemplateFormData } from './save-template-modal'
 import { Button } from '@/components/ui/button'
 import { useBuilderStore } from '@/store/builder'
 import { Code2, Copy, Download, Eye, Save, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/shallow'
+import { SaveTemplateModal } from './save-template-modal'
 
 interface PromptPreviewProps {
   className?: string
@@ -16,14 +18,17 @@ function selector(state: any) {
   return {
     preview: state.preview,
     nodes: state.nodes,
+    exportFlowData: state.exportFlowData,
   }
 }
 
 type FormatType = 'custom-instructions' | 'system-prompt' | 'raw-text'
 
 export function PromptPreview({ className, style }: PromptPreviewProps) {
-  const { preview, nodes } = useBuilderStore(useShallow(selector))
+  const { preview, nodes, exportFlowData } = useBuilderStore(useShallow(selector))
   const [currentFormat, setCurrentFormat] = useState<FormatType>('custom-instructions')
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   const generateCustomInstructions = () => {
     if (!preview.system && !preview.human && !preview.assistant) {
@@ -99,8 +104,57 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
   }
 
   const handleSaveTemplate = () => {
-    // TODO: Implement template saving
-    toast.info('Template saving coming soon!')
+    if (nodes.length === 0) {
+      toast.error('Please add some blocks before saving as template')
+      return
+    }
+    setShowSaveModal(true)
+  }
+
+  const handleSaveTemplateSubmit = async (templateData: TemplateFormData) => {
+    try {
+      setIsSaving(true)
+
+      const flowData = exportFlowData()
+      const systemPrompt = generateSystemPrompt()
+
+      const response = await fetch('/api/templates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: templateData.title,
+          description: templateData.description,
+          category: templateData.category,
+          content: systemPrompt,
+          tags: templateData.tags,
+          isPublic: templateData.isPublic,
+          flowData,
+          useCases: [],
+          features: [],
+          overview: templateData.description,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save template')
+      }
+
+      await response.json()
+      toast.success('Template saved successfully!')
+      setShowSaveModal(false)
+
+      // Optionally redirect to the template page
+      // router.push(`/templates/${savedTemplate.id}`)
+    }
+    catch (error) {
+      console.error('Error saving template:', error)
+      toast.error('Failed to save template. Please try again.')
+    }
+    finally {
+      setIsSaving(false)
+    }
   }
 
   const handleTestPrompt = () => {
@@ -181,7 +235,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               size="sm"
               onClick={handleCopy}
               disabled={!hasContent}
-              className="bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Copy className="h-3 w-3 mr-1" />
               Copy
@@ -191,7 +245,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               size="sm"
               onClick={handleExport}
               disabled={!hasContent}
-              className="bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="h-3 w-3 mr-1" />
               Export
@@ -203,7 +257,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             size="sm"
             onClick={handleTestPrompt}
             disabled={!hasContent}
-            className="w-full bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Sparkles className="h-3 w-3 mr-1" />
             Test Prompt
@@ -214,7 +268,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             size="sm"
             onClick={handleSaveTemplate}
             disabled={!hasContent}
-            className="w-full bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-3 w-3 mr-1" />
             Save as Template
@@ -239,6 +293,14 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
         }
       `}
       </style>
+
+      {/* Save Template Modal */}
+      <SaveTemplateModal
+        open={showSaveModal}
+        onOpenChange={setShowSaveModal}
+        onSave={handleSaveTemplateSubmit}
+        isLoading={isSaving}
+      />
     </aside>
   )
 }

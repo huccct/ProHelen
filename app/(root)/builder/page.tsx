@@ -24,6 +24,7 @@ function BuilderContent() {
   const importFlowData = useBuilderStore(state => state.importFlowData)
   const setTitle = useBuilderStore(state => state.setTitle)
   const setDescription = useBuilderStore(state => state.setDescription)
+  const resetFlow = useBuilderStore(state => state.resetFlow)
   const [builderState, setBuilderState] = useState<BuilderState>({
     title: '',
     description: '',
@@ -110,7 +111,21 @@ function BuilderContent() {
         setDescription(instruction.description)
       }
     }
-  }, [searchParams, importFlowData, setTitle, setDescription])
+    else {
+      // No query parameters, reset to fresh state
+      setBuilderState({
+        title: '',
+        description: '',
+        content: '',
+        tags: [],
+        isTemplate: false,
+        sourceId: null,
+      })
+
+      // Reset store and flow data
+      resetFlow()
+    }
+  }, [searchParams, importFlowData, setTitle, setDescription, resetFlow])
 
   return (
     <div className="flex flex-col min-h-screen h-screen overflow-hidden bg-black">

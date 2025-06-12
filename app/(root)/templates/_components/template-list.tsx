@@ -196,7 +196,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 hover:bg-gray-800"
+                  className="flex-1 border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 hover:bg-gray-800 cursor-pointer"
                   onClick={() => router.push(`/templates/${template.id}`)}
                 >
                   <Clock className="w-4 h-4 mr-2" />
@@ -204,7 +204,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                 </Button>
                 <Button
                   size="sm"
-                  className="flex-1 bg-white text-black hover:bg-gray-100"
+                  className="flex-1 bg-white text-black hover:bg-gray-100 cursor-pointer"
                   onClick={() => router.push(`/builder?template=${template.id}`)}
                 >
                   <Users className="w-4 h-4 mr-2" />
