@@ -2,8 +2,9 @@
 
 import { BlockPickerModal } from '@/app/(root)/builder/_components/block-picker-modal'
 import { CustomNode } from '@/app/(root)/builder/_components/custom-node'
+import { Toolbar } from '@/app/(root)/builder/_components/toolbar'
 import { useBuilderStore } from '@/store/builder'
-import { Background, Controls, MiniMap, Panel, ReactFlow, ReactFlowProvider } from '@xyflow/react'
+import { Background, MiniMap, Panel, ReactFlow, ReactFlowProvider } from '@xyflow/react'
 import { Plus } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useShallow } from 'zustand/shallow'
@@ -66,50 +67,55 @@ export function FlowCanvas({ className }: FlowCanvasProps) {
   return (
     <ReactFlowProvider>
       <div className={className}>
-        <BlockPickerModal open={open} onOpenChange={setOpen} onAddNode={addNode} />
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          nodeTypes={nodeTypes}
-          fitView
-          proOptions={{
-            hideAttribution: true,
-          }}
-          className="bg-black"
-          nodeOrigin={[0.5, 0.5]}
-          defaultEdgeOptions={{
-            style: { stroke: '#6b7280', strokeWidth: 2 },
-            animated: true,
-          }}
-        >
-          <Panel position="top-left" className="left-4 top-4">
-            <Button
-              variant="outline"
-              onClick={() => setOpen(true)}
-              className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-colors cursor-pointer"
+        <div className="flex flex-col h-full">
+          <Toolbar />
+          <div className="flex-1 relative">
+            <BlockPickerModal open={open} onOpenChange={setOpen} onAddNode={addNode} />
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+              nodeTypes={nodeTypes}
+              fitView
+              proOptions={{
+                hideAttribution: true,
+              }}
+              className="bg-black"
+              nodeOrigin={[0.5, 0.5]}
+              defaultEdgeOptions={{
+                style: { stroke: '#6b7280', strokeWidth: 2 },
+                animated: true,
+              }}
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Block
-            </Button>
-          </Panel>
-          <Controls className="border border-gray-800 rounded-lg fill-gray-400 hover:fill-white bg-black" />
-          <MiniMap
-            className="border border-gray-800 rounded-lg bg-black"
-            nodeColor="#1f2937"
-            maskColor="rgba(0, 0, 0, 0.8)"
-          />
-          <Background
-            gap={12}
-            size={1}
-            color="#1f2937"
-            className="bg-black"
-          />
-        </ReactFlow>
+              <Panel position="top-left" className="left-4 top-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setOpen(true)}
+                  className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-colors cursor-pointer"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Block
+                </Button>
+              </Panel>
+
+              <MiniMap
+                className="border border-gray-800 rounded-lg bg-black"
+                nodeColor="#1f2937"
+                maskColor="rgba(0, 0, 0, 0.8)"
+              />
+              <Background
+                gap={12}
+                size={1}
+                color="#1f2937"
+                className="bg-black"
+              />
+            </ReactFlow>
+          </div>
+        </div>
       </div>
     </ReactFlowProvider>
   )

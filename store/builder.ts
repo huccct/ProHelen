@@ -3,6 +3,11 @@ import type { Connection, Edge, Node, OnEdgesChange, OnNodesChange } from '@xyfl
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import { create } from 'zustand'
 
+interface HistoryState {
+  nodes: Node<CustomNodeData>[]
+  edges: Edge[]
+}
+
 interface BuilderState {
   nodes: Node<CustomNodeData>[]
   edges: Edge[]
@@ -17,6 +22,8 @@ interface BuilderState {
     human: string
     assistant: string
   }
+  history: HistoryState[]
+  historyIndex: number
 }
 
 interface BuilderActions {
@@ -37,6 +44,11 @@ interface BuilderActions {
   exportFlowData: () => { nodes: Node<CustomNodeData>[], edges: Edge[] }
   importFlowData: (flowData: { nodes: Node<CustomNodeData>[], edges: Edge[] }) => void
   resetFlow: () => void
+  saveToHistory: () => void
+  undo: () => void
+  redo: () => void
+  canUndo: () => boolean
+  canRedo: () => boolean
 }
 
 export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) => ({
@@ -54,12 +66,16 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
     human: '',
     assistant: '',
   },
+  history: [],
+  historyIndex: -1,
 
   // Actions
   setNodes: nodes => set({ nodes }),
   setEdges: edges => set({ edges }),
 
   addNode: (type, position) => {
+    get().saveToHistory()
+
     const nodes = get().nodes
     const nodePosition = position || {
       x: Math.random() * 500,
@@ -81,6 +97,12 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   },
 
   onNodesChange: (changes) => {
+    // Save to history for non-selection changes
+    const hasNonSelectionChanges = changes.some(change => change.type !== 'select')
+    if (hasNonSelectionChanges) {
+      get().saveToHistory()
+    }
+
     set(state => ({
       nodes: applyNodeChanges(changes, state.nodes) as Node<CustomNodeData>[],
     }))
@@ -88,6 +110,12 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   },
 
   onEdgesChange: (changes) => {
+    // Save to history for non-selection changes
+    const hasNonSelectionChanges = changes.some(change => change.type !== 'select')
+    if (hasNonSelectionChanges) {
+      get().saveToHistory()
+    }
+
     set(state => ({
       edges: applyEdgeChanges(changes, state.edges),
     }))
@@ -95,6 +123,8 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   },
 
   onConnect: (connection) => {
+    get().saveToHistory()
+
     set(state => ({
       edges: [...state.edges, { ...connection, id: `edge-${state.edges.length + 1}` }],
     }))
@@ -102,6 +132,8 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   },
 
   updateNodeData: (nodeId, data) => {
+    get().saveToHistory()
+
     set(state => ({
       nodes: state.nodes.map((node) => {
         if (node.id === nodeId) {
@@ -362,7 +394,66 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       tags: [],
       isTemplate: false,
       sourceId: null,
+      history: [],
+      historyIndex: -1,
     })
     get().updatePreview()
+  },
+
+  // History management
+  saveToHistory: () => {
+    const { nodes, edges, history, historyIndex } = get()
+    const currentState: HistoryState = { nodes, edges }
+
+    // Remove any history after current index (when we make a new change after undoing)
+    const newHistory = history.slice(0, historyIndex + 1)
+    newHistory.push(currentState)
+
+    // Limit history to last 50 states
+    const maxHistorySize = 50
+    if (newHistory.length > maxHistorySize) {
+      newHistory.shift()
+    }
+    else {
+      set({ historyIndex: historyIndex + 1 })
+    }
+
+    set({ history: newHistory })
+  },
+
+  undo: () => {
+    const { history, historyIndex } = get()
+    if (historyIndex > 0) {
+      const previousState = history[historyIndex - 1]
+      set({
+        nodes: previousState.nodes,
+        edges: previousState.edges,
+        historyIndex: historyIndex - 1,
+      })
+      get().updatePreview()
+    }
+  },
+
+  redo: () => {
+    const { history, historyIndex } = get()
+    if (historyIndex < history.length - 1) {
+      const nextState = history[historyIndex + 1]
+      set({
+        nodes: nextState.nodes,
+        edges: nextState.edges,
+        historyIndex: historyIndex + 1,
+      })
+      get().updatePreview()
+    }
+  },
+
+  canUndo: () => {
+    const { historyIndex } = get()
+    return historyIndex > 0
+  },
+
+  canRedo: () => {
+    const { history, historyIndex } = get()
+    return historyIndex < history.length - 1
   },
 }))

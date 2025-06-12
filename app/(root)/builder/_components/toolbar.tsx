@@ -1,11 +1,10 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { useBuilderStore } from '@/store/builder'
+import { useReactFlow, useViewport } from '@xyflow/react'
 import {
-  Download,
-  Grid3X3,
   Maximize2,
-  Play,
   Redo2,
   RotateCcw,
   Trash2,
@@ -13,46 +12,59 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { ConfirmClearModal } from './confirm-clear-modal'
 
 interface ToolbarProps {
   className?: string
 }
 
 export function Toolbar({ className }: ToolbarProps) {
+  const { zoomIn, zoomOut, fitView, setViewport } = useReactFlow()
+  const resetFlow = useBuilderStore(state => state.resetFlow)
+  const undo = useBuilderStore(state => state.undo)
+  const redo = useBuilderStore(state => state.redo)
+  const canUndo = useBuilderStore(state => state.canUndo())
+  const canRedo = useBuilderStore(state => state.canRedo())
+  const { zoom, x, y } = useViewport()
+  const currentZoom = Math.round(zoom * 100)
+  const [zoomInput, setZoomInput] = useState(currentZoom.toString())
+  const [showClearModal, setShowClearModal] = useState(false)
+
   const handleUndo = () => {
-    toast.info('Undo action')
-    // TODO: 实现撤销逻辑
+    if (canUndo) {
+      undo()
+      toast.success('Undone')
+    }
   }
 
   const handleRedo = () => {
-    toast.info('Redo action')
-    // TODO: 实现重做逻辑
+    if (canRedo) {
+      redo()
+      toast.success('Redone')
+    }
   }
 
   const handleZoomIn = () => {
-    toast.info('Zoom in')
-    // TODO: 实现放大逻辑
+    zoomIn()
   }
 
   const handleZoomOut = () => {
-    toast.info('Zoom out')
-    // TODO: 实现缩小逻辑
+    zoomOut()
   }
 
   const handleFitToScreen = () => {
-    toast.info('Fit to screen')
-    // TODO: 实现适应屏幕逻辑
-  }
-
-  const handleToggleGrid = () => {
-    toast.info('Toggle grid')
-    // TODO: 实现网格切换逻辑
+    fitView()
   }
 
   const handleClear = () => {
-    toast.info('Clear canvas')
-    // TODO: 实现清空画布逻辑
+    setShowClearModal(true)
+  }
+
+  const handleConfirmClear = () => {
+    resetFlow()
+    toast.success('Canvas cleared')
   }
 
   const handleAutoLayout = () => {
@@ -60,15 +72,29 @@ export function Toolbar({ className }: ToolbarProps) {
     // TODO: 实现自动布局逻辑
   }
 
-  const handleExport = () => {
-    toast.info('Export')
-    // TODO: 实现导出逻辑
+  const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setZoomInput(e.target.value)
   }
 
-  const handleTest = () => {
-    toast.info('Test prompt')
-    // TODO: 实现测试逻辑
+  const handleZoomInputSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const newZoom = Number.parseInt(zoomInput)
+    if (Number.isNaN(newZoom) || newZoom < 10 || newZoom > 500) {
+      toast.error('Please enter a zoom value between 10% and 500%')
+      setZoomInput(currentZoom.toString())
+      return
+    }
+    setViewport({ x, y, zoom: newZoom / 100 })
   }
+
+  const handleZoomInputBlur = () => {
+    setZoomInput(currentZoom.toString())
+  }
+
+  // Sync input value with current zoom when zoom changes externally
+  useEffect(() => {
+    setZoomInput(currentZoom.toString())
+  }, [currentZoom])
 
   return (
     <div className={`flex items-center justify-between px-4 py-2 border-b border-gray-800 bg-black ${className}`}>
@@ -78,7 +104,12 @@ export function Toolbar({ className }: ToolbarProps) {
           variant="ghost"
           size="sm"
           onClick={handleUndo}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0"
+          disabled={!canUndo}
+          className={`h-8 w-8 p-0 ${
+            canUndo
+              ? 'text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer'
+              : 'text-gray-600 cursor-not-allowed opacity-50'
+          }`}
           title="Undo (Ctrl+Z)"
         >
           <Undo2 size={16} />
@@ -87,7 +118,12 @@ export function Toolbar({ className }: ToolbarProps) {
           variant="ghost"
           size="sm"
           onClick={handleRedo}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0"
+          disabled={!canRedo}
+          className={`h-8 w-8 p-0 ${
+            canRedo
+              ? 'text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer'
+              : 'text-gray-600 cursor-not-allowed opacity-50'
+          }`}
           title="Redo (Ctrl+Y)"
         >
           <Redo2 size={16} />
@@ -99,7 +135,7 @@ export function Toolbar({ className }: ToolbarProps) {
           variant="ghost"
           size="sm"
           onClick={handleClear}
-          className="text-gray-400 hover:text-red-400 hover:bg-zinc-800 h-8 w-8 p-0"
+          className="text-gray-400 hover:text-red-400 hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
           title="Clear canvas"
         >
           <Trash2 size={16} />
@@ -108,7 +144,7 @@ export function Toolbar({ className }: ToolbarProps) {
           variant="ghost"
           size="sm"
           onClick={handleAutoLayout}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0"
+          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
           title="Auto layout"
         >
           <RotateCcw size={16} />
@@ -121,17 +157,27 @@ export function Toolbar({ className }: ToolbarProps) {
           variant="ghost"
           size="sm"
           onClick={handleZoomOut}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0"
+          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
           title="Zoom out"
         >
           <ZoomOut size={16} />
         </Button>
-        <span className="text-sm text-gray-400 px-2 min-w-[50px] text-center">100%</span>
+        <form onSubmit={handleZoomInputSubmit} className="min-w-[50px]">
+          <input
+            type="text"
+            value={zoomInput}
+            onChange={handleZoomInputChange}
+            onBlur={handleZoomInputBlur}
+            className="w-12 text-sm text-gray-400 bg-transparent text-center border-none focus:outline-none focus:text-white"
+            placeholder="100"
+          />
+          <span className="text-sm text-gray-400">%</span>
+        </form>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleZoomIn}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0"
+          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
           title="Zoom in"
         >
           <ZoomIn size={16} />
@@ -140,48 +186,25 @@ export function Toolbar({ className }: ToolbarProps) {
           variant="ghost"
           size="sm"
           onClick={handleFitToScreen}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0"
+          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
           title="Fit to screen"
         >
           <Maximize2 size={16} />
         </Button>
 
-        <div className="h-4 w-px bg-gray-800 mx-2" />
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleToggleGrid}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0"
-          title="Toggle grid"
-        >
-          <Grid3X3 size={16} />
-        </Button>
       </div>
 
-      {/* Right section - Export and test */}
+      {/* Right section - placeholder for future tools */}
       <div className="flex items-center space-x-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleTest}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 px-3"
-          title="Test prompt"
-        >
-          <Play size={16} className="mr-1" />
-          Test
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleExport}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 px-3"
-          title="Export"
-        >
-          <Download size={16} className="mr-1" />
-          Export
-        </Button>
+        {/* Export and Test functions are available in the right panel */}
       </div>
+
+      {/* Confirm Clear Modal */}
+      <ConfirmClearModal
+        open={showClearModal}
+        onOpenChange={setShowClearModal}
+        onConfirm={handleConfirmClear}
+      />
     </div>
   )
 }

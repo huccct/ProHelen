@@ -8,7 +8,6 @@ import { useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import { mockInstructions } from '../my-instructions/_components/instruction-grid'
 import { PromptPreview } from './_components/prompt-preview'
-import { Toolbar } from './_components/toolbar'
 
 interface BuilderState {
   title: string
@@ -156,7 +155,6 @@ function BuilderContent() {
           </div>
         </div>
       </div>
-      <Toolbar />
       <div className="flex flex-1 overflow-hidden">
         <FlowCanvas className="flex-1 h-full" />
         <div
