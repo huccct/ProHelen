@@ -3,11 +3,12 @@
 import type { TemplateFormData } from './save-template-modal'
 import { Button } from '@/components/ui/button'
 import { useBuilderStore } from '@/store/builder'
-import { Code2, Copy, Download, Eye, Save, Sparkles } from 'lucide-react'
+import { Code2, Copy, Download, Eye, Play, Save, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/shallow'
 import { SaveTemplateModal } from './save-template-modal'
+import { TestPromptModal } from './test-prompt-modal'
 
 interface PromptPreviewProps {
   className?: string
@@ -28,6 +29,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
   const { preview, nodes, exportFlowData } = useBuilderStore(useShallow(selector))
   const [currentFormat, setCurrentFormat] = useState<FormatType>('custom-instructions')
   const [showSaveModal, setShowSaveModal] = useState(false)
+  const [showTestModal, setShowTestModal] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
   const generateCustomInstructions = () => {
@@ -87,25 +89,49 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
 
   const currentContent = formatContent(currentFormat)
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(currentContent)
-    toast.success('Copied to clipboard!')
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(preview.system)
+      toast.success('Prompt copied to clipboard!')
+    }
+    catch {
+      toast.error('Failed to copy prompt')
+    }
   }
 
   const handleExport = () => {
-    const blob = new Blob([currentContent], { type: 'text/plain' })
+    const promptData = {
+      system: preview.system,
+      temperature: preview.temperature,
+      maxTokens: preview.maxTokens,
+      exportedAt: new Date().toISOString(),
+    }
+
+    const blob = new Blob([JSON.stringify(promptData, null, 2)], {
+      type: 'application/json',
+    })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `custom-instructions-${Date.now()}.txt`
+    a.download = 'prompt-export.json'
+    document.body.appendChild(a)
     a.click()
+    document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    toast.success('Exported successfully!')
+    toast.success('Prompt exported successfully!')
   }
 
-  const handleSaveTemplate = () => {
-    if (nodes.length === 0) {
-      toast.error('Please add some blocks before saving as template')
+  const handleTest = () => {
+    if (!preview.system.trim()) {
+      toast.error('Please add some content to your prompt before testing')
+      return
+    }
+    setShowTestModal(true)
+  }
+
+  const handleSave = () => {
+    if (!preview.system.trim()) {
+      toast.error('Please add some content to your prompt before saving')
       return
     }
     setShowSaveModal(true)
@@ -157,11 +183,6 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     }
   }
 
-  const handleTestPrompt = () => {
-    // TODO: Implement prompt testing
-    toast.info('Prompt testing coming soon!')
-  }
-
   const formatButtons = [
     { id: 'custom-instructions' as FormatType, label: 'Custom Instructions', icon: <Sparkles className="h-3 w-3" /> },
     { id: 'system-prompt' as FormatType, label: 'System Prompt', icon: <Code2 className="h-3 w-3" /> },
@@ -195,7 +216,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             <button
               key={button.id}
               onClick={() => setCurrentFormat(button.id)}
-              className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded transition-all duration-200 cursor-pointer ${
                 currentFormat === button.id
                   ? 'bg-white text-black font-medium'
                   : 'text-gray-400 hover:text-white hover:bg-zinc-800'
@@ -255,23 +276,23 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={handleTestPrompt}
+            onClick={handleTest}
             disabled={!hasContent}
             className="w-full bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Sparkles className="h-3 w-3 mr-1" />
-            Test Prompt
+            <Play className="h-3 w-3 mr-1" />
+            Test
           </Button>
 
           <Button
             variant="outline"
             size="sm"
-            onClick={handleSaveTemplate}
+            onClick={handleSave}
             disabled={!hasContent}
             className="w-full bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-3 w-3 mr-1" />
-            Save as Template
+            Save
           </Button>
         </div>
 
@@ -301,6 +322,8 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
         onSave={handleSaveTemplateSubmit}
         isLoading={isSaving}
       />
+
+      <TestPromptModal open={showTestModal} onOpenChange={setShowTestModal} />
     </aside>
   )
 }
