@@ -1,155 +1,492 @@
 'use client'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Clock, Edit, MoreVertical, Sparkles } from 'lucide-react'
+import { Clock, Edit, Globe, Heart, HeartOff, MoreVertical, Share, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
-// Mock data for user instructions
-export const mockInstructions = [
-  {
-    id: '1',
-    title: 'Essay Writing Guide',
-    description: 'Custom instruction for writing academic essays with proper structure and citations',
-    createdAt: '2023-10-15',
-    usageCount: 24,
-    tags: ['academic', 'writing'],
-    content: 'You are an essay writing assistant. Help me write clear, well-structured academic essays with proper citations and formatting according to academic standards.',
-  },
-  {
-    id: '2',
-    title: 'Code Documentation Helper',
-    description: 'Guides AI to help write clear and comprehensive code documentation',
-    createdAt: '2023-11-02',
-    usageCount: 18,
-    tags: ['programming', 'documentation'],
-    content: 'You are a code documentation specialist. Help me write clear, concise, and comprehensive documentation for my code that follows best practices.',
-  },
-  {
-    id: '3',
-    title: 'Data Analysis Framework',
-    description: 'Step-by-step guide for analyzing research data and drawing conclusions',
-    createdAt: '2023-11-08',
-    usageCount: 12,
-    tags: ['research', 'analysis'],
-    content: 'You are a data analysis expert. Guide me through analyzing research data step-by-step, from initial exploration to drawing meaningful conclusions.',
-  },
-  {
-    id: '4',
-    title: 'Creative Writing Prompt',
-    description: 'Instruction set for generating creative writing prompts and storylines',
-    createdAt: '2023-11-15',
-    usageCount: 8,
-    tags: ['creative', 'writing'],
-    content: 'You are a creative writing assistant. Help me develop unique and inspiring writing prompts, storylines, and character backgrounds.',
-  },
-  {
-    id: '5',
-    title: 'Meeting Notes Template',
-    description: 'Framework for organizing and summarizing meeting notes effectively',
-    createdAt: '2023-11-20',
-    usageCount: 6,
-    tags: ['productivity', 'organization'],
-    content: 'You are a meeting notes assistant. Help me organize, structure, and summarize meeting notes in a clear and actionable format.',
-  },
-  {
-    id: '6',
-    title: 'Research Question Generator',
-    description: 'System for developing specific and impactful research questions',
-    createdAt: '2023-11-28',
-    usageCount: 4,
-    tags: ['research', 'academic'],
-    content: 'You are a research methodology expert. Help me develop specific, meaningful, and impactful research questions that can guide effective academic investigations.',
-  },
-]
+// Instruction data type
+export interface Instruction {
+  id: string
+  title: string
+  description: string | null
+  content: string
+  tags: string[]
+  flowData?: any
+  userId: string
+  usageCount: number
+  lastUsedAt: string | null
+  isPublished: boolean
+  publishedTemplate?: {
+    id: string
+    title: string
+    isPublic: boolean
+  }
+  publishedAt: string | null
+  category: string | null
+  isFavorite: boolean
+  createdAt: string
+  updatedAt: string
+}
 
 interface InstructionGridProps {
   searchQuery: string
+  filter?: 'all' | 'personal' | 'favorites' | 'published'
+  viewMode?: 'grid' | 'list'
+  sortBy?: string
 }
 
-export function InstructionGrid({ searchQuery }: InstructionGridProps) {
-  const router = useRouter()
+interface ConfirmModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: () => void
+  title: string
+  description: string
+  confirmText?: string
+  cancelText?: string
+  variant?: 'default' | 'destructive'
+}
 
-  // Filter instructions based on search query
-  const filteredInstructions = mockInstructions.filter(instruction =>
-    instruction.title.toLowerCase().includes(searchQuery.toLowerCase())
-    || instruction.description.toLowerCase().includes(searchQuery.toLowerCase())
-    || instruction.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())),
+function ConfirmModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  description,
+  confirmText = 'Confirm',
+  cancelText = 'Cancel',
+  variant = 'default',
+}: ConfirmModalProps) {
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-zinc-900 border-gray-800 text-white">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription className="text-gray-400">
+            {description}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            {cancelText}
+          </Button>
+          <Button
+            variant={variant === 'destructive' ? 'destructive' : 'outline'}
+            onClick={() => {
+              onConfirm()
+              onClose()
+            }}
+          >
+            {confirmText}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
+}
+
+export function InstructionGrid({
+  searchQuery,
+  filter = 'all',
+  viewMode = 'grid',
+  sortBy = 'updated',
+}: InstructionGridProps) {
+  const router = useRouter()
+  const [instructions, setInstructions] = useState<Instruction[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean, instruction: Instruction | null }>({
+    isOpen: false,
+    instruction: null,
+  })
+  const [publishModal, setPublishModal] = useState<{ isOpen: boolean, instruction: Instruction | null }>({
+    isOpen: false,
+    instruction: null,
+  })
+
+  // Fetch instructions list
+  const fetchInstructions = async () => {
+    try {
+      setLoading(true)
+      const params = new URLSearchParams()
+
+      if (searchQuery)
+        params.set('search', searchQuery)
+      if (filter !== 'all')
+        params.set('filter', filter)
+      if (sortBy)
+        params.set('sortBy', sortBy)
+
+      const response = await fetch(`/api/instructions?${params}`)
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch instructions')
+      }
+
+      const data = await response.json()
+      setInstructions(data.instructions || [])
+    }
+    catch (err) {
+      console.error('Error fetching instructions:', err)
+      setError(err instanceof Error ? err.message : 'Failed to load instructions')
+    }
+    finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchInstructions()
+  }, [searchQuery, filter, sortBy])
+
+  // Delete instruction
+  const handleDelete = async (instructionId: string) => {
+    try {
+      const response = await fetch(`/api/instructions/${instructionId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete instruction')
+      }
+
+      toast.success('Instruction deleted successfully')
+      fetchInstructions() // Refresh list
+    }
+    catch (error) {
+      console.error('Error deleting instruction:', error)
+      toast.error('Failed to delete, please try again')
+    }
+  }
+
+  // Toggle favorite status
+  const handleToggleFavorite = async (instruction: Instruction) => {
+    try {
+      const response = await fetch(`/api/instructions/${instruction.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...instruction,
+          isFavorite: !instruction.isFavorite,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update favorite status')
+      }
+
+      toast.success(instruction.isFavorite ? 'Removed from favorites' : 'Added to favorites')
+      fetchInstructions() // Refresh list
+    }
+    catch (error) {
+      console.error('Error toggling favorite:', error)
+      toast.error('Operation failed, please try again')
+    }
+  }
+
+  // Duplicate instruction
+  const handleDuplicate = async (instruction: Instruction) => {
+    try {
+      const response = await fetch('/api/instructions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: `${instruction.title} (Copy)`,
+          description: instruction.description,
+          content: instruction.content,
+          tags: instruction.tags,
+          flowData: instruction.flowData,
+          category: instruction.category,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to duplicate instruction')
+      }
+
+      toast.success('Instruction duplicated successfully')
+      fetchInstructions() // Refresh list
+    }
+    catch (error) {
+      console.error('Error duplicating instruction:', error)
+      toast.error('Failed to duplicate, please try again')
+    }
+  }
+
+  // Publish to template library
+  const handlePublish = async (instruction: Instruction) => {
+    if (instruction.isPublished) {
+      toast.info('This instruction is already published to the template library')
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/instructions/${instruction.id}/publish`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          templateTitle: instruction.title,
+          templateDescription: instruction.description,
+          templateCategory: instruction.category || 'General',
+          isPublic: true,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to publish instruction')
+      }
+
+      toast.success('Instruction published to template library successfully')
+      fetchInstructions() // Refresh list
+    }
+    catch (error) {
+      console.error('Error publishing instruction:', error)
+      toast.error('Failed to publish, please try again')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array.from({ length: 6 })].map((_, i) => (
+          <Card key={i} className="bg-zinc-900 border-gray-800 animate-pulse">
+            <CardHeader className="pb-2">
+              <div className="h-6 bg-gray-700 rounded mb-2" />
+              <div className="h-4 bg-gray-700 rounded" />
+            </CardHeader>
+            <CardContent>
+              <div className="h-16 bg-gray-700 rounded mb-3" />
+              <div className="flex gap-2">
+                <div className="h-6 w-16 bg-gray-700 rounded" />
+                <div className="h-6 w-16 bg-gray-700 rounded" />
+              </div>
+            </CardContent>
+            <CardFooter className="border-t border-gray-800 pt-3">
+              <div className="h-4 bg-gray-700 rounded flex-1" />
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-400 mb-4">{error}</p>
+        <Button onClick={fetchInstructions} variant="outline">
+          Try Again
+        </Button>
+      </div>
+    )
+  }
+
+  if (instructions.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-gray-400 mb-4">
+          {searchQuery ? 'No matching instructions found' : 'You haven\'t created any instructions yet'}
+        </div>
+        <Button
+          onClick={() => router.push('/builder')}
+          className="bg-white text-black hover:bg-gray-100 cursor-pointer"
+        >
+          Create New Instruction
+        </Button>
+      </div>
+    )
+  }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {filteredInstructions.length > 0
-        ? (
-            filteredInstructions.map(instruction => (
-              <Card key={instruction.id} className="bg-zinc-900 border-gray-800 hover:border-gray-300 hover:shadow-md hover:shadow-gray-900/20 transition-all duration-200">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-xl font-semibold text-white cursor-pointer hover:text-gray-200 transition-colors" onClick={() => router.push(`/builder?instruction=${instruction.id}`)}>
-                      {instruction.title}
-                    </h3>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-zinc-800 border-zinc-700 text-white">
-                        <DropdownMenuItem className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700" onClick={() => router.push(`/builder?instruction=${instruction.id}`)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700" onClick={() => {}}>
-                          Duplicate
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700 text-red-400 hover:text-red-300" onClick={() => {}}>
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+    <>
+      <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+        {instructions.map(instruction => (
+          <Card
+            key={instruction.id}
+            className={`bg-zinc-900 border-gray-800 hover:border-gray-300 hover:shadow-md hover:shadow-gray-900/20 transition-all duration-200 ${
+              viewMode === 'list' ? 'flex flex-row items-center p-4' : ''
+            }`}
+          >
+            <div className={viewMode === 'list' ? 'flex-1' : ''}>
+              <CardHeader className={`pb-2 ${viewMode === 'list' ? 'pb-0' : ''}`}>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3
+                        className="text-xl font-semibold text-white cursor-pointer hover:text-gray-200 transition-colors truncate"
+                        onClick={() => router.push(`/builder?instruction=${instruction.id}`)}
+                      >
+                        {instruction.title}
+                      </h3>
+                      {instruction.isPublished && (
+                        <Badge variant="secondary" className="bg-green-900/30 text-green-300 border-green-700">
+                          <Globe className="w-3 h-3 mr-1" />
+                          Published
+                        </Badge>
+                      )}
+                      {instruction.isFavorite && (
+                        <Heart className="w-4 h-4 text-red-400 fill-current" />
+                      )}
+                    </div>
+                    {instruction.category && (
+                      <Badge variant="outline" className="border-gray-700 text-gray-400 text-xs">
+                        {instruction.category}
+                      </Badge>
+                    )}
                   </div>
-                </CardHeader>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-zinc-800 border-zinc-700 text-white">
+                      <DropdownMenuItem
+                        className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700"
+                        onClick={() => router.push(`/builder?instruction=${instruction.id}`)}
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700"
+                        onClick={() => handleDuplicate(instruction)}
+                      >
+                        Duplicate
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700"
+                        onClick={() => handleToggleFavorite(instruction)}
+                      >
+                        {instruction.isFavorite
+                          ? (
+                              <>
+                                <HeartOff className="mr-2 h-4 w-4" />
+                                Remove from favorites
+                              </>
+                            )
+                          : (
+                              <>
+                                <Heart className="mr-2 h-4 w-4" />
+                                Add to favorites
+                              </>
+                            )}
+                      </DropdownMenuItem>
+                      {!instruction.isPublished && (
+                        <DropdownMenuItem
+                          className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700"
+                          onClick={() => setPublishModal({ isOpen: true, instruction })}
+                        >
+                          <Share className="mr-2 h-4 w-4" />
+                          Publish to template library
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem
+                        className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700 text-red-400 hover:text-red-300"
+                        onClick={() => setDeleteModal({ isOpen: true, instruction })}
+                      >
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardHeader>
 
-                <CardContent>
-                  <p className="text-gray-300 text-sm min-h-[60px]">{instruction.description}</p>
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {instruction.tags.map(tag => (
-                      <span key={tag} className="bg-zinc-800 text-gray-300 text-xs px-2 py-1 rounded-full hover:bg-zinc-700 hover:text-white transition-colors">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </CardContent>
+              {viewMode === 'grid' && (
+                <>
+                  <CardContent>
+                    <p className="text-gray-300 text-sm min-h-[60px] line-clamp-3">
+                      {instruction.description || 'No description'}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {instruction.tags.slice(0, 3).map(tag => (
+                        <span key={tag} className="bg-zinc-800 text-gray-300 text-xs px-2 py-1 rounded-full hover:bg-zinc-700 hover:text-white transition-colors">
+                          {tag}
+                        </span>
+                      ))}
+                      {instruction.tags.length > 3 && (
+                        <span className="bg-zinc-800 text-gray-300 text-xs px-2 py-1 rounded-full">
+                          +
+                          {instruction.tags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </CardContent>
 
-                <CardFooter className="border-t border-gray-800 pt-3 text-xs text-gray-400 flex justify-between">
-                  <div className="flex items-center">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {instruction.createdAt}
-                  </div>
-                  <div className="flex items-center">
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    Used
-                    {' '}
-                    {instruction.usageCount}
-                    {' '}
-                    times
-                  </div>
-                </CardFooter>
-              </Card>
-            ))
-          )
-        : (
-            <div className="col-span-full text-center py-12">
-              <div className="text-gray-400 mb-4">No instructions found matching your search.</div>
-              <Button
-                onClick={() => router.push('/builder')}
-                className="cursor-pointer"
-              >
-                Create New Instruction
-              </Button>
+                  <CardFooter className="border-t border-gray-800 pt-3 text-xs text-gray-400 flex justify-between">
+                    <div className="flex items-center">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {new Date(instruction.updatedAt).toLocaleDateString()}
+                    </div>
+                    <div className="flex items-center">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Used
+                      {' '}
+                      {instruction.usageCount}
+                      {' '}
+                      times
+                    </div>
+                  </CardFooter>
+                </>
+              )}
             </div>
-          )}
-    </div>
+
+            {viewMode === 'list' && (
+              <div className="ml-4 flex items-center gap-4 text-sm text-gray-400">
+                <div className="flex items-center gap-2">
+                  {instruction.tags.slice(0, 2).map(tag => (
+                    <Badge key={tag} variant="outline" className="border-gray-700 text-gray-400 text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {new Date(instruction.updatedAt).toLocaleDateString()}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" />
+                  {instruction.usageCount}
+                </div>
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, instruction: null })}
+        onConfirm={() => deleteModal.instruction && handleDelete(deleteModal.instruction.id)}
+        title="Delete Instruction"
+        description="Are you sure you want to delete this instruction? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+      />
+
+      {/* Publish Confirmation Modal */}
+      <ConfirmModal
+        isOpen={publishModal.isOpen}
+        onClose={() => setPublishModal({ isOpen: false, instruction: null })}
+        onConfirm={() => publishModal.instruction && handlePublish(publishModal.instruction)}
+        title="Publish to Template Library"
+        description="Are you sure you want to publish this instruction to the template library? Other users will be able to see and use it."
+        confirmText="Publish"
+        cancelText="Cancel"
+      />
+    </>
   )
 }

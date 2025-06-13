@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useState } from 'react'
-import { mockInstructions } from '../my-instructions/_components/instruction-grid'
+
 import { PromptPreview } from './_components/prompt-preview'
 
 interface BuilderState {
@@ -94,21 +94,32 @@ function BuilderContent() {
         .catch(console.error)
     }
     else if (instructionId) {
-      const instruction = mockInstructions.find(i => i.id === instructionId)
-      if (instruction) {
-        setBuilderState({
-          title: `Copy of ${instruction.title}`,
-          description: instruction.description,
-          content: instruction.content,
-          tags: instruction.tags,
-          isTemplate: false,
-          sourceId: instructionId,
-        })
+      // Fetch instruction from API
+      fetch(`/api/instructions/${instructionId}`)
+        .then(res => res.json())
+        .then((data) => {
+          if (data.instruction) {
+            const instruction = data.instruction
+            setBuilderState({
+              title: `Copy of ${instruction.title}`,
+              description: instruction.description || '',
+              content: instruction.content || '',
+              tags: instruction.tags || [],
+              isTemplate: false,
+              sourceId: instructionId,
+            })
 
-        // Update store
-        setTitle(`Copy of ${instruction.title}`)
-        setDescription(instruction.description)
-      }
+            // Update store
+            setTitle(`Copy of ${instruction.title}`)
+            setDescription(instruction.description || '')
+
+            // Import flow data if available
+            if (instruction.flowData) {
+              importFlowData(instruction.flowData)
+            }
+          }
+        })
+        .catch(console.error)
     }
     else {
       // No query parameters, reset to fresh state

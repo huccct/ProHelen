@@ -1,3 +1,4 @@
+import type { AuthOptions } from 'next-auth'
 import process from 'node:process'
 import { prisma } from '@/lib/db'
 import { compare } from 'bcryptjs'
@@ -7,7 +8,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import GithubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google'
 
-const handler = NextAuth({
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -70,8 +71,10 @@ const handler = NextAuth({
     },
   },
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
   },
-})
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }

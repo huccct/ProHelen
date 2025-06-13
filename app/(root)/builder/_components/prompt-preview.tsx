@@ -1,13 +1,13 @@
 'use client'
 
-import type { TemplateFormData } from './save-template-modal'
+import type { InstructionFormData } from './save-instruction-modal'
 import { Button } from '@/components/ui/button'
 import { useBuilderStore } from '@/store/builder'
 import { Code2, Copy, Download, Eye, Play, Save, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/shallow'
-import { SaveTemplateModal } from './save-template-modal'
+import { SaveInstructionModal } from './save-instruction-modal'
 import { TestPromptModal } from './test-prompt-modal'
 
 interface PromptPreviewProps {
@@ -137,46 +137,40 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     setShowSaveModal(true)
   }
 
-  const handleSaveTemplateSubmit = async (templateData: TemplateFormData) => {
+  const handleSaveInstructionSubmit = async (instructionData: InstructionFormData) => {
     try {
       setIsSaving(true)
 
       const flowData = exportFlowData()
       const systemPrompt = generateSystemPrompt()
 
-      const response = await fetch('/api/templates', {
+      const response = await fetch('/api/instructions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title: templateData.title,
-          description: templateData.description,
-          category: templateData.category,
+          title: instructionData.title,
+          description: instructionData.description,
+          category: instructionData.category,
           content: systemPrompt,
-          tags: templateData.tags,
-          isPublic: templateData.isPublic,
+          tags: instructionData.tags,
           flowData,
-          useCases: [],
-          features: [],
-          overview: templateData.description,
+          isFavorite: instructionData.isFavorite,
         }),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to save template')
+        throw new Error('Failed to save instruction')
       }
 
       await response.json()
-      toast.success('Template saved successfully!')
+      toast.success('Instruction saved successfully!')
       setShowSaveModal(false)
-
-      // Optionally redirect to the template page
-      // router.push(`/templates/${savedTemplate.id}`)
     }
     catch (error) {
-      console.error('Error saving template:', error)
-      toast.error('Failed to save template. Please try again.')
+      console.error('Error saving instruction:', error)
+      toast.error('Failed to save, please try again')
     }
     finally {
       setIsSaving(false)
@@ -315,11 +309,11 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
       `}
       </style>
 
-      {/* Save Template Modal */}
-      <SaveTemplateModal
+      {/* Save Instruction Modal */}
+      <SaveInstructionModal
         open={showSaveModal}
         onOpenChange={setShowSaveModal}
-        onSave={handleSaveTemplateSubmit}
+        onSave={handleSaveInstructionSubmit}
         isLoading={isSaving}
       />
 
