@@ -7,9 +7,10 @@ const prisma = new PrismaClient()
 // POST /api/instructions/[id]/publish - Publish instruction to template library
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params
     const { templateTitle, templateDescription, templateCategory, isPublic } = await request.json()
 
     // Temporarily disable auth for testing
@@ -22,7 +23,7 @@ export async function POST(
     // Check if instruction exists and belongs to current user
     const instruction = await prisma.instruction.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: user.id,
       },
     })
@@ -55,7 +56,7 @@ export async function POST(
 
     // 更新指令状态
     const updatedInstruction = await prisma.instruction.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         isPublished: true,
         publishedAt: new Date(),
@@ -79,9 +80,10 @@ export async function POST(
 // DELETE /api/instructions/[id]/publish - Unpublish (delete associated template)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params
     // Temporarily disable auth for testing
     const user = await prisma.user.findFirst()
 
@@ -91,7 +93,7 @@ export async function DELETE(
 
     const instruction = await prisma.instruction.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: user.id,
       },
       include: {
@@ -114,7 +116,7 @@ export async function DELETE(
 
     // 更新指令状态
     const updatedInstruction = await prisma.instruction.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         isPublished: false,
         publishedAt: null,
