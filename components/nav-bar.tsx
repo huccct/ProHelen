@@ -1,5 +1,6 @@
 'use client'
 
+import logo from '@/assets/icons/logo.png'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,6 +13,7 @@ import {
 import { motion } from 'framer-motion'
 import { BookText, Files, LayoutDashboard, LogOut } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -42,9 +44,10 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-xl font-bold cursor-pointer"
+            className="flex items-center text-xl font-bold cursor-pointer"
             onClick={() => router.push('/')}
           >
+            <Image src={logo} alt="ProHelen Logo" width={32} height={32} className="mr-2" />
             ProHelen
           </motion.div>
 

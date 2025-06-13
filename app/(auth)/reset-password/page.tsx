@@ -123,8 +123,10 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="min-h-screen bg-black text-white">
-        <NavBar hideSignIn />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+          <NavBar hideSignIn />
+        </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20">
           <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
             <div className="text-center space-y-4">
               <h2 className="text-3xl font-bold">Invalid Reset Link</h2>
@@ -144,9 +146,11 @@ function ResetPasswordForm() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <NavBar hideSignIn />
+      <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+        <NavBar hideSignIn />
+      </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20">
         <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
           <motion.div
             className="w-full max-w-md space-y-8"
