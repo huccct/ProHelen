@@ -7,9 +7,10 @@ const prisma = new PrismaClient()
 // GET /api/instructions/[id] - Get single instruction
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params
     // Temporarily disable auth for testing
     const user = await prisma.user.findFirst()
 
@@ -19,7 +20,7 @@ export async function GET(
 
     const instruction = await prisma.instruction.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: user.id,
       },
       include: {
@@ -42,9 +43,10 @@ export async function GET(
 // PUT /api/instructions/[id] - Update instruction
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params
     const { title, description, content, tags, flowData, category, isFavorite } = await request.json()
 
     // Temporarily disable auth for testing
@@ -56,7 +58,7 @@ export async function PUT(
 
     const instruction = await prisma.instruction.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: user.id,
       },
     })
@@ -66,7 +68,7 @@ export async function PUT(
     }
 
     const updatedInstruction = await prisma.instruction.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title,
         description,
@@ -93,9 +95,10 @@ export async function PUT(
 // DELETE /api/instructions/[id] - Delete instruction
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params
     // Temporarily disable auth for testing
     const user = await prisma.user.findFirst()
 
@@ -105,7 +108,7 @@ export async function DELETE(
 
     const instruction = await prisma.instruction.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: user.id,
       },
     })
@@ -115,7 +118,7 @@ export async function DELETE(
     }
 
     await prisma.instruction.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ message: 'Instruction deleted successfully' })
