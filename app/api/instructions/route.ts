@@ -18,6 +18,8 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const filter = searchParams.get('filter') // all, favorites, published
     const sortBy = searchParams.get('sortBy') || 'updated' // updated, created, usage
+    const limit = Number.parseInt(searchParams.get('limit') || '20')
+    const offset = Number.parseInt(searchParams.get('offset') || '0')
 
     // For testing, get the first user
     const user = await prisma.user.findFirst()
@@ -66,21 +68,34 @@ export async function GET(request: NextRequest) {
         orderBy = { updatedAt: 'desc' }
     }
 
-    const instructions = await prisma.instruction.findMany({
-      where,
-      orderBy,
-      include: {
-        publishedTemplate: {
-          select: {
-            id: true,
-            title: true,
-            isPublic: true,
+    const [instructions, total] = await Promise.all([
+      prisma.instruction.findMany({
+        where,
+        orderBy,
+        include: {
+          publishedTemplate: {
+            select: {
+              id: true,
+              title: true,
+              isPublic: true,
+            },
           },
         },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.instruction.count({ where }),
+    ])
+
+    return NextResponse.json({
+      instructions,
+      pagination: {
+        total,
+        limit,
+        offset,
+        hasMore: offset + limit < total,
       },
     })
-
-    return NextResponse.json({ instructions })
   }
   catch (error) {
     console.error('Error fetching instructions:', error)

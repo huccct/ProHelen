@@ -5,6 +5,15 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 import { Clock, Edit, Globe, Heart, HeartOff, MoreVertical, Share, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -39,6 +48,13 @@ interface InstructionGridProps {
   filter?: 'all' | 'personal' | 'favorites' | 'published'
   viewMode?: 'grid' | 'list'
   sortBy?: string
+}
+
+interface PaginationInfo {
+  total: number
+  limit: number
+  offset: number
+  hasMore: boolean
 }
 
 interface ConfirmModalProps {
@@ -100,6 +116,13 @@ export function InstructionGrid({
   const [instructions, setInstructions] = useState<Instruction[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    total: 0,
+    limit: 6,
+    offset: 0,
+    hasMore: false,
+  })
+  const [currentPage, setCurrentPage] = useState(1)
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean, instruction: Instruction | null }>({
     isOpen: false,
     instruction: null,
@@ -109,8 +132,8 @@ export function InstructionGrid({
     instruction: null,
   })
 
-  // Fetch instructions list
-  const fetchInstructions = async () => {
+  // Fetch instructions list with pagination
+  const fetchInstructions = async (page = 1) => {
     try {
       setLoading(true)
       const params = new URLSearchParams()
@@ -122,6 +145,9 @@ export function InstructionGrid({
       if (sortBy)
         params.set('sortBy', sortBy)
 
+      params.set('limit', '6')
+      params.set('offset', ((page - 1) * 6).toString())
+
       const response = await fetch(`/api/instructions?${params}`)
 
       if (!response.ok) {
@@ -130,6 +156,13 @@ export function InstructionGrid({
 
       const data = await response.json()
       setInstructions(data.instructions || [])
+      setPagination(data.pagination || {
+        total: 0,
+        limit: 6,
+        offset: 0,
+        hasMore: false,
+      })
+      setCurrentPage(page)
     }
     catch (err) {
       console.error('Error fetching instructions:', err)
@@ -141,8 +174,17 @@ export function InstructionGrid({
   }
 
   useEffect(() => {
-    fetchInstructions()
+    setCurrentPage(1)
+    fetchInstructions(1)
   }, [searchQuery, filter, sortBy])
+
+  const handlePageChange = (page: number) => {
+    fetchInstructions(page)
+  }
+
+  const totalPages = Math.ceil(pagination.total / pagination.limit)
+  const canGoPrevious = currentPage > 1
+  const canGoNext = currentPage < totalPages
 
   // Delete instruction
   const handleDelete = async (instructionId: string) => {
@@ -156,7 +198,13 @@ export function InstructionGrid({
       }
 
       toast.success('Instruction deleted successfully')
-      fetchInstructions() // Refresh list
+      // If we deleted the last item on the current page and it's not page 1, go to previous page
+      if (instructions.length === 1 && currentPage > 1) {
+        fetchInstructions(currentPage - 1)
+      }
+      else {
+        fetchInstructions(currentPage) // Refresh current page
+      }
     }
     catch (error) {
       console.error('Error deleting instruction:', error)
@@ -183,7 +231,7 @@ export function InstructionGrid({
       }
 
       toast.success(instruction.isFavorite ? 'Removed from favorites' : 'Added to favorites')
-      fetchInstructions() // Refresh list
+      fetchInstructions(currentPage) // Refresh current page
     }
     catch (error) {
       console.error('Error toggling favorite:', error)
@@ -214,7 +262,7 @@ export function InstructionGrid({
       }
 
       toast.success('Instruction duplicated successfully')
-      fetchInstructions() // Refresh list
+      fetchInstructions(currentPage) // Refresh current page
     }
     catch (error) {
       console.error('Error duplicating instruction:', error)
@@ -224,31 +272,20 @@ export function InstructionGrid({
 
   // Publish to template library
   const handlePublish = async (instruction: Instruction) => {
-    if (instruction.isPublished) {
-      toast.info('This instruction is already published to the template library')
-      return
-    }
-
     try {
       const response = await fetch(`/api/instructions/${instruction.id}/publish`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          templateTitle: instruction.title,
-          templateDescription: instruction.description,
-          templateCategory: instruction.category || 'General',
-          isPublic: true,
-        }),
       })
 
       if (!response.ok) {
         throw new Error('Failed to publish instruction')
       }
 
-      toast.success('Instruction published to template library successfully')
-      fetchInstructions() // Refresh list
+      toast.success('Instruction published to template library')
+      fetchInstructions(currentPage) // Refresh current page
     }
     catch (error) {
       console.error('Error publishing instruction:', error)
@@ -258,25 +295,22 @@ export function InstructionGrid({
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...Array.from({ length: 6 })].map((_, i) => (
-          <Card key={i} className="bg-zinc-900 border-gray-800 animate-pulse">
-            <CardHeader className="pb-2">
-              <div className="h-6 bg-gray-700 rounded mb-2" />
-              <div className="h-4 bg-gray-700 rounded" />
-            </CardHeader>
-            <CardContent>
-              <div className="h-16 bg-gray-700 rounded mb-3" />
-              <div className="flex gap-2">
-                <div className="h-6 w-16 bg-gray-700 rounded" />
-                <div className="h-6 w-16 bg-gray-700 rounded" />
-              </div>
-            </CardContent>
-            <CardFooter className="border-t border-gray-800 pt-3">
-              <div className="h-4 bg-gray-700 rounded flex-1" />
-            </CardFooter>
-          </Card>
-        ))}
+      <div className="space-y-8">
+        <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+          {[...Array.from({ length: 6 })].map((_, i) => (
+            <Card key={i} className="bg-zinc-900 border-gray-800 animate-pulse">
+              <CardHeader className="p-6">
+                <div className="h-6 bg-gray-700 rounded mb-2" />
+                <div className="h-4 bg-gray-700 rounded mb-4" />
+                <div className="flex gap-2 mb-4">
+                  <div className="h-6 w-16 bg-gray-700 rounded" />
+                  <div className="h-6 w-16 bg-gray-700 rounded" />
+                </div>
+                <div className="h-4 bg-gray-700 rounded" />
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
       </div>
     )
   }
@@ -285,7 +319,7 @@ export function InstructionGrid({
     return (
       <div className="text-center py-12">
         <p className="text-red-400 mb-4">{error}</p>
-        <Button onClick={fetchInstructions} variant="outline">
+        <Button onClick={() => fetchInstructions(currentPage)} variant="outline">
           Try Again
         </Button>
       </div>
@@ -309,7 +343,7 @@ export function InstructionGrid({
   }
 
   return (
-    <>
+    <div className="space-y-8">
       <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
         {instructions.map(instruction => (
           <Card
@@ -465,6 +499,70 @@ export function InstructionGrid({
         ))}
       </div>
 
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  if (canGoPrevious)
+                    handlePageChange(currentPage - 1)
+                }}
+                className={!canGoPrevious ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              />
+            </PaginationItem>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+              const isCurrentPage = page === currentPage
+              const isNearCurrentPage = Math.abs(page - currentPage) <= 2
+              const isFirstOrLast = page === 1 || page === totalPages
+
+              if (!isNearCurrentPage && !isFirstOrLast) {
+                if (page === currentPage - 3 || page === currentPage + 3) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )
+                }
+                return null
+              }
+
+              return (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href="#"
+                    isActive={isCurrentPage}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handlePageChange(page)
+                    }}
+                    className="cursor-pointer"
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              )
+            })}
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  if (canGoNext)
+                    handlePageChange(currentPage + 1)
+                }}
+                className={!canGoNext ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteModal.isOpen}
@@ -487,6 +585,6 @@ export function InstructionGrid({
         confirmText="Publish"
         cancelText="Cancel"
       />
-    </>
+    </div>
   )
 }
