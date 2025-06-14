@@ -10,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { motion } from 'framer-motion'
 import { BookText, Files, LayoutDashboard, LogOut } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -32,30 +31,18 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
   }
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="border-b border-gray-800 text-white"
-    >
+    <nav className="border-b border-gray-800 text-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+          <div
             className="flex items-center text-xl font-bold cursor-pointer"
             onClick={() => router.push('/')}
           >
             <Image src={logo} alt="ProHelen Logo" width={32} height={32} className="mr-2" />
             ProHelen
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
+          <div>
             {session
               ? (
                   <DropdownMenu>
@@ -112,9 +99,9 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
                     Sign in
                   </Button>
                 )}
-          </motion.div>
+          </div>
         </div>
       </div>
-    </motion.nav>
+    </nav>
   )
 }

@@ -30,6 +30,8 @@ model User {
   templates     Template[]
   reviews       TemplateReview[]
   favorites     UserFavoriteTemplate[]
+  blockUsages   UserBlockUsage[]
+  userSessions  UserSession[]
 }
 
 model Account {
@@ -175,4 +177,31 @@ model UserFavoriteTemplate {
   createdAt  DateTime @default(now())
   
   @@unique([userId, templateId])
+}
+
+// 用户块使用统计
+model UserBlockUsage {
+  id         String   @id @default(cuid())
+  userId     String
+  blockType  String
+  usageCount Int      @default(1)
+  lastUsed   DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, blockType])
+  @@index([blockType])
+}
+
+// 用户会话记录（用于协同过滤）
+model UserSession {
+  id            String   @id @default(cuid())
+  userId        String
+  sessionId     String   @unique
+  blockSequence String[] // 用户添加块的顺序
+  completedAt   DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }
