@@ -121,11 +121,22 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     toast.success('Prompt exported successfully!')
   }
 
-  const handleTest = () => {
+  const handleTest = async () => {
     if (!preview.system.trim()) {
       toast.error('Please add some content to your prompt before testing')
       return
     }
+
+    // Auto-copy the system prompt to clipboard
+    try {
+      await navigator.clipboard.writeText(preview.system)
+      toast.success('System prompt copied to clipboard!')
+    }
+    catch {
+      // If clipboard fails, still open the modal
+      console.warn('Failed to copy to clipboard')
+    }
+
     setShowTestModal(true)
   }
 

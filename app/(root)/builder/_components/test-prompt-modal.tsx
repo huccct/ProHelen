@@ -24,6 +24,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [hasAutoSent, setHasAutoSent] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -33,6 +34,72 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Auto-send a test message when modal opens
+  useEffect(() => {
+    if (open && !hasAutoSent && preview.system.trim()) {
+      const autoTestMessage = 'Hello! Please introduce yourself and explain what you can help me with.'
+
+      const userMessage: Message = {
+        role: 'user',
+        content: autoTestMessage,
+        timestamp: new Date(),
+      }
+
+      setMessages([userMessage])
+      setIsLoading(true)
+      setHasAutoSent(true)
+
+      // Auto-send the test message
+      const sendAutoMessage = async () => {
+        try {
+          const response = await fetch('/api/test-prompt', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              systemPrompt: preview.system,
+              userMessage: autoTestMessage,
+              conversationHistory: [],
+            }),
+          })
+
+          if (!response.ok) {
+            throw new Error('Failed to get AI response')
+          }
+
+          const data = await response.json()
+
+          const assistantMessage: Message = {
+            role: 'assistant',
+            content: data.response,
+            timestamp: new Date(),
+          }
+
+          setMessages(prev => [...prev, assistantMessage])
+        }
+        catch (error) {
+          console.error('Error auto-testing prompt:', error)
+          // Don't show error toast for auto-test, just log it
+        }
+        finally {
+          setIsLoading(false)
+        }
+      }
+
+      sendAutoMessage()
+    }
+  }, [open, hasAutoSent, preview.system])
+
+  // Reset auto-send state when modal closes
+  useEffect(() => {
+    if (!open) {
+      setHasAutoSent(false)
+      setMessages([])
+      setInput('')
+    }
+  }, [open])
 
   const handleSend = async () => {
     if (!input.trim() || isLoading)

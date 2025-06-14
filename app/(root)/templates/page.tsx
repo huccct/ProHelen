@@ -6,8 +6,8 @@ import { CategoryFilter } from './_components/category-filter'
 import { SearchBar } from './_components/search-bar'
 import { TemplateList } from './_components/template-list'
 
-// template categories
-export type TemplateCategory = 'All' | 'Goal Setting' | 'Education' | 'Career' | 'Productivity'
+// template categories - now dynamic from database
+export type TemplateCategory = string
 
 export default function TemplatesPage() {
   const [searchQuery, setSearchQuery] = useState('')
