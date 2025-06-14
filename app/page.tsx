@@ -370,31 +370,50 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.1, duration: 0.8 }}
             >
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button
-                  size="lg"
-                  className="relative bg-white text-black hover:bg-gray-100 px-8 py-6 text-lg font-medium rounded-xl transition-all duration-300 cursor-pointer"
-                  onClick={() => router.push('/builder')}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  Start Building
-                  <motion.div
-                    className="inline-block ml-2"
-                    animate={{
-                      x: [0, 5, 0],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
+                  <Button
+                    size="lg"
+                    className="relative bg-white text-black hover:bg-gray-100 px-8 py-6 text-lg font-medium rounded-xl transition-all duration-300 cursor-pointer"
+                    onClick={() => router.push('/builder')}
                   >
-                    <IoArrowForward className="h-5 w-5" />
-                  </motion.div>
-                </Button>
-              </motion.div>
+                    Start Building
+                    <motion.div
+                      className="inline-block ml-2"
+                      animate={{
+                        x: [0, 5, 0],
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                    >
+                      <IoArrowForward className="h-5 w-5" />
+                    </motion.div>
+                  </Button>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.2, duration: 0.6 }}
+                >
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="px-8 py-6 text-lg font-medium rounded-xl border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-white/5 transition-all duration-300 cursor-pointer"
+                    onClick={() => router.push('/templates')}
+                  >
+                    Browse Templates
+                  </Button>
+                </motion.div>
+              </div>
 
               <motion.div
                 className="flex items-center justify-center gap-6 text-sm text-gray-500"

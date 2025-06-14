@@ -330,7 +330,7 @@ export function InstructionGrid({
                         {instruction.title}
                       </h3>
                       {instruction.isPublished && (
-                        <Badge variant="secondary" className="bg-green-900/30 text-green-300 border-green-700">
+                        <Badge variant="secondary" className="bg-green-900/30 text-green-300 border-green-700 pointer-events-none">
                           <Globe className="w-3 h-3 mr-1" />
                           Published
                         </Badge>

@@ -130,12 +130,12 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
               <div className="flex items-start justify-between mb-3">
                 <Badge
                   variant="secondary"
-                  className="bg-purple-900/30 text-purple-300 border-purple-700"
+                  className="bg-purple-900/30 text-purple-300 border-purple-700 pointer-events-none"
                 >
                   {template.category}
                 </Badge>
                 {template.isPremium && (
-                  <Badge className="bg-yellow-900/30 text-yellow-300 border-yellow-700">
+                  <Badge className="bg-yellow-900/30 text-yellow-300 border-yellow-700 pointer-events-none">
                     Premium
                   </Badge>
                 )}

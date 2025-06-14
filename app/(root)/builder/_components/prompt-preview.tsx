@@ -65,11 +65,11 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
   const generateRawText = () => {
     const parts = []
     if (preview.system)
-      parts.push(`System: ${preview.system}`)
+      parts.push(`System:\n${preview.system}`)
     if (preview.human && preview.human.trim())
-      parts.push(`Human: ${preview.human}`)
+      parts.push(`Human:\n${preview.human}`)
     if (preview.assistant && preview.assistant.trim())
-      parts.push(`Assistant: ${preview.assistant}`)
+      parts.push(`Assistant:\n${preview.assistant}`)
 
     return parts.length > 0 ? parts.join('\n\n') : 'No content to display'
   }

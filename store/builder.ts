@@ -276,7 +276,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
     const systemSections = []
 
     if (contentByType.system.length > 0) {
-      systemSections.push(contentByType.system.join('\n'))
+      systemSections.push(`## Core Definition\n${contentByType.system.join('\n')}`)
     }
 
     if (contentByType.context.length > 0) {

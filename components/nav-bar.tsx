@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { BookText, Files, LayoutDashboard, LogOut } from 'lucide-react'
+import { BookText, Files, LogOut, Wrench } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -61,10 +61,10 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
                       <DropdownMenuSeparator className="bg-gray-800" />
                       <DropdownMenuItem
                         className="text-gray-300 hover:text-white hover:bg-white/[0.02] cursor-pointer flex items-center gap-2"
-                        onClick={() => router.push('/dashboard')}
+                        onClick={() => router.push('/builder')}
                       >
-                        <LayoutDashboard className="w-4 h-4" />
-                        Dashboard
+                        <Wrench className="w-4 h-4" />
+                        Builder
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-gray-300 hover:text-white hover:bg-white/[0.02] cursor-pointer flex items-center gap-2"
