@@ -8,8 +8,10 @@ import { Background, MiniMap, Panel, ReactFlow, ReactFlowProvider } from '@xyflo
 import { Plus, Sparkles } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useShallow } from 'zustand/shallow'
+import { EmptyStateGuide } from './empty-state-guide'
 import { RecommendationPanel } from './recommendation-panel'
 import { Button } from './ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import '@xyflow/react/dist/style.css'
 
 const nodeTypes = {
@@ -29,9 +31,11 @@ function selector(state: any) {
 
 interface FlowCanvasProps {
   className?: string
+  onStartTour?: () => void
+  onShowHelp?: () => void
 }
 
-export function FlowCanvas({ className }: FlowCanvasProps) {
+export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasProps) {
   const [open, setOpen] = useState(false)
   const [showRecommendations, setShowRecommendations] = useState(false)
   const [selectedNode, setSelectedNode] = useState<string | null>(null)
@@ -98,25 +102,53 @@ export function FlowCanvas({ className }: FlowCanvasProps) {
                   style: { stroke: '#6b7280', strokeWidth: 2 },
                   animated: true,
                 }}
+                data-tour="canvas"
               >
+                {/* Empty State Guide */}
+                {nodes.length === 0 && (
+                  <EmptyStateGuide
+                    onAddBlock={() => setOpen(true)}
+                    onStartTour={onStartTour || (() => {})}
+                    onShowHelp={onShowHelp || (() => {})}
+                  />
+                )}
+
                 <Panel position="top-left" className="left-4 top-4">
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setOpen(true)}
-                      className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-colors cursor-pointer"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Block
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowRecommendations(!showRecommendations)}
-                      className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-colors cursor-pointer"
-                    >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Smart Suggestions
-                    </Button>
+                  <div className="flex gap-2" data-tour="add-block">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          onClick={() => setOpen(true)}
+                          className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-colors cursor-pointer"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Block
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Browse and add instruction blocks to your canvas</p>
+                        <p className="text-xs text-gray-300 mt-1">18 different block types available</p>
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowRecommendations(!showRecommendations)}
+                          className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-colors cursor-pointer"
+                          data-tour="smart-suggestions"
+                        >
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          Smart Suggestions
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Get AI-powered block recommendations</p>
+                        <p className="text-xs text-gray-300 mt-1">Based on your current blocks and best practices</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 </Panel>
 

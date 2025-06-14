@@ -1,8 +1,12 @@
 'use client'
 
 import { FlowCanvas } from '@/components/flow-canvas'
+import { HelpPanel } from '@/components/help-panel'
+import { OnboardingTour } from '@/components/onboarding-tour'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useBuilderStore } from '@/store/builder'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, HelpCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useState } from 'react'
@@ -34,6 +38,8 @@ function BuilderContent() {
   })
   const [previewWidth, setPreviewWidth] = useState(320)
   const [isDragging, setIsDragging] = useState(false)
+  const [showHelpPanel, setShowHelpPanel] = useState(false)
+  const [showOnboardingTour, setShowOnboardingTour] = useState(false)
 
   const handleMouseDown = useCallback(() => {
     setIsDragging(true)
@@ -60,6 +66,38 @@ function BuilderContent() {
       window.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isDragging, handleMouseMove, handleMouseUp])
+
+  // Check if user is new and should see onboarding
+  useEffect(() => {
+    const tourCompleted = localStorage.getItem('prohelen-tour-completed')
+    const hasTemplate = searchParams.get('template')
+    const hasInstruction = searchParams.get('instruction')
+
+    // Show tour for new users who aren't importing something
+    if (!tourCompleted && !hasTemplate && !hasInstruction) {
+      setTimeout(() => setShowOnboardingTour(true), 1000)
+    }
+  }, [searchParams])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // F1 for help
+      if (e.key === 'F1') {
+        e.preventDefault()
+        setShowHelpPanel(true)
+      }
+
+      // Escape to close modals
+      if (e.key === 'Escape') {
+        setShowHelpPanel(false)
+        setShowOnboardingTour(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   useEffect(() => {
     const templateId = searchParams.get('template')
@@ -148,7 +186,7 @@ function BuilderContent() {
             <ArrowLeft size={18} />
           </Link>
           <div className="h-6 w-px bg-gray-800" />
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0" data-tour="title-input">
             <input
               type="text"
               placeholder="Untitled Instruction"
@@ -164,10 +202,32 @@ function BuilderContent() {
               className="bg-transparent text-sm text-gray-400 border-none focus:outline-none w-full mt-0.5 truncate"
             />
           </div>
+
+          {/* Help Button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHelpPanel(true)}
+                className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              >
+                <HelpCircle className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Get help and shortcuts</p>
+              <p className="text-xs text-gray-300 mt-1">Press F1 or click for help</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
       <div className="flex flex-1 overflow-hidden">
-        <FlowCanvas className="flex-1 h-full" />
+        <FlowCanvas
+          className="flex-1 h-full"
+          onStartTour={() => setShowOnboardingTour(true)}
+          onShowHelp={() => setShowHelpPanel(true)}
+        />
         <div
           className="w-1 hover:w-2 bg-gray-800 cursor-col-resize transition-all hover:bg-gray-700 active:bg-gray-600"
           onMouseDown={handleMouseDown}
@@ -175,8 +235,30 @@ function BuilderContent() {
         <PromptPreview
           className="overflow-y-hidden border-l border-gray-800"
           style={{ width: previewWidth }}
+          data-tour="preview-panel"
         />
       </div>
+
+      {/* Help Panel */}
+      <HelpPanel
+        isOpen={showHelpPanel}
+        onClose={() => setShowHelpPanel(false)}
+        onStartTour={() => {
+          setShowHelpPanel(false)
+          setShowOnboardingTour(true)
+        }}
+      />
+
+      {/* Onboarding Tour */}
+      <OnboardingTour
+        isOpen={showOnboardingTour}
+        onClose={() => setShowOnboardingTour(false)}
+        onComplete={() => {
+          setShowOnboardingTour(false)
+          // Could save completion status to localStorage
+          localStorage.setItem('prohelen-tour-completed', 'true')
+        }}
+      />
     </div>
   )
 }

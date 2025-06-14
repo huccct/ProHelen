@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useBuilderStore } from '@/store/builder'
 import { useReactFlow, useViewport } from '@xyflow/react'
 import {
@@ -97,37 +98,52 @@ export function Toolbar({ className }: ToolbarProps) {
   }, [currentZoom])
 
   return (
-    <div className={`flex items-center justify-between px-4 py-2 border-b border-gray-800 bg-black ${className}`}>
+    <div className={`flex items-center justify-between px-4 py-2 border-b border-gray-800 bg-black ${className}`} data-tour="toolbar">
       {/* Left section - Edit actions */}
       <div className="flex items-center space-x-1">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleUndo}
-          disabled={!canUndo}
-          className={`h-8 w-8 p-0 ${
-            canUndo
-              ? 'text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer'
-              : 'text-gray-600 cursor-not-allowed opacity-50'
-          }`}
-          title="Undo (Ctrl+Z)"
-        >
-          <Undo2 size={16} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleRedo}
-          disabled={!canRedo}
-          className={`h-8 w-8 p-0 ${
-            canRedo
-              ? 'text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer'
-              : 'text-gray-600 cursor-not-allowed opacity-50'
-          }`}
-          title="Redo (Ctrl+Y)"
-        >
-          <Redo2 size={16} />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleUndo}
+              disabled={!canUndo}
+              className={`h-8 w-8 p-0 ${
+                canUndo
+                  ? 'text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer'
+                  : 'text-gray-600 cursor-not-allowed opacity-50'
+              }`}
+            >
+              <Undo2 size={16} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Undo last action</p>
+            <p className="text-xs text-gray-300 mt-1">Ctrl+Z</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRedo}
+              disabled={!canRedo}
+              className={`h-8 w-8 p-0 ${
+                canRedo
+                  ? 'text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer'
+                  : 'text-gray-600 cursor-not-allowed opacity-50'
+              }`}
+            >
+              <Redo2 size={16} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Redo last action</p>
+            <p className="text-xs text-gray-300 mt-1">Ctrl+Y</p>
+          </TooltipContent>
+        </Tooltip>
 
         <div className="h-4 w-px bg-gray-800 mx-2" />
 

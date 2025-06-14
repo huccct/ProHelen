@@ -198,7 +198,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
   const nodeCount = nodes.length
 
   return (
-    <aside className={className} style={style}>
+    <aside className={className} style={style} data-tour="preview-panel">
       <div className="p-4 flex flex-col h-full bg-zinc-950/50">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
