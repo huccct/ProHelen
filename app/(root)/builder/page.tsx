@@ -28,6 +28,10 @@ function BuilderContent() {
   const setTitle = useBuilderStore(state => state.setTitle)
   const setDescription = useBuilderStore(state => state.setDescription)
   const resetFlow = useBuilderStore(state => state.resetFlow)
+  const undo = useBuilderStore(state => state.undo)
+  const redo = useBuilderStore(state => state.redo)
+  const canUndo = useBuilderStore(state => state.canUndo)
+  const canRedo = useBuilderStore(state => state.canRedo)
   const [builderState, setBuilderState] = useState<BuilderState>({
     title: '',
     description: '',
@@ -93,11 +97,27 @@ function BuilderContent() {
         setShowHelpPanel(false)
         setShowOnboardingTour(false)
       }
+
+      // Ctrl+Z for undo
+      if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        if (canUndo()) {
+          undo()
+        }
+      }
+
+      // Ctrl+Y for redo (or Ctrl+Shift+Z)
+      if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && e.key === 'z')) {
+        e.preventDefault()
+        if (canRedo()) {
+          redo()
+        }
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [undo, redo, canUndo, canRedo])
 
   useEffect(() => {
     const templateId = searchParams.get('template')

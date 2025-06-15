@@ -22,14 +22,14 @@ interface HelpPanelProps {
 const shortcuts = [
   { key: 'Ctrl + Z', description: 'Undo last action' },
   { key: 'Ctrl + Y', description: 'Redo last action' },
-  { key: 'Ctrl + S', description: 'Save instruction' },
-  { key: 'Ctrl + C', description: 'Copy selected content' },
-  { key: 'Ctrl + V', description: 'Paste content' },
-  { key: 'Delete', description: 'Delete selected block' },
-  { key: 'Space', description: 'Fit canvas to view' },
-  { key: 'Ctrl + +', description: 'Zoom in' },
-  { key: 'Ctrl + -', description: 'Zoom out' },
-  { key: 'Escape', description: 'Close dialogs/panels' },
+  { key: 'F1', description: 'Open help panel' },
+  { key: 'Escape', description: 'Close dialogs and panels' },
+  { key: 'Click + Drag', description: 'Move blocks on canvas' },
+  { key: 'Drag from handle', description: 'Connect blocks together' },
+  { key: 'Click block', description: 'Get smart suggestions' },
+  { key: 'Double click', description: 'Edit block content' },
+  { key: 'Enter', description: 'Confirm in dialogs' },
+  { key: 'Mouse wheel', description: 'Zoom in/out on canvas' },
 ]
 
 const faqs = [
