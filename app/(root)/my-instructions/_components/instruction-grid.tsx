@@ -88,7 +88,7 @@ function ConfirmModal({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} className="cursor-pointer">
             {cancelText}
           </Button>
           <Button
@@ -97,6 +97,7 @@ function ConfirmModal({
               onConfirm()
               onClose()
             }}
+            className="cursor-pointer"
           >
             {confirmText}
           </Button>

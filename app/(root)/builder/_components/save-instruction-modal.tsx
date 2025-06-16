@@ -163,7 +163,7 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
                 type="button"
                 onClick={handleAddTag}
                 variant="outline"
-                className="border-zinc-700 text-white hover:bg-zinc-800"
+                className="border-zinc-700 text-white hover:bg-zinc-800 hover:text-white cursor-pointer"
               >
                 Add
               </Button>

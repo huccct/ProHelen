@@ -8,7 +8,6 @@ import {
   Maximize,
   Minimize,
   Redo2,
-  RotateCcw,
   Trash2,
   Undo2,
   ZoomIn,
@@ -95,11 +94,6 @@ export function Toolbar({ className }: ToolbarProps) {
     toast.success('Canvas cleared')
   }
 
-  const handleAutoLayout = () => {
-    toast.info('Auto layout')
-    // TODO: 实现自动布局逻辑
-  }
-
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setZoomInput(e.target.value)
   }
@@ -183,15 +177,7 @@ export function Toolbar({ className }: ToolbarProps) {
         >
           <Trash2 size={16} />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleAutoLayout}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
-          title="Auto layout"
-        >
-          <RotateCcw size={16} />
-        </Button>
+
       </div>
 
       {/* Center section - View controls */}

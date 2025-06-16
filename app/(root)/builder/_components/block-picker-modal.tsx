@@ -317,7 +317,7 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
                 variant={selectedCategory === category.id ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center gap-2 whitespace-nowrap flex-shrink-0 ${
+                className={`flex items-center gap-2 whitespace-nowrap flex-shrink-0 cursor-pointer ${
                   selectedCategory === category.id
                     ? 'bg-white text-black hover:bg-gray-200'
                     : 'text-gray-400 hover:text-white hover:bg-zinc-800'
@@ -334,7 +334,7 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
             <>
               <button
                 onClick={() => scroll('left')}
-                className={`absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-black via-black/80 to-transparent flex items-center justify-center text-gray-400 hover:text-white hover:bg-zinc-800/50 transition-all duration-200 ease-out z-10 rounded-l transform hover:scale-110 active:scale-95 active:bg-zinc-700/70 ${
+                className={`cursor-pointer absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-black via-black/80 to-transparent flex items-center justify-center text-gray-400 hover:text-white hover:bg-zinc-800/50 transition-all duration-200 ease-out z-10 rounded-l transform hover:scale-110 active:scale-95 active:bg-zinc-700/70 ${
                   !canScrollLeft ? 'opacity-30 cursor-not-allowed' : 'opacity-80 hover:opacity-100 hover:shadow-lg hover:shadow-white/10'
                 }`}
                 disabled={!canScrollLeft}
@@ -343,7 +343,7 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
               </button>
               <button
                 onClick={() => scroll('right')}
-                className={`absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-black via-black/80 to-transparent flex items-center justify-center text-gray-400 hover:text-white hover:bg-zinc-800/50 transition-all duration-200 ease-out z-10 rounded-r transform hover:scale-110 active:scale-95 active:bg-zinc-700/70 ${
+                className={`cursor-pointer absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-black via-black/80 to-transparent flex items-center justify-center text-gray-400 hover:text-white hover:bg-zinc-800/50 transition-all duration-200 ease-out z-10 rounded-r transform hover:scale-110 active:scale-95 active:bg-zinc-700/70 ${
                   !canScrollRight ? 'opacity-30 cursor-not-allowed' : 'opacity-80 hover:opacity-100 hover:shadow-lg hover:shadow-white/10'
                 }`}
                 disabled={!canScrollRight}
