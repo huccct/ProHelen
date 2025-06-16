@@ -181,13 +181,37 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
       {currentTourStep.spotlight !== false && (
         <div
           className="fixed z-[9999] border-4 border-white/30 rounded-lg pointer-events-none transition-all duration-300"
-          style={{
-            left: targetElement.getBoundingClientRect().left - 8,
-            top: targetElement.getBoundingClientRect().top - 8,
-            width: targetElement.getBoundingClientRect().width + 16,
-            height: targetElement.getBoundingClientRect().height + 16,
-            boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.8)',
-          }}
+          style={(() => {
+            const rect = targetElement.getBoundingClientRect()
+            const padding = 8
+
+            // for specific elements, we need to limit the area to avoid overflow
+            if (currentTourStep.id === 'canvas' || currentTourStep.id === 'toolbar') {
+              return {
+                left: rect.left,
+                top: rect.top,
+                width: rect.width,
+                height: rect.height,
+                boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.8)',
+              }
+            }
+
+            // for other elements, we use boundary check logic
+            const left = Math.max(0, rect.left - padding)
+            const top = Math.max(0, rect.top - padding)
+            const right = Math.min(window.innerWidth, rect.right + padding)
+            const bottom = Math.min(window.innerHeight, rect.bottom + padding)
+            const width = right - left
+            const height = bottom - top
+
+            return {
+              left,
+              top,
+              width,
+              height,
+              boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.8)',
+            }
+          })()}
         />
       )}
 
