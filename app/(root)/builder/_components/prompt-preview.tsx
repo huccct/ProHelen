@@ -19,6 +19,8 @@ function selector(state: any) {
   return {
     preview: state.preview,
     nodes: state.nodes,
+    title: state.title,
+    description: state.description,
     exportFlowData: state.exportFlowData,
   }
 }
@@ -26,7 +28,7 @@ function selector(state: any) {
 type FormatType = 'custom-instructions' | 'system-prompt' | 'raw-text'
 
 export function PromptPreview({ className, style }: PromptPreviewProps) {
-  const { preview, nodes, exportFlowData } = useBuilderStore(useShallow(selector))
+  const { preview, nodes, title, description, exportFlowData } = useBuilderStore(useShallow(selector))
   const [currentFormat, setCurrentFormat] = useState<FormatType>('custom-instructions')
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [showTestModal, setShowTestModal] = useState(false)
@@ -326,6 +328,8 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
         onOpenChange={setShowSaveModal}
         onSave={handleSaveInstructionSubmit}
         isLoading={isSaving}
+        initialTitle={title}
+        initialDescription={description}
       />
 
       <TestPromptModal open={showTestModal} onOpenChange={setShowTestModal} />

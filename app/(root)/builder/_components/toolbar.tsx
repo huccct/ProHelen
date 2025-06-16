@@ -5,7 +5,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useBuilderStore } from '@/store/builder'
 import { useReactFlow, useViewport } from '@xyflow/react'
 import {
-  Maximize2,
+  Maximize,
+  Minimize,
   Redo2,
   RotateCcw,
   Trash2,
@@ -22,7 +23,7 @@ interface ToolbarProps {
 }
 
 export function Toolbar({ className }: ToolbarProps) {
-  const { zoomIn, zoomOut, fitView, setViewport } = useReactFlow()
+  const { zoomIn, zoomOut, setViewport } = useReactFlow()
   const resetFlow = useBuilderStore(state => state.resetFlow)
   const undo = useBuilderStore(state => state.undo)
   const redo = useBuilderStore(state => state.redo)
@@ -55,9 +56,35 @@ export function Toolbar({ className }: ToolbarProps) {
     zoomOut()
   }
 
-  const handleFitToScreen = () => {
-    fitView()
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  const handleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen()
+        setIsFullscreen(true)
+        toast.success('Entered fullscreen mode')
+      }
+      else {
+        await document.exitFullscreen()
+        setIsFullscreen(false)
+        toast.success('Exited fullscreen mode')
+      }
+    }
+    catch {
+      toast.error('Fullscreen not supported')
+    }
   }
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  }, [])
 
   const handleClear = () => {
     setShowClearModal(true)
@@ -198,14 +225,15 @@ export function Toolbar({ className }: ToolbarProps) {
         >
           <ZoomIn size={16} />
         </Button>
+
         <Button
           variant="ghost"
           size="sm"
-          onClick={handleFitToScreen}
+          onClick={handleFullscreen}
           className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
-          title="Fit to screen"
+          title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         >
-          <Maximize2 size={16} />
+          {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
         </Button>
 
       </div>

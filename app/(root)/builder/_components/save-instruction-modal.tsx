@@ -6,13 +6,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface SaveInstructionModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSave: (instructionData: InstructionFormData) => void
   isLoading?: boolean
+  initialTitle?: string
+  initialDescription?: string
 }
 
 export interface InstructionFormData {
@@ -36,15 +38,26 @@ const categories = [
   'Business',
 ]
 
-export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: SaveInstructionModalProps) {
+export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, initialTitle = '', initialDescription = '' }: SaveInstructionModalProps) {
   const [formData, setFormData] = useState<InstructionFormData>({
-    title: '',
-    description: '',
+    title: initialTitle,
+    description: initialDescription,
     category: 'General',
     tags: [],
     isFavorite: false,
   })
   const [tagInput, setTagInput] = useState('')
+
+  // Update form data when modal opens or initial values change
+  useEffect(() => {
+    if (open) {
+      setFormData(prev => ({
+        ...prev,
+        title: initialTitle,
+        description: initialDescription,
+      }))
+    }
+  }, [open, initialTitle, initialDescription])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -194,14 +207,14 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: 
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-zinc-700 text-white hover:bg-zinc-800"
+              className="border-zinc-700 text-white hover:bg-zinc-800 hover:text-white cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={!formData.title.trim() || isLoading}
-              className="bg-white text-black hover:bg-gray-100"
+              className="bg-white text-black hover:bg-gray-100 cursor-pointer"
             >
               {isLoading ? 'Saving...' : 'Save Instruction'}
             </Button>

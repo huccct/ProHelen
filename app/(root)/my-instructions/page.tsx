@@ -10,6 +10,7 @@ import { InstructionGrid } from './_components/instruction-grid'
 export default function MyInstructionsPage() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<'created' | 'updated' | 'usage'>('updated')
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
@@ -46,20 +47,26 @@ export default function MyInstructionsPage() {
             <div className="ml-4 space-x-2">
               <Button
                 variant="outline"
-                className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer"
+                onClick={() => setSortBy('created')}
+                className={`border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer ${
+                  sortBy === 'created' ? 'bg-zinc-800 border-gray-500' : ''
+                }`}
               >
                 Date Created
               </Button>
               <Button
                 variant="outline"
-                className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer"
+                onClick={() => setSortBy('usage')}
+                className={`border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer ${
+                  sortBy === 'usage' ? 'bg-zinc-800 border-gray-500' : ''
+                }`}
               >
                 Most Used
               </Button>
             </div>
           </div>
 
-          <InstructionGrid searchQuery={searchQuery} />
+          <InstructionGrid searchQuery={searchQuery} sortBy={sortBy} />
         </div>
       </main>
     </div>

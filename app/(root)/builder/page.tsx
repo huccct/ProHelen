@@ -131,7 +131,7 @@ function BuilderContent() {
           if (template) {
             // Update builder state
             setBuilderState({
-              title: `Copy of ${template.title}`,
+              title: template.title,
               description: template.description,
               content: template.content || '',
               tags: [],
@@ -140,7 +140,7 @@ function BuilderContent() {
             })
 
             // Update store with title and description
-            setTitle(`Copy of ${template.title}`)
+            setTitle(template.title)
             setDescription(template.description)
 
             // Import flow data if available
