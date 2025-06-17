@@ -6,7 +6,7 @@ import { Toolbar } from '@/app/(root)/builder/_components/toolbar'
 import { useBuilderStore } from '@/store/builder'
 import { Background, MiniMap, Panel, ReactFlow, ReactFlowProvider } from '@xyflow/react'
 import { Plus, Sparkles } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { EmptyStateGuide } from './empty-state-guide'
 import { RecommendationPanel } from './recommendation-panel'
@@ -48,6 +48,14 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
     addNode,
   } = useBuilderStore(useShallow(selector))
 
+  // 缓存currentBlocks计算，只在节点类型真正变化时重新计算
+  const currentBlocks = useMemo(() => {
+    return nodes
+      .map((node: any) => (node.data as any)?.type)
+      .filter(Boolean)
+      .sort()
+  }, [nodes.map((node: any) => (node.data as any)?.type).join(',')])
+
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault()
@@ -71,6 +79,19 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
     event.dataTransfer.dropEffect = 'move'
   }, [])
 
+  // 验证连接是否有效
+  const isValidConnection = useCallback((connection: any) => {
+    // 防止重复连接
+    const isDuplicateConnection = edges.some((edge: any) =>
+      edge.source === connection.source && edge.target === connection.target,
+    )
+
+    // 防止自环连接（节点连接到自己）
+    const isSelfConnection = connection.source === connection.target
+
+    return !isDuplicateConnection && !isSelfConnection
+  }, [edges])
+
   return (
     <ReactFlowProvider>
       <div className={className}>
@@ -92,6 +113,7 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                   setShowRecommendations(true)
                 }}
                 nodeTypes={nodeTypes}
+                isValidConnection={isValidConnection}
                 fitView
                 proOptions={{
                   hideAttribution: true,
@@ -169,7 +191,7 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
             {showRecommendations && (
               <RecommendationPanel
                 selectedBlock={selectedNode || undefined}
-                currentBlocks={nodes.map((node: any) => (node.data as any)?.type).filter(Boolean)}
+                currentBlocks={currentBlocks}
                 onBlockSelect={(blockType) => {
                   addNode(blockType)
                   setShowRecommendations(false)

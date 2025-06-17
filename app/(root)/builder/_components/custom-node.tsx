@@ -2,6 +2,7 @@
 
 import type { Node, NodeProps } from '@xyflow/react'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useBuilderStore } from '@/store/builder'
 import { Handle, Position } from '@xyflow/react'
 import {
@@ -23,6 +24,7 @@ import {
   Save,
   Star,
   Target,
+  Trash2,
   Users,
   Workflow,
   X,
@@ -41,21 +43,42 @@ type CustomNodeType = Node<CustomNodeData>
 export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType>) {
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(data.content || '')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const updateNodeData = useBuilderStore(state => state.updateNodeData)
+  const deleteNode = useBuilderStore(state => state.deleteNode)
 
   const handleSave = () => {
     updateNodeData(id, { content: editContent })
     setIsEditing(false)
+    // Save时允许弹出Smart Suggestions，所以不阻止事件冒泡
   }
 
-  const handleCancel = () => {
+  const handleCancel = (e: React.MouseEvent) => {
+    e.stopPropagation() // 阻止事件冒泡，避免弹出Smart Suggestions
     setEditContent(data.content || '')
     setIsEditing(false)
   }
 
-  const handleEdit = () => {
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation() // 阻止事件冒泡
     setEditContent(data.content || '')
     setIsEditing(true)
+  }
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation() // 阻止事件冒泡
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDelete = (e: React.MouseEvent) => {
+    e.stopPropagation() // 阻止事件冒泡
+    deleteNode(id)
+    setShowDeleteConfirm(false)
+  }
+
+  const handleCancelDelete = (e: React.MouseEvent) => {
+    e.stopPropagation() // 阻止事件冒泡
+    setShowDeleteConfirm(false)
   }
 
   const icon = getNodeIcon(data.type)
@@ -98,14 +121,24 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
             </div>
 
             {!isEditing && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleEdit}
-                className="opacity-0 group-hover:opacity-100 transition-all duration-300 h-7 w-7 p-0 text-gray-400 hover:text-white hover:bg-white/10 ml-2 flex-shrink-0 rounded-md"
-              >
-                <Edit3 className="h-3 w-3" />
-              </Button>
+              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleEdit}
+                  className="h-7 w-7 p-0 text-gray-400 hover:text-white hover:bg-white/10 flex-shrink-0 rounded-md cursor-pointer"
+                >
+                  <Edit3 className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDelete}
+                  className="h-7 w-7 p-0 text-gray-400 hover:text-red-400 hover:bg-red-500/10 flex-shrink-0 rounded-md cursor-pointer"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
             )}
           </div>
         </div>
@@ -174,6 +207,37 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
         className="!bg-gray-600 !border-gray-500 !w-3 !h-3 hover:!bg-white hover:!border-gray-300 transition-colors !z-50"
         isConnectable={isConnectable}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="bg-zinc-900 border-gray-700 [&>button]:text-gray-400 [&>button]:hover:text-gray-300">
+          <DialogHeader>
+            <DialogTitle className="text-white">Delete Block</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Are you sure you want to delete "
+              {data.label}
+              "? This action cannot be undone and will also remove all connections to this block.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={handleCancelDelete}
+              className="border-gray-600 text-gray-300 cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 cursor-pointer"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

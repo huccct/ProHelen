@@ -30,6 +30,7 @@ interface BuilderActions {
   setNodes: (nodes: Node<CustomNodeData>[]) => void
   setEdges: (edges: Edge[]) => void
   addNode: (type: string, position?: { x: number, y: number }) => void
+  deleteNode: (nodeId: string) => void
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
   onConnect: (connection: Connection) => void
@@ -96,6 +97,26 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
     get().updatePreview()
   },
 
+  deleteNode: (nodeId) => {
+    get().saveToHistory()
+
+    const state = get()
+
+    // 删除节点
+    const newNodes = state.nodes.filter(node => node.id !== nodeId)
+
+    // 删除与该节点相关的所有连接边
+    const newEdges = state.edges.filter(edge =>
+      edge.source !== nodeId && edge.target !== nodeId,
+    )
+
+    set({
+      nodes: newNodes,
+      edges: newEdges,
+    })
+    get().updatePreview()
+  },
+
   onNodesChange: (changes) => {
     // Save to history for non-selection changes
     const hasNonSelectionChanges = changes.some(change => change.type !== 'select')
@@ -103,10 +124,23 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       get().saveToHistory()
     }
 
-    set(state => ({
-      nodes: applyNodeChanges(changes, state.nodes) as Node<CustomNodeData>[],
-    }))
-    get().updatePreview()
+    const prevState = get()
+    const newNodes = applyNodeChanges(changes, prevState.nodes) as Node<CustomNodeData>[]
+
+    set({ nodes: newNodes })
+
+    // 只有在节点内容实际发生变化时才更新预览
+    // 仅移动节点位置不应该触发昂贵的操作
+    const hasContentChange = changes.some(change =>
+      change.type === 'add'
+      || change.type === 'remove'
+      || (change.type === 'replace'
+        && ((change as any).item?.data?.content !== (prevState.nodes.find(n => n.id === change.id)?.data?.content))),
+    )
+
+    if (hasContentChange) {
+      get().updatePreview()
+    }
   },
 
   onEdgesChange: (changes) => {
@@ -123,6 +157,25 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   },
 
   onConnect: (connection) => {
+    const state = get()
+
+    // 检查是否已存在相同的连接
+    const isDuplicateConnection = state.edges.some(edge =>
+      edge.source === connection.source && edge.target === connection.target,
+    )
+
+    // 防止重复连接
+    if (isDuplicateConnection) {
+      console.warn('Duplicate connection attempted - connection already exists')
+      return
+    }
+
+    // 防止自环连接（节点连接到自己）
+    if (connection.source === connection.target) {
+      console.warn('Self-connection attempted - nodes cannot connect to themselves')
+      return
+    }
+
     get().saveToHistory()
 
     set(state => ({
