@@ -38,7 +38,13 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
             className="flex items-center text-xl font-bold cursor-pointer"
             onClick={() => router.push('/')}
           >
-            <Image src={logo} alt="ProHelen Logo" width={32} height={32} className="mr-2" />
+            <Image
+              src={logo}
+              alt="ProHelen Logo"
+              width={32}
+              height={32}
+              className="mr-2 filter invert dark:invert-0"
+            />
             ProHelen
           </div>
 
