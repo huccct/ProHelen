@@ -114,19 +114,19 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
                 <h3 className="font-medium text-foreground text-sm">
                   {data.label}
                 </h3>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-foreground/70">
                   {description}
                 </p>
               </div>
             </div>
 
             {!isEditing && (
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
+              <div className="flex gap-1 opacity-80 group-hover:opacity-100 transition-all duration-300">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleEdit}
-                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-foreground/10 flex-shrink-0 rounded-md cursor-pointer"
+                  className="h-7 w-7 p-0 text-foreground/70 hover:text-foreground hover:bg-foreground/10 flex-shrink-0 rounded-md cursor-pointer"
                 >
                   <Edit3 className="h-3 w-3" />
                 </Button>
@@ -134,7 +134,7 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
                   variant="ghost"
                   size="sm"
                   onClick={handleDelete}
-                  className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400 hover:bg-red-500/10 flex-shrink-0 rounded-md cursor-pointer"
+                  className="h-7 w-7 p-0 text-foreground/70 hover:text-destructive hover:bg-destructive/10 flex-shrink-0 rounded-md cursor-pointer"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
@@ -185,7 +185,7 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
                         </p>
                       )
                     : (
-                        <p className="text-muted-foreground text-sm italic">
+                        <p className="text-foreground/60 text-sm italic">
                           Click edit to add content...
                         </p>
                       )}
