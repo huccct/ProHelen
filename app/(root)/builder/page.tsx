@@ -230,7 +230,7 @@ function BuilderContent() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowHelpPanel(true)}
-                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 <HelpCircle className="h-4 w-4" />
               </Button>

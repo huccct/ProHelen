@@ -59,10 +59,17 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
     setIsEditing(false)
   }
 
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation() // 阻止事件冒泡
+  const handleEdit = (e?: React.MouseEvent) => {
+    e?.stopPropagation() // 阻止事件冒泡
     setEditContent(data.content || '')
     setIsEditing(true)
+  }
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation() // 阻止事件冒泡
+    if (!isEditing) {
+      handleEdit()
+    }
   }
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -94,11 +101,13 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
         isConnectable={isConnectable}
       />
 
-      <div className={`relative overflow-hidden rounded-xl border-2 transition-all duration-300 ${
-        isEditing
-          ? 'border-foreground bg-card'
-          : 'border-border bg-card/80 hover:border-border/80 hover:bg-card/90'
-      } backdrop-blur-sm`}
+      <div
+        className={`relative overflow-hidden rounded-xl border-2 transition-all duration-300 ${
+          isEditing
+            ? 'border-foreground bg-card'
+            : 'border-border bg-card/80 hover:border-border/80 hover:bg-card/90'
+        } backdrop-blur-sm`}
+        onDoubleClick={handleDoubleClick}
       >
 
         {/* Header */}

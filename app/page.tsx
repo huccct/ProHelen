@@ -547,8 +547,8 @@ export default function Home() {
           transition={{ delay: 1.2, duration: 0.8 }}
         >
           <div className="text-center space-y-4">
-            <h2 className="text-4xl font-light text-white">Perfect For</h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <h2 className="text-4xl font-light text-foreground">Perfect For</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Whether you're an educator, developer, or AI enthusiast
             </p>
           </div>
@@ -599,7 +599,7 @@ export default function Home() {
 
         {/* Enhanced Stats Section */}
         <motion.div
-          className="py-20 border-t border-gray-800/50"
+          className="py-20 border-t border-border/50"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.4, duration: 0.8 }}
@@ -619,14 +619,14 @@ export default function Home() {
                 transition={{ delay: 1.5 + index * 0.1, duration: 0.6 }}
                 whileHover={{ y: -5 }}
               >
-                <div className="text-4xl font-mono font-light text-white group-hover:text-gray-200 transition-colors">
+                <div className="text-4xl font-mono font-light text-foreground group-hover:text-foreground/80 transition-colors">
                   {stat.value}
                 </div>
                 <div className="space-y-1">
-                  <div className="text-sm text-gray-300 uppercase tracking-wider font-medium">
+                  <div className="text-sm text-foreground/80 uppercase tracking-wider font-medium">
                     {stat.label}
                   </div>
-                  <div className="text-xs text-gray-500">{stat.description}</div>
+                  <div className="text-xs text-muted-foreground">{stat.description}</div>
                 </div>
               </motion.div>
             ))}
@@ -635,16 +635,16 @@ export default function Home() {
 
         {/* Footer */}
         <motion.div
-          className="py-16 text-center text-gray-600 text-sm font-light border-t border-gray-900/50 space-y-4"
+          className="py-16 text-center text-muted-foreground text-sm font-light border-t border-border/50 space-y-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.6, duration: 0.8 }}
         >
-          <div className="flex items-center justify-center gap-8 text-gray-500">
-            <span className="hover:text-gray-400 transition-colors cursor-pointer">Privacy</span>
-            <span className="hover:text-gray-400 transition-colors cursor-pointer">Terms</span>
-            <span className="hover:text-gray-400 transition-colors cursor-pointer">Documentation</span>
-            <span className="hover:text-gray-400 transition-colors cursor-pointer">Support</span>
+          <div className="flex items-center justify-center gap-8 text-muted-foreground">
+            <span className="hover:text-foreground transition-colors cursor-pointer">Privacy</span>
+            <span className="hover:text-foreground transition-colors cursor-pointer">Terms</span>
+            <span className="hover:text-foreground transition-colors cursor-pointer">Documentation</span>
+            <span className="hover:text-foreground transition-colors cursor-pointer">Support</span>
           </div>
           <div>
             © 2025 ProHelen. Revolutionizing AI instruction design for everyone.

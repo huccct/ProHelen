@@ -7,6 +7,7 @@ import {
   Book,
   HelpCircle,
   Keyboard,
+  Link,
   MessageCircle,
   PlayCircle,
   X,
@@ -36,6 +37,14 @@ const faqs = [
   {
     question: 'How do I connect blocks together?',
     answer: 'Click and drag from the bottom handle of one block to the top handle of another block. Connected blocks work together to create more complex instructions.',
+  },
+  {
+    question: 'Why do I need to connect blocks?',
+    answer: 'Connections create a logical flow and sequence for your AI instructions. They ensure blocks are processed in the right order and build context progressively, resulting in more coherent and effective prompts.',
+  },
+  {
+    question: 'What happens if I don\'t connect blocks?',
+    answer: 'Unconnected blocks will still appear in your prompt, but they may not have a logical relationship or proper sequence. Connecting blocks ensures they work together as a cohesive instruction workflow.',
   },
   {
     question: 'What happens when I delete a block?',
@@ -90,7 +99,7 @@ const blockGuide = [
 ]
 
 export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
-  const [activeTab, setActiveTab] = useState<'guide' | 'shortcuts' | 'faq'>('guide')
+  const [activeTab, setActiveTab] = useState<'guide' | 'connections' | 'shortcuts' | 'faq'>('guide')
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -126,6 +135,20 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
             >
               <Book className="h-4 w-4" />
               Block Guide
+            </Button>
+            <Button
+              variant={activeTab === 'connections' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setActiveTab('connections')}
+              className={cn(
+                'flex items-center gap-2 cursor-pointer',
+                activeTab === 'connections'
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+              )}
+            >
+              <Link className="h-4 w-4" />
+              Connections
             </Button>
             <Button
               variant={activeTab === 'shortcuts' ? 'default' : 'ghost'}
@@ -231,6 +254,140 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
                   <div className="flex gap-3">
                     <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
                     <p className="text-muted-foreground">Use Smart Suggestions to discover complementary blocks</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Connections Tab */}
+          {activeTab === 'connections' && (
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Understanding Connections</h3>
+                <p className="text-muted-foreground mb-6">
+                  Connections define the flow and relationship between your instruction blocks. They determine how information passes from one block to the next, creating a logical sequence for your AI prompt.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                <div className="border border-border rounded-lg p-4 bg-muted/50">
+                  <h4 className="font-medium text-foreground mb-3">Why Connect Blocks?</h4>
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium text-foreground">Sequential Processing:</span>
+                        <span className="text-muted-foreground ml-2">Blocks execute in order, building context step by step</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium text-foreground">Context Building:</span>
+                        <span className="text-muted-foreground ml-2">Each block adds to the overall instruction context</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium text-foreground">Logical Flow:</span>
+                        <span className="text-muted-foreground ml-2">Creates a coherent narrative for the AI to follow</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium text-foreground">Dependency Management:</span>
+                        <span className="text-muted-foreground ml-2">Later blocks can reference information from earlier ones</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border border-border rounded-lg p-4 bg-muted/50">
+                  <h4 className="font-medium text-foreground mb-3">Connection Examples</h4>
+                  <div className="space-y-4">
+                    <div className="p-3 bg-background border border-border rounded">
+                      <div className="font-medium text-foreground text-sm mb-2">Teaching Scenario:</div>
+                      <div className="text-sm text-muted-foreground">
+                        Role Definition → Subject Focus → Learning Style → Output Format
+                      </div>
+                      <div className="text-xs text-muted-foreground/80 mt-1">
+                        Each block builds on the previous to create a complete educational context
+                      </div>
+                    </div>
+                    <div className="p-3 bg-background border border-border rounded">
+                      <div className="font-medium text-foreground text-sm mb-2">Creative Writing:</div>
+                      <div className="text-sm text-muted-foreground">
+                        Context Setting → Personality → Communication Style → Goal Setting
+                      </div>
+                      <div className="text-xs text-muted-foreground/80 mt-1">
+                        Establishes environment, character, tone, then objectives
+                      </div>
+                    </div>
+                    <div className="p-3 bg-background border border-border rounded">
+                      <div className="font-medium text-foreground text-sm mb-2">Technical Support:</div>
+                      <div className="text-sm text-muted-foreground">
+                        Role Definition → Context Setting → Feedback Style → Output Format
+                      </div>
+                      <div className="text-xs text-muted-foreground/80 mt-1">
+                        Defines expertise level, problem context, support approach, and response structure
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border border-border rounded-lg p-4 bg-muted/50">
+                  <h4 className="font-medium text-foreground mb-3">How to Create Connections</h4>
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</div>
+                      <div>
+                        <span className="font-medium text-foreground">Identify the handle:</span>
+                        <span className="text-muted-foreground ml-2">Look for the small circle at the bottom of each block</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</div>
+                      <div>
+                        <span className="font-medium text-foreground">Click and drag:</span>
+                        <span className="text-muted-foreground ml-2">Click on the output handle and drag to the input handle of another block</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</div>
+                      <div>
+                        <span className="font-medium text-foreground">Release to connect:</span>
+                        <span className="text-muted-foreground ml-2">Drop on the target block's input handle to create the connection</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border border-border rounded-lg p-4 bg-muted/50">
+                  <h4 className="font-medium text-foreground mb-3">Best Connection Practices</h4>
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                      <p className="text-muted-foreground">Start with foundational blocks (Role Definition, Context Setting)</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                      <p className="text-muted-foreground">Build context before adding specific behaviors or requirements</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                      <p className="text-muted-foreground">End with output formatting blocks to structure responses</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                      <p className="text-muted-foreground">Keep related blocks close together in the sequence</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                      <p className="text-muted-foreground">Test your workflow frequently to ensure logical flow</p>
+                    </div>
                   </div>
                 </div>
               </div>
