@@ -3,6 +3,7 @@
 import { BlockPickerModal } from '@/app/(root)/builder/_components/block-picker-modal'
 import { CustomNode } from '@/app/(root)/builder/_components/custom-node'
 import { Toolbar } from '@/app/(root)/builder/_components/toolbar'
+import { useTheme } from '@/lib/theme-context'
 import { useBuilderStore } from '@/store/builder'
 import { Background, MiniMap, Panel, ReactFlow, ReactFlowProvider } from '@xyflow/react'
 import { Plus, Sparkles } from 'lucide-react'
@@ -36,6 +37,7 @@ interface FlowCanvasProps {
 }
 
 export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasProps) {
+  const { theme } = useTheme()
   const [open, setOpen] = useState(false)
   const [showRecommendations, setShowRecommendations] = useState(false)
   const [selectedNode, setSelectedNode] = useState<string | null>(null)
@@ -114,16 +116,13 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                 }}
                 nodeTypes={nodeTypes}
                 isValidConnection={isValidConnection}
+                colorMode={theme === 'light' ? 'light' : 'dark'}
                 fitView
                 proOptions={{
                   hideAttribution: true,
                 }}
                 className="bg-background"
                 nodeOrigin={[0.5, 0.5]}
-                defaultEdgeOptions={{
-                  style: { stroke: 'hsl(var(--border))', strokeWidth: 2 },
-                  animated: true,
-                }}
                 data-tour="canvas"
               >
                 {/* Empty State Guide */}
@@ -175,7 +174,7 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                 </Panel>
 
                 <MiniMap
-                  className="border border-border rounded-lg bg-background"
+                  className="border border-border rounded-xl bg-background shadow-lg"
                   nodeColor="hsl(var(--muted))"
                   maskColor="hsl(var(--background) / 0.8)"
                 />

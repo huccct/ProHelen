@@ -155,3 +155,84 @@
     stroke-dashoffset: -100;
   }
 }
+
+/* ReactFlow Theming */
+.react-flow {
+  --xy-edge-stroke-default: hsl(var(--foreground) / 0.4);
+  --xy-edge-stroke-width-default: 2;
+  --xy-edge-stroke-selected-default: hsl(var(--primary));
+  --xy-connectionline-stroke-default: hsl(var(--foreground) / 0.4);
+  --xy-connectionline-stroke-width-default: 2;
+  --xy-background-pattern-dots-color-default: hsl(var(--border));
+  --xy-background-pattern-line-color-default: hsl(var(--border));
+  --xy-minimap-background-color-default: hsl(var(--background));
+  --xy-node-background-color-default: hsl(var(--card));
+  --xy-node-border-default: 1px solid hsl(var(--border));
+  --xy-handle-background-color-default: hsl(var(--muted));
+  --xy-handle-border-color-default: hsl(var(--border));
+  --xy-controls-button-background-color-default: hsl(var(--background));
+  --xy-controls-button-color-default: hsl(var(--foreground));
+  --xy-controls-button-border-color-default: hsl(var(--border));
+  --xy-controls-box-shadow-default: 0 2px 4px hsl(var(--foreground) / 0.1);
+}
+
+.react-flow__handle {
+  background: hsl(var(--muted));
+  border: 2px solid hsl(var(--border));
+}
+
+.react-flow__handle.connecting {
+  background: hsl(var(--primary));
+  border: 2px solid hsl(var(--primary));
+}
+
+.react-flow__handle.valid {
+  background: hsl(var(--primary));
+  border: 2px solid hsl(var(--primary));
+}
+
+.react-flow__minimap {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem; /* 12px - 对应rounded-xl */
+  overflow: hidden;
+}
+
+.react-flow__minimap-mask {
+  fill: hsl(var(--background) / 0.8);
+}
+
+.react-flow__minimap-node {
+  fill: hsl(var(--muted));
+  stroke: hsl(var(--border));
+  stroke-width: 1;
+}
+
+.react-flow__controls {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.react-flow__controls-button {
+  background: hsl(var(--background));
+  border: none;
+  border-bottom: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  transition: background-color 0.3s ease;
+}
+
+.react-flow__controls-button:hover {
+  background: hsl(var(--muted));
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+
+.react-flow__attribution {
+  background: hsl(var(--background));
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+}
