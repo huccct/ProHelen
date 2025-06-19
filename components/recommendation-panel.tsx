@@ -178,7 +178,7 @@ export function RecommendationPanel({
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 300, opacity: 0 }}
       transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-      className="w-80 border-l border-gray-800 bg-gray-900/95 backdrop-blur-sm p-4 relative"
+      className="w-80 border-l border-border bg-card/95 backdrop-blur-sm p-4 relative"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
@@ -186,13 +186,13 @@ export function RecommendationPanel({
           <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-500/20">
             <Sparkles className="h-4 w-4 text-purple-400" />
           </div>
-          <h3 className="text-lg font-semibold text-white">Smart Suggestions</h3>
+          <h3 className="text-lg font-semibold text-foreground">Smart Suggestions</h3>
         </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={onClose}
-          className="text-gray-400 cursor-pointer"
+          className="text-muted-foreground cursor-pointer"
         >
           <X className="h-4 w-4" />
         </Button>
@@ -208,7 +208,7 @@ export function RecommendationPanel({
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.1 }}
-                  className="h-20 bg-gray-800/50 rounded-lg animate-pulse"
+                  className="h-20 bg-muted/50 rounded-lg animate-pulse"
                 />
               ))}
             </div>
@@ -225,7 +225,7 @@ export function RecommendationPanel({
                     className="group"
                   >
                     <div
-                      className="p-4 border border-gray-700/50 rounded-lg bg-gray-800/30 hover:border-gray-600 hover:bg-gray-800/50 cursor-pointer transition-all duration-200 relative overflow-hidden"
+                      className="p-4 border border-border/50 rounded-lg bg-muted/30 hover:border-border hover:bg-muted/50 cursor-pointer transition-all duration-200 relative overflow-hidden"
                       onClick={() => handleBlockSelect(rec.blockType)}
                     >
                       {/* Background gradient */}
@@ -234,29 +234,29 @@ export function RecommendationPanel({
                       <div className="relative">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
-                            <h4 className="text-sm font-medium text-white group-hover:text-purple-300 transition-colors">
+                            <h4 className="text-sm font-medium text-foreground group-hover:text-purple-300 transition-colors">
                               {blockTypeLabels[rec.blockType] || rec.blockType}
                             </h4>
-                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                               {rec.reason}
                             </p>
                           </div>
                           <div className="flex items-center gap-2 ml-3">
-                            <div className="text-xs text-gray-500 bg-gray-700/50 px-2 py-1 rounded">
+                            <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
                               {Math.round(rec.score * 100)}
                               %
                             </div>
-                            <Plus className="h-4 w-4 text-gray-400 group-hover:text-purple-400 transition-colors" />
+                            <Plus className="h-4 w-4 text-muted-foreground group-hover:text-purple-400 transition-colors" />
                           </div>
                         </div>
 
                         {/* Progress bar */}
-                        <div className="w-full bg-gray-700/30 rounded-full h-1 mt-2">
+                        <div className="w-full bg-muted/30 rounded-full h-1 mt-2">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${rec.score * 100}%` }}
                             transition={{ delay: index * 0.1 + 0.3, duration: 0.5 }}
-                            className={`h-1 rounded-full bg-gradient-to-r ${blockTypeColors[rec.blockType] || 'from-gray-500 to-gray-600'}`}
+                            className={`h-1 rounded-full bg-gradient-to-r ${blockTypeColors[rec.blockType] || 'from-muted to-muted-foreground'}`}
                           />
                         </div>
                       </div>
@@ -267,8 +267,8 @@ export function RecommendationPanel({
             )
           : (
               <div className="text-center py-8">
-                <Lightbulb className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-400 text-sm">
+                <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                <p className="text-muted-foreground text-sm">
                   Add some blocks to get
                   <br />
                   personalized suggestions

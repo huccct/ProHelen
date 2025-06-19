@@ -196,30 +196,30 @@ function BuilderContent() {
   }, [searchParams, importFlowData, setTitle, setDescription, resetFlow])
 
   return (
-    <div className="flex flex-col min-h-screen h-screen overflow-hidden bg-black">
-      <div className="flex-none px-4 py-3 border-b border-gray-800">
+    <div className="flex flex-col min-h-screen h-screen overflow-hidden bg-background">
+      <div className="flex-none px-4 py-3 border-b border-border">
         <div className="flex items-center space-x-4">
           <Link
             href="/"
-            className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-zinc-800 cursor-pointer"
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted cursor-pointer"
           >
             <ArrowLeft size={18} />
           </Link>
-          <div className="h-6 w-px bg-gray-800" />
+          <div className="h-6 w-px bg-border" />
           <div className="flex-1 min-w-0" data-tour="title-input">
             <input
               type="text"
               placeholder="Untitled Instruction"
               value={builderState.title}
               onChange={e => setBuilderState(prev => ({ ...prev, title: e.target.value }))}
-              className="bg-transparent text-lg font-medium text-white border-none focus:outline-none w-full truncate"
+              className="bg-transparent text-lg font-medium text-foreground border-none focus:outline-none w-full truncate"
             />
             <input
               type="text"
               placeholder="Add a description..."
               value={builderState.description}
               onChange={e => setBuilderState(prev => ({ ...prev, description: e.target.value }))}
-              className="bg-transparent text-sm text-gray-400 border-none focus:outline-none w-full mt-0.5 truncate"
+              className="bg-transparent text-sm text-muted-foreground border-none focus:outline-none w-full mt-0.5 truncate"
             />
           </div>
 
@@ -230,14 +230,14 @@ function BuilderContent() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowHelpPanel(true)}
-                className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-zinc-800 transition-colors"
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
                 <HelpCircle className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               <p>Get help and shortcuts</p>
-              <p className="text-xs text-gray-300 mt-1">Press F1 or click for help</p>
+              <p className="text-xs text-muted-foreground mt-1">Press F1 or click for help</p>
             </TooltipContent>
           </Tooltip>
         </div>
@@ -249,11 +249,11 @@ function BuilderContent() {
           onShowHelp={() => setShowHelpPanel(true)}
         />
         <div
-          className="w-1 hover:w-2 bg-gray-800 cursor-col-resize transition-all hover:bg-gray-700 active:bg-gray-600"
+          className="w-1 hover:w-2 bg-border cursor-col-resize transition-all hover:bg-border/80 active:bg-border/60"
           onMouseDown={handleMouseDown}
         />
         <PromptPreview
-          className="overflow-y-hidden border-l border-gray-800"
+          className="overflow-y-hidden border-l border-border"
           style={{ width: previewWidth }}
           data-tour="preview-panel"
         />

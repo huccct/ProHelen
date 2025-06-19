@@ -161,11 +161,11 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-900 border-gray-700 text-white max-w-4xl h-[80vh] flex flex-col">
+      <DialogContent className="bg-background border-border text-foreground max-w-4xl h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-3">
-            <div className="p-2 bg-gray-700/30 rounded-lg">
-              <Sparkles className="h-6 w-6 text-gray-400" />
+            <div className="p-2 bg-muted/30 rounded-lg">
+              <Sparkles className="h-6 w-6 text-muted-foreground" />
             </div>
             Test Prompt
           </DialogTitle>
@@ -173,12 +173,12 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
 
         <div className="flex-1 flex flex-col min-h-0">
           {/* Conversation Area */}
-          <div className="flex-1 bg-black rounded-lg border border-gray-800 flex flex-col min-h-0">
+          <div className="flex-1 bg-card rounded-lg border border-border flex flex-col min-h-0">
             {/* Messages */}
             <div className="flex-1 p-4 overflow-y-auto space-y-4 scrollbar">
               {messages.length === 0
                 ? (
-                    <div className="text-center text-gray-500 py-8">
+                    <div className="text-center text-muted-foreground py-8">
                       <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-50" />
                       <p>Type a message below to test your prompt</p>
                     </div>
@@ -192,24 +192,24 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
                         }`}
                       >
                         {message.role === 'assistant' && (
-                          <div className="w-8 h-8 rounded-full bg-gray-700/30 flex items-center justify-center flex-shrink-0 mt-1">
-                            <Sparkles className="h-4 w-4 text-gray-400" />
+                          <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center flex-shrink-0 mt-1">
+                            <Sparkles className="h-4 w-4 text-muted-foreground" />
                           </div>
                         )}
 
                         <div
                           className={`max-w-[70%] rounded-lg p-3 ${
                             message.role === 'user'
-                              ? 'bg-gray-700 text-white'
-                              : 'bg-zinc-800 text-gray-100'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-foreground'
                           }`}
                         >
                           <p className="whitespace-pre-wrap">{message.content}</p>
                         </div>
 
                         {message.role === 'user' && (
-                          <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center flex-shrink-0 mt-1">
-                            <User className="h-4 w-4 text-gray-300" />
+                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-1">
+                            <User className="h-4 w-4 text-muted-foreground" />
                           </div>
                         )}
                       </div>
@@ -218,13 +218,13 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
 
               {isLoading && (
                 <div className="flex gap-3 justify-start">
-                  <div className="w-8 h-8 rounded-full bg-gray-700/30 flex items-center justify-center flex-shrink-0 mt-1">
-                    <Sparkles className="h-4 w-4 text-gray-400" />
+                  <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center flex-shrink-0 mt-1">
+                    <Sparkles className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div className="bg-zinc-800 rounded-lg p-3">
+                  <div className="bg-muted rounded-lg p-3">
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-gray-400">Thinking...</span>
+                      <span className="text-muted-foreground">Thinking...</span>
                     </div>
                   </div>
                 </div>
@@ -233,26 +233,26 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
             </div>
 
             {/* Input Area */}
-            <div className="border-t border-gray-800 p-4">
+            <div className="border-t border-border p-4">
               <div className="relative flex-1">
                 <Textarea
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Type your test message... (Press Enter to send)"
-                  className="text-sm text-white placeholder-gray-400 h-[52px] max-h-24 pr-12 scrollbar bg-zinc-800 border border-gray-700 rounded-lg"
+                  className="text-sm text-foreground placeholder-muted-foreground h-[52px] max-h-24 pr-12 scrollbar bg-background border border-border rounded-lg"
                   disabled={isLoading}
                 />
                 <Button
                   type="button"
                   onClick={handleSend}
                   disabled={!input.trim() || isLoading}
-                  className="absolute bottom-2 right-2 p-2 h-8 w-8 min-w-0 bg-transparent hover:bg-gray-700/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-none border-none"
+                  className="absolute bottom-2 right-2 p-2 h-8 w-8 min-w-0 bg-transparent hover:bg-muted/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-none border-none"
                   tabIndex={-1}
                 >
                   {isLoading
                     ? <Loader2 className="h-4 w-4 animate-spin" />
-                    : <Send className="h-4 w-4 rotate-45 text-gray-400 hover:text-white transition-colors" />}
+                    : <Send className="h-4 w-4 rotate-45 text-muted-foreground hover:text-foreground transition-colors" />}
                 </Button>
               </div>
             </div>

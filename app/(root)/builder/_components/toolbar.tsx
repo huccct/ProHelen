@@ -119,7 +119,7 @@ export function Toolbar({ className }: ToolbarProps) {
   }, [currentZoom])
 
   return (
-    <div className={`flex items-center justify-between px-4 py-2 border-b border-gray-800 bg-black ${className}`} data-tour="toolbar">
+    <div className={`flex items-center justify-between px-4 py-2 border-b border-border bg-background ${className}`} data-tour="toolbar">
       {/* Left section - Edit actions */}
       <div className="flex items-center space-x-1">
         <Tooltip>
@@ -131,8 +131,8 @@ export function Toolbar({ className }: ToolbarProps) {
               disabled={!canUndo}
               className={`h-8 w-8 p-0 ${
                 canUndo
-                  ? 'text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer'
-                  : 'text-gray-600 cursor-not-allowed opacity-50'
+                  ? 'text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer'
+                  : 'text-muted-foreground/50 cursor-not-allowed opacity-50'
               }`}
             >
               <Undo2 size={16} />
@@ -140,7 +140,7 @@ export function Toolbar({ className }: ToolbarProps) {
           </TooltipTrigger>
           <TooltipContent>
             <p>Undo last action</p>
-            <p className="text-xs text-gray-300 mt-1">Ctrl+Z</p>
+            <p className="text-xs text-muted-foreground mt-1">Ctrl+Z</p>
           </TooltipContent>
         </Tooltip>
 
@@ -153,8 +153,8 @@ export function Toolbar({ className }: ToolbarProps) {
               disabled={!canRedo}
               className={`h-8 w-8 p-0 ${
                 canRedo
-                  ? 'text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer'
-                  : 'text-gray-600 cursor-not-allowed opacity-50'
+                  ? 'text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer'
+                  : 'text-muted-foreground/50 cursor-not-allowed opacity-50'
               }`}
             >
               <Redo2 size={16} />
@@ -162,17 +162,17 @@ export function Toolbar({ className }: ToolbarProps) {
           </TooltipTrigger>
           <TooltipContent>
             <p>Redo last action</p>
-            <p className="text-xs text-gray-300 mt-1">Ctrl+Y</p>
+            <p className="text-xs text-muted-foreground mt-1">Ctrl+Y</p>
           </TooltipContent>
         </Tooltip>
 
-        <div className="h-4 w-px bg-gray-800 mx-2" />
+        <div className="h-4 w-px bg-border mx-2" />
 
         <Button
           variant="ghost"
           size="sm"
           onClick={handleClear}
-          className="text-gray-400 hover:text-red-400 hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
+          className="text-muted-foreground hover:text-red-400 hover:bg-muted h-8 w-8 p-0 cursor-pointer"
           title="Clear canvas"
         >
           <Trash2 size={16} />
@@ -186,7 +186,7 @@ export function Toolbar({ className }: ToolbarProps) {
           variant="ghost"
           size="sm"
           onClick={handleZoomOut}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
+          className="text-muted-foreground hover:text-foreground hover:bg-muted h-8 w-8 p-0 cursor-pointer"
           title="Zoom out"
         >
           <ZoomOut size={16} />
@@ -197,16 +197,16 @@ export function Toolbar({ className }: ToolbarProps) {
             value={zoomInput}
             onChange={handleZoomInputChange}
             onBlur={handleZoomInputBlur}
-            className="w-12 text-sm text-gray-400 bg-transparent text-center border-none focus:outline-none focus:text-white"
+            className="w-12 text-sm text-muted-foreground bg-transparent text-center border-none focus:outline-none focus:text-foreground"
             placeholder="100"
           />
-          <span className="text-sm text-gray-400">%</span>
+          <span className="text-sm text-muted-foreground">%</span>
         </form>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleZoomIn}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
+          className="text-muted-foreground hover:text-foreground hover:bg-muted h-8 w-8 p-0 cursor-pointer"
           title="Zoom in"
         >
           <ZoomIn size={16} />
@@ -216,7 +216,7 @@ export function Toolbar({ className }: ToolbarProps) {
           variant="ghost"
           size="sm"
           onClick={handleFullscreen}
-          className="text-gray-400 hover:text-white hover:bg-zinc-800 h-8 w-8 p-0 cursor-pointer"
+          className="text-muted-foreground hover:text-foreground hover:bg-muted h-8 w-8 p-0 cursor-pointer"
           title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         >
           {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}

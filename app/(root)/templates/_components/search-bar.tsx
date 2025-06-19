@@ -19,13 +19,13 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   return (
     <div className="relative w-full md:w-64">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-        <IoSearch className="w-5 h-5 text-gray-400" />
+        <IoSearch className="w-5 h-5 text-muted-foreground" />
       </div>
       <input
         type="text"
         value={localQuery}
         onChange={handleChange}
-        className="w-full p-3 pl-10 text-sm bg-zinc-900 border border-gray-800 rounded-lg focus:ring-gray-200 focus:border-gray-200 text-white placeholder-gray-400"
+        className="w-full p-3 pl-10 text-sm bg-card border border-border rounded-lg focus:ring-ring focus:border-ring text-foreground placeholder-muted-foreground"
         placeholder="Search templates..."
       />
     </div>

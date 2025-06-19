@@ -142,7 +142,7 @@ export default function SignUp() {
           {[...Array.from({ length: 4 })].map((_, i) => (
             <div
               key={i}
-              className={`h-1 flex-1 rounded-full ${i < strength ? 'bg-green-500' : 'bg-gray-700'}`}
+              className={`h-1 flex-1 rounded-full ${i < strength ? 'bg-green-500' : 'bg-muted'}`}
             />
           ))}
         </div>
@@ -150,7 +150,7 @@ export default function SignUp() {
           {validations.map((validation, index) => (
             <li
               key={index}
-              className={`flex items-center gap-1 ${validation.met ? 'text-green-500' : 'text-gray-400'}`}
+              className={`flex items-center gap-1 ${validation.met ? 'text-green-500' : 'text-muted-foreground'}`}
             >
               {validation.met ? '✓' : '○'}
               {' '}
@@ -163,8 +163,8 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
         <NavBar hideSignIn />
       </div>
 
@@ -186,7 +186,7 @@ export default function SignUp() {
                 Create your account
               </motion.h2>
               <motion.p
-                className="text-gray-400"
+                className="text-muted-foreground"
                 variants={fadeIn}
               >
                 Start building your personalized AI assistant
@@ -207,7 +207,7 @@ export default function SignUp() {
                     placeholder="Enter your name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="bg-[#2a2a2a] border-gray-700 text-white h-12"
+                    className="bg-input border-border text-foreground h-12"
                     required
                   />
                 </div>
@@ -220,7 +220,7 @@ export default function SignUp() {
                     placeholder="Enter your email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="bg-[#2a2a2a] border-gray-700 text-white h-12"
+                    className="bg-input border-border text-foreground h-12"
                     required
                   />
                 </div>
@@ -234,13 +234,13 @@ export default function SignUp() {
                       placeholder="Create a password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="bg-[#2a2a2a] border-gray-700 text-white pr-10 h-12"
+                      className="bg-input border-border text-foreground pr-10 h-12"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showPassword ? <IoEyeOffOutline className="h-5 w-5" /> : <IoEyeOutline className="h-5 w-5" />}
                     </button>
@@ -257,13 +257,13 @@ export default function SignUp() {
                       placeholder="Confirm your password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      className="bg-[#2a2a2a] border-gray-700 text-white pr-10 h-12"
+                      className="bg-input border-border text-foreground pr-10 h-12"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showConfirmPassword ? <IoEyeOffOutline className="h-5 w-5" /> : <IoEyeOutline className="h-5 w-5" />}
                     </button>
@@ -275,7 +275,7 @@ export default function SignUp() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-white text-black hover:bg-gray-100 h-12 mt-6 cursor-pointer"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Creating account...' : 'Create account'}
@@ -284,10 +284,10 @@ export default function SignUp() {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-800"></div>
+                  <div className="w-full border-t border-border"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-black text-gray-400">Or continue with</span>
+                  <span className="px-2 bg-background text-muted-foreground">Or continue with</span>
                 </div>
               </div>
 
@@ -295,7 +295,7 @@ export default function SignUp() {
                 <motion.div variants={buttonVariants} whileHover="hover">
                   <Button
                     variant="outline"
-                    className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
+                    className="w-full h-12 cursor-pointer"
                     onClick={() => signIn('google', { callbackUrl: '/' })}
                   >
                     <FcGoogle className="h-5 w-5" />
@@ -304,7 +304,7 @@ export default function SignUp() {
                 <motion.div variants={buttonVariants} whileHover="hover">
                   <Button
                     variant="outline"
-                    className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
+                    className="w-full h-12 cursor-pointer"
                     onClick={() => signIn('github', { callbackUrl: '/' })}
                   >
                     <FaGithub className="h-5 w-5" />
@@ -313,7 +313,7 @@ export default function SignUp() {
                 <motion.div variants={buttonVariants} whileHover="hover">
                   <Button
                     variant="outline"
-                    className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
+                    className="w-full h-12 cursor-pointer"
                     onClick={() => signIn('azure-ad', { callbackUrl: '/' })}
                   >
                     <FaMicrosoft className="h-5 w-5" />
@@ -321,12 +321,12 @@ export default function SignUp() {
                 </motion.div>
               </div>
 
-              <div className="text-center text-sm text-gray-400">
+              <div className="text-center text-sm text-muted-foreground">
                 Already have an account?
                 {' '}
                 <button
                   type="button"
-                  className="text-[#FAFAFA] hover:underline cursor-pointer"
+                  className="text-foreground hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-in')}
                 >
                   Sign in
@@ -335,14 +335,14 @@ export default function SignUp() {
             </motion.div>
 
             <motion.p
-              className="text-center text-sm text-gray-500"
+              className="text-center text-sm text-muted-foreground"
               variants={fadeIn}
             >
               By continuing, you agree to our
               {' '}
               <a
                 href="/terms"
-                className="underline text-[#FAFAFA] hover:text-[#e5e5e5] transition-colors"
+                className="underline text-foreground hover:text-foreground/80 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -353,7 +353,7 @@ export default function SignUp() {
               {' '}
               <a
                 href="/privacy"
-                className="underline text-[#FAFAFA] hover:text-[#e5e5e5] transition-colors"
+                className="underline text-foreground hover:text-foreground/80 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >

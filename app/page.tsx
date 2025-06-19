@@ -73,14 +73,14 @@ function TypewriterEffect() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="text-white"
+        className="text-foreground"
       >
         {displayText}
       </motion.span>
       <motion.span
         animate={{ opacity: showCursor ? 1 : 0 }}
         transition={{ duration: 0.3 }}
-        className="inline-block w-[3px] h-[1em] translate-y-[2px] mx-[2px] bg-white rounded-full"
+        className="inline-block w-[3px] h-[1em] translate-y-[2px] mx-[2px] bg-foreground rounded-full"
       />
     </>
   )
@@ -103,14 +103,16 @@ function GridBackground() {
             <path
               d="M 60 0 L 0 0 0 60"
               fill="none"
-              stroke="rgba(255,255,255,0.02)"
+              stroke="currentColor"
               strokeWidth="1"
+              opacity="0.02"
+              className="text-foreground"
             />
           </pattern>
           <radialGradient id="radialGradient" cx="50%" cy="30%" r="60%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.04)" />
-            <stop offset="50%" stopColor="rgba(255,255,255,0.01)" />
-            <stop offset="100%" stopColor="rgba(0,0,0,0.8)" />
+            <stop offset="0%" stopColor="currentColor" stopOpacity="0.04" className="text-foreground" />
+            <stop offset="50%" stopColor="currentColor" stopOpacity="0.01" className="text-foreground" />
+            <stop offset="100%" stopColor="currentColor" stopOpacity="0.8" className="text-background" />
           </radialGradient>
         </defs>
         <rect width="100%" height="100%" fill="url(#grid)" />
@@ -129,28 +131,28 @@ function FeatureCard({ icon: Icon, title, description, highlight, delay = 0 }: {
 }) {
   return (
     <motion.div
-      className="relative p-6 rounded-xl border border-gray-800/50 bg-gray-900/30 backdrop-blur-sm group hover:border-gray-600/50 transition-all duration-500 hover:bg-gray-900/50"
+      className="relative p-6 rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm group hover:border-border transition-all duration-500 hover:bg-card/80"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.6 }}
       whileHover={{ y: -8, scale: 1.02 }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-gray-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-br from-foreground/5 to-muted-foreground/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="relative">
         <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 rounded-lg bg-white/10 border border-white/20">
-            <Icon className="h-6 w-6 text-white" />
+          <div className="p-2 rounded-lg bg-muted border border-border">
+            <Icon className="h-6 w-6 text-foreground" />
           </div>
           {highlight && (
-            <Badge variant="outline" className="border-gray-600 text-gray-300 text-xs">
+            <Badge variant="outline" className="text-xs">
               {highlight}
             </Badge>
           )}
         </div>
-        <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-gray-100 transition-colors">
+        <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-foreground/90 transition-colors">
           {title}
         </h3>
-        <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">
+        <p className="text-muted-foreground leading-relaxed group-hover:text-muted-foreground/80 transition-colors">
           {description}
         </p>
       </div>
@@ -166,18 +168,18 @@ function UseCaseCard({ title, description, icon: Icon, delay = 0 }: {
 }) {
   return (
     <motion.div
-      className="flex items-start gap-4 p-4 rounded-lg border border-gray-800/50 bg-gray-900/20 hover:bg-gray-900/40 transition-all duration-300"
+      className="flex items-start gap-4 p-4 rounded-lg border border-border/50 bg-card/30 hover:bg-card/60 transition-all duration-300"
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay, duration: 0.6 }}
       whileHover={{ x: 5 }}
     >
-      <div className="p-2 rounded-lg bg-white/10 border border-white/20 flex-shrink-0">
-        <Icon className="h-5 w-5 text-white" />
+      <div className="p-2 rounded-lg bg-muted border border-border flex-shrink-0">
+        <Icon className="h-5 w-5 text-foreground" />
       </div>
       <div>
-        <h4 className="font-medium text-white mb-1">{title}</h4>
-        <p className="text-sm text-gray-400 leading-relaxed">{description}</p>
+        <h4 className="font-medium text-foreground mb-1">{title}</h4>
+        <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
       </div>
     </motion.div>
   )
@@ -187,7 +189,7 @@ export default function Home() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden relative">
+    <div className="min-h-screen bg-background text-foreground overflow-hidden relative">
       <GridBackground />
 
       {/* Enhanced animated background elements */}
@@ -236,9 +238,9 @@ export default function Home() {
           }}
         >
           <div className="flex flex-col gap-2">
-            <div className="w-16 h-3 bg-gray-600 rounded"></div>
-            <div className="w-12 h-3 bg-gray-700 rounded"></div>
-            <div className="w-14 h-3 bg-gray-600 rounded"></div>
+            <div className="w-16 h-3 bg-muted rounded"></div>
+            <div className="w-12 h-3 bg-muted/80 rounded"></div>
+            <div className="w-14 h-3 bg-muted rounded"></div>
           </div>
         </motion.div>
         <motion.div
@@ -255,15 +257,15 @@ export default function Home() {
           }}
         >
           <div className="grid grid-cols-2 gap-2">
-            <div className="w-8 h-8 bg-gray-700 rounded border border-gray-600"></div>
-            <div className="w-8 h-8 bg-gray-600 rounded border border-gray-500"></div>
-            <div className="w-8 h-8 bg-gray-600 rounded border border-gray-500"></div>
-            <div className="w-8 h-8 bg-gray-700 rounded border border-gray-600"></div>
+            <div className="w-8 h-8 bg-muted rounded border border-border"></div>
+            <div className="w-8 h-8 bg-muted/80 rounded border border-border/80"></div>
+            <div className="w-8 h-8 bg-muted/80 rounded border border-border/80"></div>
+            <div className="w-8 h-8 bg-muted rounded border border-border"></div>
           </div>
         </motion.div>
       </div>
 
-      <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
         <NavBar />
       </div>
 
@@ -285,7 +287,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <Badge variant="outline" className="border-gray-600 text-gray-300 px-3 py-1">
+                <Badge variant="outline" className="px-3 py-1">
                   <IoSparkles className="w-3 h-3 mr-1" />
                   ProHelen v1.0
                 </Badge>
@@ -300,16 +302,16 @@ export default function Home() {
                   ease: [0.16, 1, 0.3, 1],
                 }}
               >
-                <span className="text-white block mb-4">
+                <span className="text-foreground block mb-4">
                   The Future of
                 </span>
-                <span className="text-white">
+                <span className="text-foreground">
                   <TypewriterEffect />
                 </span>
               </motion.h1>
 
               <motion.p
-                className="text-xl text-gray-400 max-w-4xl mx-auto leading-relaxed"
+                className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -320,7 +322,7 @@ export default function Home() {
               >
                 Transform how you interact with AI through
                 {' '}
-                <span className="text-white font-medium">intuitive visual building blocks</span>
+                <span className="text-foreground font-medium">intuitive visual building blocks</span>
                 . Create sophisticated LLM instructions without coding, deploy instantly, and achieve precise AI behavior control with our revolutionary drag-and-drop interface.
               </motion.p>
 
@@ -338,13 +340,13 @@ export default function Home() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.6, duration: 0.6 }}
                   >
-                    <div className="w-16 h-16 rounded-2xl border-2 border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center group hover:border-white/50 transition-all">
-                      <IoGrid className="text-2xl text-white group-hover:scale-110 transition-transform" />
+                    <div className="w-16 h-16 rounded-2xl border-2 border-border bg-muted backdrop-blur-sm flex items-center justify-center group hover:border-border/80 transition-all">
+                      <IoGrid className="text-2xl text-foreground group-hover:scale-110 transition-transform" />
                     </div>
-                    <span className="text-gray-300 text-center font-medium">
+                    <span className="text-foreground text-center font-medium">
                       Drag & Drop
                       <br />
-                      <span className="text-sm text-gray-400">Visual Blocks</span>
+                      <span className="text-sm text-muted-foreground">Visual Blocks</span>
                     </span>
                   </motion.div>
 
@@ -354,8 +356,8 @@ export default function Home() {
                     animate={{ scaleX: 1 }}
                     transition={{ delay: 0.8, duration: 0.6 }}
                   >
-                    <div className="w-12 h-[2px] bg-gradient-to-r from-gray-600 to-gray-400"></div>
-                    <IoArrowForward className="text-gray-400" />
+                    <div className="w-12 h-[2px] bg-gradient-to-r from-muted-foreground to-muted-foreground/70"></div>
+                    <IoArrowForward className="text-muted-foreground" />
                   </motion.div>
 
                   <motion.div
@@ -364,13 +366,13 @@ export default function Home() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.0, duration: 0.6 }}
                   >
-                    <div className="w-16 h-16 rounded-2xl border-2 border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center group hover:border-white/50 transition-all">
-                      <IoFlash className="text-2xl text-white group-hover:scale-110 transition-transform" />
+                    <div className="w-16 h-16 rounded-2xl border-2 border-border bg-muted backdrop-blur-sm flex items-center justify-center group hover:border-border/80 transition-all">
+                      <IoFlash className="text-2xl text-foreground group-hover:scale-110 transition-transform" />
                     </div>
-                    <span className="text-gray-300 text-center font-medium">
+                    <span className="text-foreground text-center font-medium">
                       Generate
                       <br />
-                      <span className="text-sm text-gray-400">Smart Prompts</span>
+                      <span className="text-sm text-muted-foreground">Smart Prompts</span>
                     </span>
                   </motion.div>
 
@@ -380,8 +382,8 @@ export default function Home() {
                     animate={{ scaleX: 1 }}
                     transition={{ delay: 1.2, duration: 0.6 }}
                   >
-                    <div className="w-12 h-[2px] bg-gradient-to-r from-gray-600 to-gray-400"></div>
-                    <IoArrowForward className="text-gray-400" />
+                    <div className="w-12 h-[2px] bg-gradient-to-r from-muted-foreground to-muted-foreground/70"></div>
+                    <IoArrowForward className="text-muted-foreground" />
                   </motion.div>
 
                   <motion.div
@@ -390,13 +392,13 @@ export default function Home() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 1.4, duration: 0.6 }}
                   >
-                    <div className="w-16 h-16 rounded-2xl border-2 border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center group hover:border-white/50 transition-all">
-                      <IoRocket className="text-2xl text-white group-hover:scale-110 transition-transform" />
+                    <div className="w-16 h-16 rounded-2xl border-2 border-border bg-muted backdrop-blur-sm flex items-center justify-center group hover:border-border/80 transition-all">
+                      <IoRocket className="text-2xl text-foreground group-hover:scale-110 transition-transform" />
                     </div>
-                    <span className="text-gray-300 text-center font-medium">
+                    <span className="text-foreground text-center font-medium">
                       Deploy
                       <br />
-                      <span className="text-sm text-gray-400">Instantly</span>
+                      <span className="text-sm text-muted-foreground">Instantly</span>
                     </span>
                   </motion.div>
                 </div>
@@ -417,7 +419,7 @@ export default function Home() {
                 >
                   <Button
                     size="lg"
-                    className="relative bg-white text-black hover:bg-gray-100 px-10 py-6 text-lg font-medium rounded-xl transition-all duration-300 cursor-pointer shadow-2xl hover:shadow-white/20"
+                    className="relative bg-primary text-primary-foreground hover:bg-primary/90 px-10 py-6 text-lg font-medium rounded-xl transition-all duration-300 cursor-pointer shadow-2xl"
                     onClick={() => router.push('/builder')}
                   >
                     <IoSparkles className="h-5 w-5 mr-2" />
@@ -448,7 +450,7 @@ export default function Home() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="px-10 py-6 text-lg font-medium rounded-xl border-gray-600 text-white hover:text-white hover:border-gray-400 hover:bg-white/10 transition-all duration-300 cursor-pointer"
+                    className="px-10 py-6 text-lg font-medium rounded-xl transition-all duration-300 cursor-pointer"
                     onClick={() => router.push('/templates')}
                   >
                     <IoDocumentText className="h-5 w-5 mr-2" />
@@ -458,7 +460,7 @@ export default function Home() {
               </div>
 
               <motion.div
-                className="flex items-center justify-center gap-8 text-sm text-gray-500"
+                className="flex items-center justify-center gap-8 text-sm text-muted-foreground"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.9, duration: 0.6 }}
@@ -488,8 +490,8 @@ export default function Home() {
           transition={{ delay: 1.0, duration: 0.8 }}
         >
           <div className="text-center space-y-4">
-            <h2 className="text-4xl font-light text-white">Powerful Features</h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <h2 className="text-4xl font-light text-foreground">Powerful Features</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Everything you need to build, manage, and deploy sophisticated AI instructions
             </p>
           </div>

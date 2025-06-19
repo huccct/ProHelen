@@ -123,15 +123,15 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array.from({ length: 6 })].map((_, i) => (
-          <Card key={i} className="border-gray-800 bg-gray-900/50 animate-pulse">
+          <Card key={i} className="border-border bg-card/50 animate-pulse">
             <CardHeader className="p-6">
-              <div className="h-6 bg-gray-700 rounded mb-2" />
-              <div className="h-4 bg-gray-700 rounded mb-4" />
+              <div className="h-6 bg-muted rounded mb-2" />
+              <div className="h-4 bg-muted rounded mb-4" />
               <div className="flex gap-2 mb-4">
-                <div className="h-6 w-16 bg-gray-700 rounded" />
-                <div className="h-6 w-16 bg-gray-700 rounded" />
+                <div className="h-6 w-16 bg-muted rounded" />
+                <div className="h-6 w-16 bg-muted rounded" />
               </div>
-              <div className="h-10 bg-gray-700 rounded" />
+              <div className="h-10 bg-muted rounded" />
             </CardHeader>
           </Card>
         ))}
@@ -142,7 +142,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-400 mb-4">{error}</p>
+        <p className="text-destructive mb-4">{error}</p>
         <Button onClick={() => fetchTemplates(currentPage)} variant="outline">
           Try Again
         </Button>
@@ -153,7 +153,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
   if (templates.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-400">No templates found for your search criteria.</p>
+        <p className="text-muted-foreground">No templates found for your search criteria.</p>
       </div>
     )
   }
@@ -168,32 +168,32 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
           >
-            <Card className="border-gray-800 bg-gray-900/50 hover:bg-gray-900/70 transition-all duration-300 hover:border-gray-700 group cursor-pointer h-full flex flex-col">
+            <Card className="border-border bg-card/50 hover:bg-card/70 transition-all duration-300 hover:border-border/50 group cursor-pointer h-full flex flex-col">
               <CardHeader className="p-6 flex-1">
                 <div className="flex items-start justify-between mb-3">
                   <Badge
                     variant="secondary"
-                    className="bg-purple-900/30 text-purple-300 border-purple-700 pointer-events-none"
+                    className="bg-primary/10 text-primary border-primary/30 pointer-events-none"
                   >
                     {template.category}
                   </Badge>
                   {template.isPremium && (
-                    <Badge className="bg-yellow-900/30 text-yellow-300 border-yellow-700 pointer-events-none">
+                    <Badge className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/30 pointer-events-none">
                       Premium
                     </Badge>
                   )}
                 </div>
 
-                <CardTitle className="text-xl text-white group-hover:text-purple-300 transition-colors line-clamp-2">
+                <CardTitle className="text-xl text-foreground group-hover:text-primary transition-colors line-clamp-2">
                   {template.title}
                 </CardTitle>
 
-                <CardDescription className="text-gray-400 leading-relaxed line-clamp-3 flex-1">
+                <CardDescription className="text-muted-foreground leading-relaxed line-clamp-3 flex-1">
                   {template.description}
                 </CardDescription>
 
                 {/* Statistics */}
-                <div className="flex items-center gap-4 text-sm text-gray-500 mt-4">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground mt-4">
                   {template.rating && (
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 text-yellow-500 fill-current" />
@@ -221,13 +221,13 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                       <Badge
                         key={tag}
                         variant="outline"
-                        className="text-xs border-gray-700 text-gray-400 hover:text-gray-300"
+                        className="text-xs border-border text-muted-foreground hover:text-foreground"
                       >
                         {tag}
                       </Badge>
                     ))}
                     {template.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs border-gray-700 text-gray-400">
+                      <Badge variant="outline" className="text-xs border-border text-muted-foreground">
                         +
                         {template.tags.length - 3}
                       </Badge>
@@ -239,7 +239,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 hover:bg-gray-800 cursor-pointer"
+                    className="flex-1 cursor-pointer"
                     onClick={() => router.push(`/templates/${template.id}`)}
                   >
                     <Clock className="w-4 h-4 mr-2" />
@@ -247,7 +247,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                   </Button>
                   <Button
                     size="sm"
-                    className="flex-1 bg-white text-black hover:bg-gray-100 cursor-pointer"
+                    className="flex-1 cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
                     onClick={() => router.push(`/builder?template=${template.id}`)}
                   >
                     <Users className="w-4 h-4 mr-2" />

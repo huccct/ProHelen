@@ -90,31 +90,31 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
       <Handle
         type="target"
         position={Position.Top}
-        className="!bg-gray-600 !border-gray-500 !w-3 !h-3 hover:!bg-white hover:!border-gray-300 transition-colors !z-50"
+        className="!bg-muted !border-border !w-3 !h-3 hover:!bg-foreground hover:!border-foreground transition-colors !z-50"
         isConnectable={isConnectable}
       />
 
       <div className={`relative overflow-hidden rounded-xl border-2 transition-all duration-300 ${
         isEditing
-          ? 'border-white bg-zinc-800'
-          : 'border-gray-700 bg-zinc-900/80 hover:border-gray-600 hover:bg-zinc-800/90'
+          ? 'border-foreground bg-card'
+          : 'border-border bg-card/80 hover:border-border/80 hover:bg-card/90'
       } backdrop-blur-sm`}
       >
 
         {/* Header */}
-        <div className={`px-4 py-3 bg-gradient-to-r ${colors.gradient} bg-opacity-10 border-b border-gray-700 relative`}>
+        <div className={`px-4 py-3 bg-gradient-to-r ${colors.gradient} bg-opacity-10 border-b border-border relative`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 flex-1">
-              <div className={`flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br ${colors.gradient} bg-opacity-20 border border-gray-600 relative z-10 group-hover:bg-opacity-30 transition-all duration-300`}>
-                <div className="text-white text-sm group-hover:scale-110 transition-transform duration-300">
+              <div className={`flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br ${colors.gradient} bg-opacity-20 border border-border relative z-10 group-hover:bg-opacity-30 transition-all duration-300`}>
+                <div className="text-foreground text-sm group-hover:scale-110 transition-transform duration-300">
                   {icon}
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-medium text-white text-sm">
+                <h3 className="font-medium text-foreground text-sm">
                   {data.label}
                 </h3>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   {description}
                 </p>
               </div>
@@ -126,7 +126,7 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
                   variant="ghost"
                   size="sm"
                   onClick={handleEdit}
-                  className="h-7 w-7 p-0 text-gray-400 hover:text-white hover:bg-white/10 flex-shrink-0 rounded-md cursor-pointer"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-foreground/10 flex-shrink-0 rounded-md cursor-pointer"
                 >
                   <Edit3 className="h-3 w-3" />
                 </Button>
@@ -134,7 +134,7 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
                   variant="ghost"
                   size="sm"
                   onClick={handleDelete}
-                  className="h-7 w-7 p-0 text-gray-400 hover:text-red-400 hover:bg-red-500/10 flex-shrink-0 rounded-md cursor-pointer"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400 hover:bg-red-500/10 flex-shrink-0 rounded-md cursor-pointer"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
@@ -152,14 +152,14 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
                     value={editContent}
                     onChange={e => setEditContent(e.target.value)}
                     placeholder={getNodePlaceholder(data.type)}
-                    className="w-full h-20 p-3 bg-black border border-gray-600 rounded-lg text-white text-sm placeholder-gray-500 resize-none focus:outline-none focus:border-gray-400 scrollbar"
+                    className="w-full h-20 p-3 bg-background border border-border rounded-lg text-foreground text-sm placeholder-muted-foreground resize-none focus:outline-none focus:border-border/80 scrollbar"
                     autoFocus
                   />
                   <div className="flex gap-2">
                     <Button
                       size="sm"
                       onClick={handleSave}
-                      className="flex-1 bg-white text-black hover:bg-gray-200 h-7 text-xs font-medium"
+                      className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 h-7 text-xs font-medium"
                     >
                       <Save className="h-3 w-3 mr-1" />
                       Save
@@ -168,7 +168,7 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
                       variant="outline"
                       size="sm"
                       onClick={handleCancel}
-                      className="flex-1 bg-transparent border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 hover:bg-zinc-800/50 h-7 text-xs font-medium"
+                      className="flex-1 h-7 text-xs font-medium"
                     >
                       <X className="h-3 w-3 mr-1" />
                       Cancel
@@ -180,12 +180,12 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
                 <div className="min-h-[60px] flex items-center">
                   {data.content
                     ? (
-                        <p className="text-gray-300 text-sm leading-relaxed">
+                        <p className="text-foreground text-sm leading-relaxed">
                           {data.content}
                         </p>
                       )
                     : (
-                        <p className="text-gray-500 text-sm italic">
+                        <p className="text-muted-foreground text-sm italic">
                           Click edit to add content...
                         </p>
                       )}
@@ -204,16 +204,16 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!bg-gray-600 !border-gray-500 !w-3 !h-3 hover:!bg-white hover:!border-gray-300 transition-colors !z-50"
+        className="!bg-muted !border-border !w-3 !h-3 hover:!bg-foreground hover:!border-foreground transition-colors !z-50"
         isConnectable={isConnectable}
       />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <DialogContent className="bg-zinc-900 border-gray-700 [&>button]:text-gray-400 [&>button]:hover:text-gray-300">
+        <DialogContent className="bg-card border-border [&>button]:text-muted-foreground [&>button]:hover:text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-white">Delete Block</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogTitle className="text-foreground">Delete Block</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Are you sure you want to delete "
               {data.label}
               "? This action cannot be undone and will also remove all connections to this block.
@@ -223,14 +223,14 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
             <Button
               variant="outline"
               onClick={handleCancelDelete}
-              className="border-gray-600 text-gray-300 cursor-pointer"
+              className="cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={confirmDelete}
-              className="bg-red-600 hover:bg-red-700 cursor-pointer"
+              className="cursor-pointer"
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Delete

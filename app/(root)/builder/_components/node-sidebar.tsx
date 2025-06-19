@@ -18,7 +18,7 @@ export function NodeSidebar({ className }: NodeSidebarProps) {
   return (
     <aside className={className}>
       <div className="p-4">
-        <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Blocks</h3>
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4">Blocks</h3>
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Button
@@ -29,7 +29,7 @@ export function NodeSidebar({ className }: NodeSidebarProps) {
             >
               <Plus className="h-4 w-4" />
             </Button>
-            <span className="text-sm text-gray-400">Add a new block</span>
+            <span className="text-sm text-muted-foreground">Add a new block</span>
           </div>
           <BlockPickerModal open={open} onOpenChange={setOpen} onAddNode={addNode} />
         </div>

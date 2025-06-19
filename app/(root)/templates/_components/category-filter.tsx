@@ -42,7 +42,7 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
         {[...Array.from({ length: 5 })].map((_, i) => (
           <div
             key={i}
-            className="px-4 py-2 rounded-full bg-zinc-800 animate-pulse h-8 w-20"
+            className="px-4 py-2 rounded-full bg-muted animate-pulse h-8 w-20"
           />
         ))}
       </div>
@@ -57,8 +57,8 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
           onClick={() => onCategoryChange(category)}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
             activeCategory === category
-              ? 'bg-white text-black hover:bg-gray-100'
-              : 'bg-zinc-900 text-gray-300 hover:bg-zinc-800'
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+              : 'bg-card text-muted-foreground hover:bg-muted'
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}

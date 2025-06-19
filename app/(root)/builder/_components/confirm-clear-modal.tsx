@@ -18,22 +18,22 @@ export function ConfirmClearModal({ open, onOpenChange, onConfirm }: ConfirmClea
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-900 border-gray-700 text-white max-w-md">
+      <DialogContent className="bg-background border-border text-foreground max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-3">
-            <div className="p-2 bg-red-500/20 rounded-lg">
-              <AlertTriangle className="h-6 w-6 text-red-400" />
+            <div className="p-2 bg-destructive/20 rounded-lg">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
             </div>
             Clear Canvas
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          <p className="text-gray-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Are you sure you want to clear the canvas? This will remove all blocks and connections.
           </p>
 
-          <p className="text-sm text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20">
+          <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg border border-destructive/20">
             ⚠️ This action cannot be undone.
           </p>
 
@@ -42,14 +42,14 @@ export function ConfirmClearModal({ open, onOpenChange, onConfirm }: ConfirmClea
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-gray-500 cursor-pointer transition-colors"
+              className="flex-1 cursor-pointer transition-colors"
             >
               Cancel
             </Button>
             <Button
               type="button"
               onClick={handleConfirm}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+              className="flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground cursor-pointer"
             >
               Clear Canvas
             </Button>

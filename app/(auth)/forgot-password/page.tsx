@@ -51,8 +51,8 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
         <NavBar hideSignIn />
       </div>
 
@@ -74,7 +74,7 @@ export default function ForgotPassword() {
                 Reset your password
               </motion.h2>
               <motion.p
-                className="text-gray-400"
+                className="text-muted-foreground"
                 variants={fadeIn}
               >
                 {!isSent
@@ -99,14 +99,14 @@ export default function ForgotPassword() {
                           placeholder="Enter your email"
                           value={email}
                           onChange={e => setEmail(e.target.value)}
-                          className="bg-[#2a2a2a] border-gray-700 text-white h-12"
+                          className="bg-input border-border text-foreground h-12"
                           required
                         />
                       </div>
 
                       <Button
                         type="submit"
-                        className="w-full bg-white text-black hover:bg-gray-100 h-12 mt-6 cursor-pointer"
+                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
                         disabled={isLoading}
                       >
                         {isLoading ? 'Sending reset link...' : 'Send reset link'}
@@ -115,7 +115,7 @@ export default function ForgotPassword() {
                   )
                 : (
                     <div className="space-y-4">
-                      <div className="bg-white/10 text-white p-4 rounded-lg text-sm">
+                      <div className="bg-muted text-foreground p-4 rounded-lg text-sm">
                         We've sent a password reset link to
                         {' '}
                         <strong>{email}</strong>
@@ -123,7 +123,7 @@ export default function ForgotPassword() {
                       <Button
                         type="button"
                         variant="outline"
-                        className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
+                        className="w-full h-12 cursor-pointer"
                         onClick={() => {
                           setIsSent(false)
                           setEmail('')
@@ -134,12 +134,12 @@ export default function ForgotPassword() {
                     </div>
                   )}
 
-              <div className="text-center text-sm text-gray-400">
+              <div className="text-center text-sm text-muted-foreground">
                 Remember your password?
                 {' '}
                 <button
                   type="button"
-                  className="text-[#FAFAFA] hover:underline cursor-pointer"
+                  className="text-foreground hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-in')}
                 >
                   Sign in
@@ -148,14 +148,14 @@ export default function ForgotPassword() {
             </motion.div>
 
             <motion.p
-              className="text-center text-sm text-gray-500"
+              className="text-center text-sm text-muted-foreground"
               variants={fadeIn}
             >
               By continuing, you agree to our
               {' '}
               <a
                 href="/terms"
-                className="underline text-[#FAFAFA] hover:text-[#e5e5e5] transition-colors"
+                className="underline text-foreground hover:text-foreground/80 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -166,7 +166,7 @@ export default function ForgotPassword() {
               {' '}
               <a
                 href="/privacy"
-                className="underline text-[#FAFAFA] hover:text-[#e5e5e5] transition-colors"
+                className="underline text-foreground hover:text-foreground/80 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >

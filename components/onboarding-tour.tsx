@@ -117,19 +117,19 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
   if (isWelcomeStep) {
     return (
       <Dialog open={isOpen} onOpenChange={handleSkip}>
-        <DialogContent className="bg-zinc-900 border-gray-700 text-white max-w-md">
+        <DialogContent className="bg-background border-border text-foreground max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-white">
+            <DialogTitle className="text-lg font-semibold text-foreground">
               {currentTourStep.title}
             </DialogTitle>
-            <DialogDescription className="text-gray-300 text-sm leading-relaxed">
+            <DialogDescription className="text-muted-foreground text-sm leading-relaxed">
               {currentTourStep.content}
             </DialogDescription>
           </DialogHeader>
 
           {/* Progress bar */}
           <div className="my-4">
-            <div className="flex justify-between text-xs text-gray-400 mb-2">
+            <div className="flex justify-between text-xs text-muted-foreground mb-2">
               <span>
                 Step
                 {currentStep + 1}
@@ -138,9 +138,9 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
                 {tourSteps.length}
               </span>
             </div>
-            <div className="h-1 bg-gray-700 rounded-full overflow-hidden">
+            <div className="h-1 bg-muted rounded-full overflow-hidden">
               <div
-                className="h-full bg-white transition-all duration-300"
+                className="h-full bg-primary transition-all duration-300"
                 style={{ width: `${((currentStep + 1) / tourSteps.length) * 100}%` }}
               />
             </div>
@@ -152,7 +152,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
                 variant="ghost"
                 size="sm"
                 onClick={handleSkip}
-                className="text-gray-400 cursor-pointer"
+                className="text-muted-foreground cursor-pointer"
               >
                 Skip Tour
               </Button>
@@ -160,7 +160,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
               <Button
                 size="sm"
                 onClick={handleNext}
-                className="bg-white hover:bg-gray-100 text-black cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
               >
                 Next
               </Button>
@@ -180,7 +180,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
       {/* Spotlight effect */}
       {currentTourStep.spotlight !== false && (
         <div
-          className="fixed z-[9999] border-4 border-white/30 rounded-lg pointer-events-none transition-all duration-300"
+          className="fixed z-[9999] border-4 border-primary/30 rounded-lg pointer-events-none transition-all duration-300"
           style={(() => {
             const rect = targetElement.getBoundingClientRect()
             const padding = 8
@@ -226,7 +226,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
         }}
       >
         <div
-          className={`absolute bg-zinc-900 border border-gray-700 text-white p-4 max-w-sm rounded-lg shadow-xl pointer-events-auto ${
+          className={`absolute bg-background border border-border text-foreground p-4 max-w-sm rounded-lg shadow-xl pointer-events-auto ${
             currentTourStep.position === 'top'
               ? 'bottom-full mb-3 left-1/2 transform -translate-x-1/2'
               : currentTourStep.position === 'bottom'
@@ -240,7 +240,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
         >
           {/* Arrow */}
           <div
-            className={`absolute w-2 h-2 bg-zinc-900 border-gray-700 transform rotate-45 ${
+            className={`absolute w-2 h-2 bg-background border-border transform rotate-45 ${
               currentTourStep.position === 'top'
                 ? 'top-full -mt-1 left-1/2 transform -translate-x-1/2 border-b border-r'
                 : currentTourStep.position === 'bottom'
@@ -255,17 +255,17 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
 
           <div className="space-y-3">
             <div>
-              <h3 className="text-sm font-semibold text-white mb-1">
+              <h3 className="text-sm font-semibold text-foreground mb-1">
                 {currentTourStep.title}
               </h3>
-              <p className="text-xs text-gray-300 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {currentTourStep.content}
               </p>
             </div>
 
             {/* Progress bar */}
             <div>
-              <div className="flex justify-between text-xs text-gray-400 mb-1">
+              <div className="flex justify-between text-xs text-muted-foreground mb-1">
                 <span>
                   Step
                   {' '}
@@ -276,9 +276,9 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
                   {tourSteps.length}
                 </span>
               </div>
-              <div className="h-0.5 bg-gray-700 rounded-full overflow-hidden">
+              <div className="h-0.5 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-white transition-all duration-300"
+                  className="h-full bg-primary transition-all duration-300"
                   style={{ width: `${((currentStep + 1) / tourSteps.length) * 100}%` }}
                 />
               </div>
@@ -290,7 +290,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
                 variant="ghost"
                 size="sm"
                 onClick={handleSkip}
-                className="text-gray-400 text-xs h-7 px-3 cursor-pointer"
+                className="text-muted-foreground text-xs h-7 px-3 cursor-pointer"
               >
                 Skip
               </Button>
@@ -309,7 +309,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
                 <Button
                   size="sm"
                   onClick={handleNext}
-                  className="bg-white hover:bg-gray-100 text-black text-xs h-7 px-3 cursor-pointer"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-7 px-3 cursor-pointer"
                 >
                   {isLastStep ? 'Done!' : 'Next'}
                 </Button>

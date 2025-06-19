@@ -118,10 +118,10 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                 proOptions={{
                   hideAttribution: true,
                 }}
-                className="bg-black"
+                className="bg-background"
                 nodeOrigin={[0.5, 0.5]}
                 defaultEdgeOptions={{
-                  style: { stroke: '#6b7280', strokeWidth: 2 },
+                  style: { stroke: 'hsl(var(--border))', strokeWidth: 2 },
                   animated: true,
                 }}
                 data-tour="canvas"
@@ -142,7 +142,7 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                         <Button
                           variant="outline"
                           onClick={() => setOpen(true)}
-                          className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-colors cursor-pointer"
+                          className="transition-colors cursor-pointer"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Add Block
@@ -150,7 +150,7 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>Browse and add instruction blocks to your canvas</p>
-                        <p className="text-xs text-gray-300 mt-1">18 different block types available</p>
+                        <p className="text-xs text-muted-foreground mt-1">18 different block types available</p>
                       </TooltipContent>
                     </Tooltip>
 
@@ -159,7 +159,7 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                         <Button
                           variant="outline"
                           onClick={() => setShowRecommendations(!showRecommendations)}
-                          className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 transition-colors cursor-pointer"
+                          className="transition-colors cursor-pointer"
                           data-tour="smart-suggestions"
                         >
                           <Sparkles className="h-4 w-4 mr-2" />
@@ -168,22 +168,22 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>Get AI-powered block recommendations</p>
-                        <p className="text-xs text-gray-300 mt-1">Based on your current blocks and best practices</p>
+                        <p className="text-xs text-muted-foreground mt-1">Based on your current blocks and best practices</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
                 </Panel>
 
                 <MiniMap
-                  className="border border-gray-800 rounded-lg bg-black"
-                  nodeColor="#1f2937"
-                  maskColor="rgba(0, 0, 0, 0.8)"
+                  className="border border-border rounded-lg bg-background"
+                  nodeColor="hsl(var(--muted))"
+                  maskColor="hsl(var(--background) / 0.8)"
                 />
                 <Background
                   gap={12}
                   size={1}
-                  color="#1f2937"
-                  className="bg-black"
+                  color="hsl(var(--border))"
+                  className="bg-background"
                 />
               </ReactFlow>
             </div>

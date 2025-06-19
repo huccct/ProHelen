@@ -52,7 +52,7 @@ function ResetPasswordForm() {
           {[...Array.from({ length: 4 })].map((_, i) => (
             <div
               key={i}
-              className={`h-1 flex-1 rounded-full ${i < strength ? 'bg-green-500' : 'bg-gray-700'}`}
+              className={`h-1 flex-1 rounded-full ${i < strength ? 'bg-green-500' : 'bg-muted'}`}
             />
           ))}
         </div>
@@ -60,7 +60,7 @@ function ResetPasswordForm() {
           {validations.map((validation, index) => (
             <li
               key={index}
-              className={`flex items-center gap-1 ${validation.met ? 'text-green-500' : 'text-gray-400'}`}
+              className={`flex items-center gap-1 ${validation.met ? 'text-green-500' : 'text-muted-foreground'}`}
             >
               {validation.met ? '✓' : '○'}
               {' '}
@@ -122,15 +122,15 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-black text-white">
-        <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
           <NavBar hideSignIn />
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20">
           <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
             <div className="text-center space-y-4">
               <h2 className="text-3xl font-bold">Invalid Reset Link</h2>
-              <p className="text-gray-400">This password reset link is invalid or has expired.</p>
+              <p className="text-muted-foreground">This password reset link is invalid or has expired.</p>
               <Button
                 onClick={() => router.push('/forgot-password')}
                 className="mt-4"
@@ -145,8 +145,8 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
         <NavBar hideSignIn />
       </div>
 
@@ -168,7 +168,7 @@ function ResetPasswordForm() {
                 Reset your password
               </motion.h2>
               <motion.p
-                className="text-gray-400"
+                className="text-muted-foreground"
                 variants={fadeIn}
               >
                 Please enter your new password below.
@@ -189,13 +189,13 @@ function ResetPasswordForm() {
                       placeholder="Enter your new password"
                       value={password}
                       onChange={e => setPassword(e.target.value)}
-                      className="bg-[#2a2a2a] border-gray-700 text-white pr-10 h-12"
+                      className="bg-input border-border text-foreground pr-10 h-12"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showPassword ? <IoEyeOffOutline className="h-5 w-5" /> : <IoEyeOutline className="h-5 w-5" />}
                     </button>
@@ -212,13 +212,13 @@ function ResetPasswordForm() {
                       placeholder="Confirm your new password"
                       value={confirmPassword}
                       onChange={e => setConfirmPassword(e.target.value)}
-                      className="bg-[#2a2a2a] border-gray-700 text-white pr-10 h-12"
+                      className="bg-input border-border text-foreground pr-10 h-12"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showConfirmPassword ? <IoEyeOffOutline className="h-5 w-5" /> : <IoEyeOutline className="h-5 w-5" />}
                     </button>
@@ -230,19 +230,19 @@ function ResetPasswordForm() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-white text-black hover:bg-gray-100 h-12 mt-6 cursor-pointer"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Resetting password...' : 'Reset password'}
                 </Button>
               </form>
 
-              <div className="text-center text-sm text-gray-400">
+              <div className="text-center text-sm text-muted-foreground">
                 Remember your password?
                 {' '}
                 <button
                   type="button"
-                  className="text-[#FAFAFA] hover:underline cursor-pointer"
+                  className="text-foreground hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-in')}
                 >
                   Sign in
@@ -259,10 +259,10 @@ function ResetPasswordForm() {
 export default function ResetPassword() {
   return (
     <Suspense fallback={(
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-2">Loading...</h2>
-          <p className="text-gray-400">Please wait while we verify your reset link.</p>
+          <p className="text-muted-foreground">Please wait while we verify your reset link.</p>
         </div>
       </div>
     )}

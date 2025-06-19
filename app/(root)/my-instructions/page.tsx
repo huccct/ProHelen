@@ -17,8 +17,8 @@ export default function MyInstructionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
         <NavBar />
       </div>
       <main className="container mx-auto px-4 py-8 pt-28">
@@ -27,7 +27,7 @@ export default function MyInstructionsPage() {
             <h1 className="text-3xl font-bold">My Instructions</h1>
             <Button
               onClick={() => router.push('/builder')}
-              className="bg-white text-black font-semibold shadow-sm hover:bg-gray-100 cursor-pointer"
+              className="bg-primary text-primary-foreground font-semibold shadow-sm hover:bg-primary/90 cursor-pointer"
             >
               Create New Instruction
             </Button>
@@ -35,11 +35,11 @@ export default function MyInstructionsPage() {
 
           <div className="flex items-center relative">
             <div className="relative w-full max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <input
                 type="text"
                 placeholder="Search instructions..."
-                className="bg-zinc-900 border border-gray-800 rounded-md py-2 pl-10 pr-4 w-full focus:outline-none focus:ring-1 focus:ring-gray-200 text-white"
+                className="bg-card border border-border rounded-md py-2 pl-10 pr-4 w-full focus:outline-none focus:ring-1 focus:ring-ring text-foreground"
                 value={searchQuery}
                 onChange={handleSearch}
               />
@@ -48,8 +48,8 @@ export default function MyInstructionsPage() {
               <Button
                 variant="outline"
                 onClick={() => setSortBy('created')}
-                className={`border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer ${
-                  sortBy === 'created' ? 'bg-zinc-800 border-gray-500' : ''
+                className={`cursor-pointer ${
+                  sortBy === 'created' ? 'bg-muted border-border' : ''
                 }`}
               >
                 Date Created
@@ -57,8 +57,8 @@ export default function MyInstructionsPage() {
               <Button
                 variant="outline"
                 onClick={() => setSortBy('usage')}
-                className={`border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer ${
-                  sortBy === 'usage' ? 'bg-zinc-800 border-gray-500' : ''
+                className={`cursor-pointer ${
+                  sortBy === 'usage' ? 'bg-muted border-border' : ''
                 }`}
               >
                 Most Used

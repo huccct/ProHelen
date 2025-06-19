@@ -80,8 +80,8 @@ export default function SignIn() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
         <NavBar hideSignIn />
       </div>
 
@@ -103,7 +103,7 @@ export default function SignIn() {
                 Welcome Back
               </motion.h2>
               <motion.p
-                className="text-gray-400"
+                className="text-muted-foreground"
                 variants={fadeIn}
               >
                 Sign in to continue building your AI assistant
@@ -123,7 +123,7 @@ export default function SignIn() {
                     placeholder="Enter your email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="bg-[#2a2a2a] border-gray-700 text-white h-12"
+                    className="bg-input border-border text-foreground h-12"
                     required
                   />
                 </div>
@@ -132,7 +132,7 @@ export default function SignIn() {
                     <Label htmlFor="password">Password</Label>
                     <button
                       type="button"
-                      className="text-sm text-[#FAFAFA] hover:underline cursor-pointer"
+                      className="text-sm text-foreground hover:underline cursor-pointer"
                       onClick={() => {
                         router.push('/forgot-password')
                       }}
@@ -147,13 +147,13 @@ export default function SignIn() {
                       placeholder="Enter your password"
                       value={password}
                       onChange={e => setPassword(e.target.value)}
-                      className="bg-[#2a2a2a] border-gray-700 text-white pr-10 h-12"
+                      className="bg-input border-border text-foreground pr-10 h-12"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showPassword ? <IoEyeOffOutline className="h-5 w-5" /> : <IoEyeOutline className="h-5 w-5" />}
                     </button>
@@ -162,7 +162,7 @@ export default function SignIn() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-white text-black hover:bg-gray-100 h-12 mt-6 cursor-pointer"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Signing in...' : 'Sign in'}
@@ -171,10 +171,10 @@ export default function SignIn() {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-800"></div>
+                  <div className="w-full border-t border-border"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-black text-gray-400">Or continue with</span>
+                  <span className="px-2 bg-background text-muted-foreground">Or continue with</span>
                 </div>
               </div>
 
@@ -182,7 +182,7 @@ export default function SignIn() {
                 <motion.div variants={buttonVariants} whileHover="hover">
                   <Button
                     variant="outline"
-                    className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
+                    className="w-full h-12 cursor-pointer"
                     onClick={() => handleSocialSignIn('google')}
                   >
                     <FcGoogle className="h-5 w-5" />
@@ -191,7 +191,7 @@ export default function SignIn() {
                 <motion.div variants={buttonVariants} whileHover="hover">
                   <Button
                     variant="outline"
-                    className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
+                    className="w-full h-12 cursor-pointer"
                     onClick={() => handleSocialSignIn('github')}
                   >
                     <FaGithub className="h-5 w-5" />
@@ -200,7 +200,7 @@ export default function SignIn() {
                 <motion.div variants={buttonVariants} whileHover="hover">
                   <Button
                     variant="outline"
-                    className="w-full h-12 bg-white/10 text-white hover:bg-white/20 border border-gray-700 cursor-pointer"
+                    className="w-full h-12 cursor-pointer"
                     onClick={() => handleSocialSignIn('azure-ad')}
                   >
                     <FaMicrosoft className="h-5 w-5" />
@@ -208,12 +208,12 @@ export default function SignIn() {
                 </motion.div>
               </div>
 
-              <div className="text-center text-sm text-gray-400">
+              <div className="text-center text-sm text-muted-foreground">
                 Don't have an account?
                 {' '}
                 <button
                   type="button"
-                  className="text-[#FAFAFA] hover:underline cursor-pointer"
+                  className="text-foreground hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-up')}
                 >
                   Sign up
@@ -222,14 +222,14 @@ export default function SignIn() {
             </motion.div>
 
             <motion.p
-              className="text-center text-sm text-gray-500"
+              className="text-center text-sm text-muted-foreground"
               variants={fadeIn}
             >
               By continuing, you agree to our
               {' '}
               <a
                 href="/terms"
-                className="underline text-[#FAFAFA] hover:text-[#e5e5e5] transition-colors"
+                className="underline text-foreground hover:text-foreground/80 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -240,7 +240,7 @@ export default function SignIn() {
               {' '}
               <a
                 href="/privacy"
-                className="underline text-[#FAFAFA] hover:text-[#e5e5e5] transition-colors"
+                className="underline text-foreground hover:text-foreground/80 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >

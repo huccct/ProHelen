@@ -52,13 +52,13 @@ export default function TemplateDetailPage({ params }: { params: any }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-black text-white">
-        <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
           <NavBar />
         </div>
         <main className="container mx-auto px-4 py-8 pt-28">
           <div className="text-center py-12">
-            <p className="text-red-400 mb-4">{error}</p>
+            <p className="text-destructive mb-4">{error}</p>
             <Button onClick={() => window.location.reload()} variant="outline">
               Try Again
             </Button>
@@ -69,8 +69,8 @@ export default function TemplateDetailPage({ params }: { params: any }) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800/20">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
         <NavBar />
       </div>
 
@@ -78,7 +78,7 @@ export default function TemplateDetailPage({ params }: { params: any }) {
         {loading
           ? (
               <div className="flex items-center justify-center h-64">
-                <div className="text-gray-400">Loading template...</div>
+                <div className="text-muted-foreground">Loading template...</div>
               </div>
             )
           : template
@@ -88,25 +88,25 @@ export default function TemplateDetailPage({ params }: { params: any }) {
                     <div>
                       <button
                         onClick={() => router.back()}
-                        className="flex items-center text-gray-400 hover:text-white mb-3 transition-colors cursor-pointer"
+                        className="flex items-center text-muted-foreground hover:text-foreground mb-3 transition-colors cursor-pointer"
                       >
                         <ArrowLeft className="h-4 w-4 mr-1" />
                         Back to templates
                       </button>
                       <h1 className="text-3xl font-bold">{template.title}</h1>
-                      <p className="text-gray-400 mt-2">{template.category}</p>
+                      <p className="text-muted-foreground mt-2">{template.category}</p>
                     </div>
 
                     <div className="flex space-x-3">
                       <Button
                         variant="outline"
-                        className="border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer"
+                        className="cursor-pointer"
                         onClick={() => window.open(`mailto:?subject=Check out this template&body=I found this great template on ProHelen: ${template.title}`)}
                       >
                         Share
                       </Button>
                       <Button
-                        className="bg-white text-black hover:bg-gray-100 cursor-pointer"
+                        className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
                         onClick={() => router.push(`/builder?template=${template.id}`)}
                       >
                         Use Template

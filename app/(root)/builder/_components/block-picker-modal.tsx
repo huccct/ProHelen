@@ -294,14 +294,14 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-black border-gray-800 text-white sm:max-w-[800px] max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="bg-background border-border text-foreground sm:max-w-[800px] max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-gray-200 text-xl">Add Instruction Block</DialogTitle>
-          <p className="text-gray-400 text-sm">Choose a block type to add to your prompt</p>
+          <DialogTitle className="text-foreground text-xl">Add Instruction Block</DialogTitle>
+          <p className="text-muted-foreground text-sm">Choose a block type to add to your prompt</p>
         </DialogHeader>
 
         {/* Category Filter */}
-        <div className="relative border-b border-gray-800 pb-2">
+        <div className="relative border-b border-border pb-2">
           <div
             ref={scrollContainerRef}
             className="flex gap-2 overflow-x-auto scroll-smooth custom-scroll"
@@ -319,8 +319,8 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
                 onClick={() => setSelectedCategory(category.id)}
                 className={`flex items-center gap-2 whitespace-nowrap flex-shrink-0 cursor-pointer ${
                   selectedCategory === category.id
-                    ? 'bg-white text-black hover:bg-gray-200'
-                    : 'text-gray-400 hover:text-white hover:bg-zinc-800'
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
                 {category.icon}
@@ -334,8 +334,8 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
             <>
               <button
                 onClick={() => scroll('left')}
-                className={`cursor-pointer absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-black via-black/80 to-transparent flex items-center justify-center text-gray-400 hover:text-white hover:bg-zinc-800/50 transition-all duration-200 ease-out z-10 rounded-l transform hover:scale-110 active:scale-95 active:bg-zinc-700/70 ${
-                  !canScrollLeft ? 'opacity-30 cursor-not-allowed' : 'opacity-80 hover:opacity-100 hover:shadow-lg hover:shadow-white/10'
+                className={`cursor-pointer absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-background via-background/80 to-transparent flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 ease-out z-10 rounded-l transform hover:scale-110 active:scale-95 active:bg-muted/70 ${
+                  !canScrollLeft ? 'opacity-30 cursor-not-allowed' : 'opacity-80 hover:opacity-100 hover:shadow-lg hover:shadow-foreground/10'
                 }`}
                 disabled={!canScrollLeft}
               >
@@ -343,8 +343,8 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
               </button>
               <button
                 onClick={() => scroll('right')}
-                className={`cursor-pointer absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-black via-black/80 to-transparent flex items-center justify-center text-gray-400 hover:text-white hover:bg-zinc-800/50 transition-all duration-200 ease-out z-10 rounded-r transform hover:scale-110 active:scale-95 active:bg-zinc-700/70 ${
-                  !canScrollRight ? 'opacity-30 cursor-not-allowed' : 'opacity-80 hover:opacity-100 hover:shadow-lg hover:shadow-white/10'
+                className={`cursor-pointer absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-background via-background/80 to-transparent flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 ease-out z-10 rounded-r transform hover:scale-110 active:scale-95 active:bg-muted/70 ${
+                  !canScrollRight ? 'opacity-30 cursor-not-allowed' : 'opacity-80 hover:opacity-100 hover:shadow-lg hover:shadow-foreground/10'
                 }`}
                 disabled={!canScrollRight}
               >
@@ -383,7 +383,7 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
           {filteredBlocks.map(block => (
             <div
               key={block.type}
-              className="group relative overflow-hidden flex flex-col items-center gap-3 p-4 border border-gray-800 rounded-xl hover:bg-zinc-800/50 hover:border-gray-600 cursor-pointer transition-all duration-300 transform hover:scale-105"
+              className="group relative overflow-hidden flex flex-col items-center gap-3 p-4 border border-border rounded-xl hover:bg-muted/50 hover:border-border/80 cursor-pointer transition-all duration-300 transform hover:scale-105"
               draggable
               onDragStart={e => handleDragStart(e, block.type)}
               onClick={() => handleClick(block.type)}
@@ -392,18 +392,18 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
               <div className={`absolute inset-0 bg-gradient-to-br ${block.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
 
               {/* Icon */}
-              <div className={`flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br ${block.color} bg-opacity-10 border border-gray-700 group-hover:border-gray-500 transition-all duration-300`}>
-                <div className="text-gray-400 group-hover:text-white transition-colors duration-300">
+              <div className={`flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br ${block.color} bg-opacity-10 border border-border group-hover:border-border/80 transition-all duration-300`}>
+                <div className="text-muted-foreground group-hover:text-foreground transition-colors duration-300">
                   {block.icon}
                 </div>
               </div>
 
               {/* Content */}
               <div className="text-center space-y-1">
-                <h3 className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors duration-300">
+                <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors duration-300">
                   {block.label}
                 </h3>
-                <p className="text-xs text-gray-400 leading-tight">
+                <p className="text-xs text-muted-foreground leading-tight">
                   {block.description}
                 </p>
               </div>
@@ -412,7 +412,7 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-50 transition-opacity duration-300">
                 <div className="grid grid-cols-2 gap-0.5">
                   {[...Array.from({ length: 4 })].map((_, i) => (
-                    <div key={i} className="w-1 h-1 bg-gray-400 rounded-full" />
+                    <div key={i} className="w-1 h-1 bg-muted-foreground rounded-full" />
                   ))}
                 </div>
               </div>
@@ -421,8 +421,8 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
         </div>
 
         {/* Help Text */}
-        <div className="px-4 py-3 border-t border-gray-800 bg-zinc-900/50">
-          <p className="text-xs text-gray-400 text-center">
+        <div className="px-4 py-3 border-t border-border bg-muted/50">
+          <p className="text-xs text-muted-foreground text-center">
             💡 Click to add instantly or drag to position on canvas
           </p>
         </div>

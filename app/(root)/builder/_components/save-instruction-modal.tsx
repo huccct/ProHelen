@@ -92,13 +92,13 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-zinc-900 border-zinc-700">
+      <DialogContent className="sm:max-w-[425px] bg-background border-border">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-white">Save Instruction</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-foreground">Save Instruction</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-white">
+            <Label htmlFor="title" className="text-foreground">
               Title *
             </Label>
             <Input
@@ -106,13 +106,13 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
               placeholder="Enter instruction title..."
               value={formData.title}
               onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className="bg-zinc-800 border-zinc-700 text-white"
+              className="bg-card border-border text-foreground"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-white">
+            <Label htmlFor="description" className="text-foreground">
               Description
             </Label>
             <Textarea
@@ -120,25 +120,25 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
               placeholder="Describe what this instruction does..."
               value={formData.description}
               onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="bg-zinc-800 border-zinc-700 text-white resize-none"
+              className="bg-card border-border text-foreground resize-none"
               rows={3}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category" className="text-white">
+            <Label htmlFor="category" className="text-foreground">
               Category
             </Label>
             <Select
               value={formData.category}
               onValueChange={value => setFormData(prev => ({ ...prev, category: value }))}
             >
-              <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+              <SelectTrigger className="bg-card border-border text-foreground">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-zinc-800 border-zinc-700">
+              <SelectContent className="bg-card border-border">
                 {categories.map(category => (
-                  <SelectItem key={category} value={category} className="text-white hover:bg-zinc-700">
+                  <SelectItem key={category} value={category} className="text-foreground hover:bg-muted">
                     {category}
                   </SelectItem>
                 ))}
@@ -147,7 +147,7 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="tags" className="text-white">
+            <Label htmlFor="tags" className="text-foreground">
               Tags
             </Label>
             <div className="flex gap-2">
@@ -157,13 +157,13 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
                 value={tagInput}
                 onChange={e => setTagInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="bg-zinc-800 border-zinc-700 text-white flex-1"
+                className="bg-card border-border text-foreground flex-1"
               />
               <Button
                 type="button"
                 onClick={handleAddTag}
                 variant="outline"
-                className="border-zinc-700 text-white hover:bg-zinc-800 hover:text-white cursor-pointer"
+                className="cursor-pointer"
               >
                 Add
               </Button>
@@ -173,13 +173,13 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
                 {formData.tags.map(tag => (
                   <span
                     key={tag}
-                    className="bg-zinc-800 text-white px-2 py-1 rounded-full text-sm flex items-center gap-1"
+                    className="bg-card text-foreground px-2 py-1 rounded-full text-sm flex items-center gap-1 border border-border"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="text-gray-400 hover:text-white ml-1"
+                      className="text-muted-foreground hover:text-foreground ml-1"
                     >
                       ×
                     </button>
@@ -195,9 +195,9 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
               id="favorite"
               checked={formData.isFavorite}
               onChange={e => setFormData(prev => ({ ...prev, isFavorite: e.target.checked }))}
-              className="rounded border-zinc-700 bg-zinc-800"
+              className="rounded border-border bg-card"
             />
-            <Label htmlFor="favorite" className="text-white text-sm">
+            <Label htmlFor="favorite" className="text-foreground text-sm">
               Add to favorites
             </Label>
           </div>
@@ -207,14 +207,14 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-zinc-700 text-white hover:bg-zinc-800 hover:text-white cursor-pointer"
+              className="cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={!formData.title.trim() || isLoading}
-              className="bg-white text-black hover:bg-gray-100 cursor-pointer"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
             >
               {isLoading ? 'Saving...' : 'Save Instruction'}
             </Button>

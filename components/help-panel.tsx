@@ -94,18 +94,18 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[80vh] bg-zinc-900 border-gray-700 text-white flex flex-col [&>button]:hidden">
-        <DialogHeader className="pb-4 border-b border-gray-700 flex-shrink-0">
+      <DialogContent className="max-w-4xl max-h-[80vh] bg-background border-border text-foreground flex flex-col [&>button]:hidden">
+        <DialogHeader className="pb-4 border-b border-border flex-shrink-0">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-semibold text-white flex items-center gap-2">
-              <HelpCircle className="h-5 w-5 text-white" />
+            <DialogTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
+              <HelpCircle className="h-5 w-5 text-foreground" />
               ProHelen Help Center
             </DialogTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer"
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -120,8 +120,8 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               className={cn(
                 'flex items-center gap-2 cursor-pointer',
                 activeTab === 'guide'
-                  ? 'bg-white text-black hover:bg-gray-100'
-                  : 'text-gray-400 hover:text-white hover:bg-zinc-800',
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted',
               )}
             >
               <Book className="h-4 w-4" />
@@ -134,8 +134,8 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               className={cn(
                 'flex items-center gap-2 cursor-pointer',
                 activeTab === 'shortcuts'
-                  ? 'bg-white text-black hover:bg-gray-100'
-                  : 'text-gray-400 hover:text-white hover:bg-zinc-800',
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted',
               )}
             >
               <Keyboard className="h-4 w-4" />
@@ -148,8 +148,8 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               className={cn(
                 'flex items-center gap-2 cursor-pointer',
                 activeTab === 'faq'
-                  ? 'bg-white text-black hover:bg-gray-100'
-                  : 'text-gray-400 hover:text-white hover:bg-zinc-800',
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted',
               )}
             >
               <MessageCircle className="h-4 w-4" />
@@ -160,15 +160,15 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
 
         <div className="flex-1 overflow-y-auto p-6 min-h-0 scrollbar">
           {/* Take Tour CTA */}
-          <div className="mb-6 p-4 bg-zinc-800 border border-gray-700 rounded-lg">
+          <div className="mb-6 p-4 bg-muted border border-border rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium text-white mb-1">New to ProHelen?</h4>
-                <p className="text-sm text-gray-300">Take a guided tour to learn the basics in 2 minutes!</p>
+                <h4 className="font-medium text-foreground mb-1">New to ProHelen?</h4>
+                <p className="text-sm text-muted-foreground">Take a guided tour to learn the basics in 2 minutes!</p>
               </div>
               <Button
                 onClick={onStartTour}
-                className="bg-white hover:bg-gray-100 text-black flex items-center gap-2 cursor-pointer whitespace-nowrap"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 cursor-pointer whitespace-nowrap"
               >
                 <PlayCircle className="h-4 w-4" />
                 Start Tour
@@ -180,26 +180,26 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
           {activeTab === 'guide' && (
             <div className="space-y-8">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Understanding Blocks</h3>
-                <p className="text-gray-300 mb-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Understanding Blocks</h3>
+                <p className="text-muted-foreground mb-6">
                   Blocks are the building pieces of your AI instructions. Each block serves a specific purpose and can be combined to create powerful, customized prompts.
                 </p>
 
                 <div className="space-y-6">
                   {blockGuide.map(category => (
-                    <div key={category.category} className="border border-gray-700 rounded-lg p-4 bg-zinc-800/50">
-                      <h4 className="font-medium text-white mb-2">{category.category}</h4>
-                      <p className="text-sm text-gray-400 mb-4">{category.description}</p>
+                    <div key={category.category} className="border border-border rounded-lg p-4 bg-muted/50">
+                      <h4 className="font-medium text-foreground mb-2">{category.category}</h4>
+                      <p className="text-sm text-muted-foreground mb-4">{category.description}</p>
                       <div className="space-y-3">
                         {category.blocks.map(block => (
                           <div key={block.name} className="flex gap-3">
-                            <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0" />
+                            <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
                             <div>
-                              <span className="font-medium text-white">
+                              <span className="font-medium text-foreground">
                                 {block.name}
                                 :
                               </span>
-                              <span className="text-gray-300 ml-2">{block.use}</span>
+                              <span className="text-muted-foreground ml-2">{block.use}</span>
                             </div>
                           </div>
                         ))}
@@ -210,27 +210,27 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Best Practices</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Best Practices</h3>
                 <div className="space-y-3">
                   <div className="flex gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-gray-300">Start with a Role Definition block to establish the AI's perspective</p>
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                    <p className="text-muted-foreground">Start with a Role Definition block to establish the AI's perspective</p>
                   </div>
                   <div className="flex gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-gray-300">Use Context Setting early to provide necessary background information</p>
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                    <p className="text-muted-foreground">Use Context Setting early to provide necessary background information</p>
                   </div>
                   <div className="flex gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-gray-300">Add Output Format blocks to ensure consistent response structure</p>
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                    <p className="text-muted-foreground">Add Output Format blocks to ensure consistent response structure</p>
                   </div>
                   <div className="flex gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-gray-300">Test your instructions frequently using the Preview panel</p>
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                    <p className="text-muted-foreground">Test your instructions frequently using the Preview panel</p>
                   </div>
                   <div className="flex gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-gray-300">Use Smart Suggestions to discover complementary blocks</p>
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
+                    <p className="text-muted-foreground">Use Smart Suggestions to discover complementary blocks</p>
                   </div>
                 </div>
               </div>
@@ -241,16 +241,16 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
           {activeTab === 'shortcuts' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Keyboard Shortcuts</h3>
-                <p className="text-gray-300 mb-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Keyboard Shortcuts</h3>
+                <p className="text-muted-foreground mb-6">
                   Speed up your workflow with these keyboard shortcuts.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {shortcuts.map(shortcut => (
-                    <div key={shortcut.key} className="flex items-center justify-between p-3 bg-zinc-800 border border-gray-700 rounded-lg">
-                      <span className="text-gray-300">{shortcut.description}</span>
-                      <kbd className="px-2 py-1 bg-zinc-700 border border-gray-600 rounded text-sm font-mono text-gray-200">
+                    <div key={shortcut.key} className="flex items-center justify-between p-3 bg-muted border border-border rounded-lg">
+                      <span className="text-muted-foreground">{shortcut.description}</span>
+                      <kbd className="px-2 py-1 bg-card border border-border rounded text-sm font-mono text-foreground">
                         {shortcut.key}
                       </kbd>
                     </div>
@@ -259,23 +259,23 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Mouse Actions</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Mouse Actions</h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-zinc-800 border border-gray-700 rounded-lg">
-                    <span className="text-gray-300">Pan canvas</span>
-                    <span className="text-sm text-gray-400">Click and drag on empty space</span>
+                  <div className="flex items-center justify-between p-3 bg-muted border border-border rounded-lg">
+                    <span className="text-muted-foreground">Pan canvas</span>
+                    <span className="text-sm text-muted-foreground/80">Click and drag on empty space</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-zinc-800 border border-gray-700 rounded-lg">
-                    <span className="text-gray-300">Connect blocks</span>
-                    <span className="text-sm text-gray-400">Drag from output to input handle</span>
+                  <div className="flex items-center justify-between p-3 bg-muted border border-border rounded-lg">
+                    <span className="text-muted-foreground">Connect blocks</span>
+                    <span className="text-sm text-muted-foreground/80">Drag from output to input handle</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-zinc-800 border border-gray-700 rounded-lg">
-                    <span className="text-gray-300">Select multiple blocks</span>
-                    <span className="text-sm text-gray-400">Ctrl + click</span>
+                  <div className="flex items-center justify-between p-3 bg-muted border border-border rounded-lg">
+                    <span className="text-muted-foreground">Select multiple blocks</span>
+                    <span className="text-sm text-muted-foreground/80">Ctrl + click</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-zinc-800 border border-gray-700 rounded-lg">
-                    <span className="text-gray-300">Zoom</span>
-                    <span className="text-sm text-gray-400">Mouse wheel or zoom controls</span>
+                  <div className="flex items-center justify-between p-3 bg-muted border border-border rounded-lg">
+                    <span className="text-muted-foreground">Zoom</span>
+                    <span className="text-sm text-muted-foreground/80">Mouse wheel or zoom controls</span>
                   </div>
                 </div>
               </div>
@@ -286,31 +286,31 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
           {activeTab === 'faq' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Frequently Asked Questions</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Frequently Asked Questions</h3>
                 <div className="space-y-4">
                   {faqs.map((faq, index) => (
-                    <div key={index} className="border border-gray-700 bg-zinc-800/50 rounded-lg p-4">
-                      <h4 className="font-medium text-white mb-2">{faq.question}</h4>
-                      <p className="text-gray-300 text-sm leading-relaxed">{faq.answer}</p>
+                    <div key={index} className="border border-border bg-muted/50 rounded-lg p-4">
+                      <h4 className="font-medium text-foreground mb-2">{faq.question}</h4>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{faq.answer}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-zinc-800 border border-gray-700 rounded-lg p-4">
-                <h4 className="font-medium text-white mb-2">Still need help?</h4>
-                <p className="text-sm text-gray-300 mb-3">
+              <div className="bg-muted border border-border rounded-lg p-4">
+                <h4 className="font-medium text-foreground mb-2">Still need help?</h4>
+                <p className="text-sm text-muted-foreground mb-3">
                   Can't find what you're looking for? We're here to help!
                 </p>
                 <div className="flex gap-2">
-                  <Button size="sm" className="bg-white hover:bg-gray-100 text-black cursor-pointer">
+                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer">
                     Contact Support
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={onStartTour}
-                    className="border-gray-600 text-gray-300 hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer"
+                    className="cursor-pointer"
                   >
                     Take Tour Again
                   </Button>

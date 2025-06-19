@@ -1,6 +1,7 @@
 'use client'
 
 import logo from '@/assets/icons/logo.png'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -31,11 +32,11 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
   }
 
   return (
-    <nav className="border-b border-gray-800 text-white">
+    <nav className="border-b border-border bg-background text-foreground transition-colors duration-300">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div
-            className="flex items-center text-xl font-bold cursor-pointer"
+            className="flex items-center text-xl font-bold cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => router.push('/')}
           >
             <Image
@@ -43,12 +44,13 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
               alt="ProHelen Logo"
               width={32}
               height={32}
-              className="mr-2 filter invert dark:invert-0"
+              className="mr-2 filter invert-0 dark:invert"
             />
             ProHelen
           </div>
 
-          <div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
             {session
               ? (
                   <DropdownMenu>
@@ -60,35 +62,35 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
                         </div>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 bg-zinc-900 border-gray-800">
-                      <DropdownMenuLabel className="text-gray-400">
+                    <DropdownMenuContent align="end" className="w-56 bg-popover border-border">
+                      <DropdownMenuLabel className="text-muted-foreground">
                         {session.user?.name || 'User'}
                       </DropdownMenuLabel>
-                      <DropdownMenuSeparator className="bg-gray-800" />
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        className="text-gray-300 hover:text-white hover:bg-white/[0.02] cursor-pointer flex items-center gap-2"
+                        className="cursor-pointer flex items-center gap-2"
                         onClick={() => router.push('/builder')}
                       >
                         <Wrench className="w-4 h-4" />
                         Builder
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="text-gray-300 hover:text-white hover:bg-white/[0.02] cursor-pointer flex items-center gap-2"
+                        className="cursor-pointer flex items-center gap-2"
                         onClick={() => router.push('/templates')}
                       >
                         <Files className="w-4 h-4" />
                         Templates
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="text-gray-300 hover:text-white hover:bg-white/[0.02] cursor-pointer flex items-center gap-2"
+                        className="cursor-pointer flex items-center gap-2"
                         onClick={() => router.push('/my-instructions')}
                       >
                         <BookText className="w-4 h-4" />
                         My Instructions
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator className="bg-gray-800" />
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        className="text-gray-300 hover:text-white hover:bg-white/[0.02] cursor-pointer flex items-center gap-2"
+                        className="cursor-pointer flex items-center gap-2"
                         onClick={handleSignOut}
                       >
                         <LogOut className="w-4 h-4" />
@@ -100,7 +102,7 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
               : !hideSignIn && (
                   <Button
                     onClick={() => router.push('/sign-in')}
-                    className="bg-white text-black hover:bg-gray-100 cursor-pointer"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
                   >
                     Sign in
                   </Button>

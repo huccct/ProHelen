@@ -83,41 +83,41 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-900 border-gray-700 text-white max-w-lg">
+      <DialogContent className="bg-background border-border text-foreground max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Save as Template</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Title</label>
+            <label className="block text-sm font-medium text-foreground mb-2">Title</label>
             <input
               type="text"
               value={formData.title}
               onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full px-3 py-2 bg-black border border-gray-700 rounded-lg text-white focus:outline-none focus:border-gray-500"
+              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-border/80"
               placeholder="Enter template title..."
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Description</label>
+            <label className="block text-sm font-medium text-foreground mb-2">Description</label>
             <textarea
               value={formData.description}
               onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-3 py-2 bg-black border border-gray-700 rounded-lg text-white focus:outline-none focus:border-gray-500 h-20 resize-none"
+              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-border/80 h-20 resize-none"
               placeholder="Describe what this template does..."
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Category</label>
+            <label className="block text-sm font-medium text-foreground mb-2">Category</label>
             <select
               value={formData.category}
               onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
-              className="w-full px-3 py-2 bg-black border border-gray-700 rounded-lg text-white focus:outline-none focus:border-gray-500"
+              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-border/80"
               disabled={isLoading}
             >
               {categories.map(category => (
@@ -127,21 +127,21 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Tags</label>
+            <label className="block text-sm font-medium text-foreground mb-2">Tags</label>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
                 value={tagInput}
                 onChange={e => setTagInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="flex-1 px-3 py-2 bg-black border border-gray-700 rounded-lg text-white focus:outline-none focus:border-gray-500"
+                className="flex-1 px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-border/80"
                 placeholder="Add tags..."
                 disabled={isLoading}
               />
               <Button
                 type="button"
                 onClick={addTag}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600"
+                className="px-4 py-2 bg-muted hover:bg-muted/80"
                 disabled={isLoading}
               >
                 Add
@@ -151,7 +151,7 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
               {formData.tags.map(tag => (
                 <span
                   key={tag}
-                  className="inline-flex items-center px-2 py-1 bg-gray-700 text-xs rounded cursor-pointer hover:bg-gray-600"
+                  className="inline-flex items-center px-2 py-1 bg-muted text-xs rounded cursor-pointer hover:bg-muted/80"
                   onClick={() => removeTag(tag)}
                 >
                   {tag}
@@ -171,7 +171,7 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
               className="w-4 h-4"
               disabled={isLoading}
             />
-            <label htmlFor="isPublic" className="text-sm">
+            <label htmlFor="isPublic" className="text-sm text-foreground">
               Make this template public (others can discover and use it)
             </label>
           </div>
@@ -181,14 +181,14 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="flex-1 border-gray-700 text-white hover:bg-gray-800"
+              className="flex-1"
               disabled={isLoading}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-white text-black hover:bg-gray-100"
+              className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={isLoading}
             >
               {isLoading ? 'Saving...' : 'Save Template'}

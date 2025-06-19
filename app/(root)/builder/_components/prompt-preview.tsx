@@ -201,12 +201,12 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
 
   return (
     <aside className={className} style={style} data-tour="preview-panel">
-      <div className="p-4 flex flex-col h-full bg-zinc-950/50">
+      <div className="p-4 flex flex-col h-full bg-card/50">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-medium text-white">Prompt Preview</h3>
-            <p className="text-xs text-gray-400 mt-1">
+            <h3 className="text-sm font-medium text-foreground">Prompt Preview</h3>
+            <p className="text-xs text-muted-foreground mt-1">
               {nodeCount}
               {' '}
               block
@@ -218,15 +218,15 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
         </div>
 
         {/* Format Tabs */}
-        <div className="flex gap-1 mb-4 p-1 bg-zinc-900 rounded-lg">
+        <div className="flex gap-1 mb-4 p-1 bg-muted rounded-lg">
           {formatButtons.map(button => (
             <button
               key={button.id}
               onClick={() => setCurrentFormat(button.id)}
               className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded transition-all duration-200 cursor-pointer ${
                 currentFormat === button.id
-                  ? 'bg-white text-black font-medium'
-                  : 'text-gray-400 hover:text-white hover:bg-zinc-800'
+                  ? 'bg-primary text-primary-foreground font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               }`}
             >
               {button.icon}
@@ -237,16 +237,16 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
 
         {/* Content */}
         <div className="flex-1 mb-4">
-          <div className="relative h-full border border-gray-800 rounded-lg bg-black">
+          <div className="relative h-full border border-border rounded-lg bg-background">
             <div className="absolute inset-0 p-4 overflow-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              <pre className="text-xs text-gray-300 leading-relaxed whitespace-pre-wrap font-mono">
+              <pre className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-mono">
                 {currentContent}
               </pre>
             </div>
 
             {/* Character count */}
             {hasContent && (
-              <div className="absolute bottom-2 right-2 px-2 py-1 bg-zinc-800 rounded text-xs text-gray-400">
+              <div className="absolute bottom-2 right-2 px-2 py-1 bg-muted rounded text-xs text-muted-foreground">
                 {currentContent.length}
                 {' '}
                 chars
@@ -263,7 +263,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               size="sm"
               onClick={handleCopy}
               disabled={!hasContent}
-              className="bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Copy className="h-3 w-3 mr-1" />
               Copy
@@ -273,7 +273,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               size="sm"
               onClick={handleExport}
               disabled={!hasContent}
-              className="bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="h-3 w-3 mr-1" />
               Export
@@ -285,7 +285,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             size="sm"
             onClick={handleTest}
             disabled={!hasContent}
-            className="w-full bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Play className="h-3 w-3 mr-1" />
             Test
@@ -296,7 +296,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             size="sm"
             onClick={handleSave}
             disabled={!hasContent}
-            className="w-full bg-transparent border-gray-700 text-white hover:text-white hover:border-gray-500 hover:bg-zinc-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-3 w-3 mr-1" />
             Save
@@ -305,8 +305,8 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
 
         {/* Help Text */}
         {!hasContent && (
-          <div className="mt-4 p-3 bg-zinc-900/50 rounded-lg border border-gray-800">
-            <p className="text-xs text-gray-400 text-center">
+          <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-border">
+            <p className="text-xs text-muted-foreground text-center">
               💡 Add instruction blocks to your canvas to see the generated prompt here
             </p>
           </div>

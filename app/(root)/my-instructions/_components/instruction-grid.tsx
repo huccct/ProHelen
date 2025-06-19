@@ -80,10 +80,10 @@ function ConfirmModal({
 }: ConfirmModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-zinc-900 border-gray-800 text-white">
+      <DialogContent className="bg-card border-border text-foreground">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-muted-foreground">
             {description}
           </DialogDescription>
         </DialogHeader>
@@ -299,15 +299,15 @@ export function InstructionGrid({
       <div className="space-y-8">
         <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
           {[...Array.from({ length: 6 })].map((_, i) => (
-            <Card key={i} className="bg-zinc-900 border-gray-800 animate-pulse">
+            <Card key={i} className="bg-card border-border animate-pulse">
               <CardHeader className="p-6">
-                <div className="h-6 bg-gray-700 rounded mb-2" />
-                <div className="h-4 bg-gray-700 rounded mb-4" />
+                <div className="h-6 bg-muted rounded mb-2" />
+                <div className="h-4 bg-muted rounded mb-4" />
                 <div className="flex gap-2 mb-4">
-                  <div className="h-6 w-16 bg-gray-700 rounded" />
-                  <div className="h-6 w-16 bg-gray-700 rounded" />
+                  <div className="h-6 w-16 bg-muted rounded" />
+                  <div className="h-6 w-16 bg-muted rounded" />
                 </div>
-                <div className="h-4 bg-gray-700 rounded" />
+                <div className="h-4 bg-muted rounded" />
               </CardHeader>
             </Card>
           ))}
@@ -319,7 +319,7 @@ export function InstructionGrid({
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-400 mb-4">{error}</p>
+        <p className="text-destructive mb-4">{error}</p>
         <Button onClick={() => fetchInstructions(currentPage)} variant="outline">
           Try Again
         </Button>
@@ -330,12 +330,12 @@ export function InstructionGrid({
   if (instructions.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="text-gray-400 mb-4">
+        <div className="text-muted-foreground mb-4">
           {searchQuery ? 'No matching instructions found' : 'You haven\'t created any instructions yet'}
         </div>
         <Button
           onClick={() => router.push('/builder')}
-          className="bg-white text-black hover:bg-gray-100 cursor-pointer"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
         >
           Create New Instruction
         </Button>
@@ -349,7 +349,7 @@ export function InstructionGrid({
         {instructions.map(instruction => (
           <Card
             key={instruction.id}
-            className={`bg-zinc-900 border-gray-800 hover:border-gray-300 hover:shadow-md hover:shadow-gray-900/20 transition-all duration-200 ${
+            className={`bg-card border-border hover:border-border/80 hover:shadow-md hover:shadow-muted/20 transition-all duration-200 ${
               viewMode === 'list' ? 'flex flex-row items-center p-4' : ''
             }`}
           >
@@ -359,7 +359,7 @@ export function InstructionGrid({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <h3
-                        className="text-xl font-semibold text-white cursor-pointer hover:text-gray-200 transition-colors truncate"
+                        className="text-xl font-semibold text-foreground cursor-pointer hover:text-foreground/80 transition-colors truncate"
                         onClick={() => router.push(`/builder?instruction=${instruction.id}`)}
                       >
                         {instruction.title}
@@ -375,33 +375,33 @@ export function InstructionGrid({
                       )}
                     </div>
                     {instruction.category && (
-                      <Badge variant="outline" className="border-gray-700 text-gray-400 text-xs">
+                      <Badge variant="outline" className="text-xs">
                         {instruction.category}
                       </Badge>
                     )}
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white hover:bg-zinc-800 cursor-pointer">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer">
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-zinc-800 border-zinc-700 text-white">
+                    <DropdownMenuContent align="end" className="bg-card border-border text-foreground">
                       <DropdownMenuItem
-                        className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700"
+                        className="cursor-pointer hover:bg-muted focus:bg-muted"
                         onClick={() => router.push(`/builder?instruction=${instruction.id}`)}
                       >
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700"
+                        className="cursor-pointer hover:bg-muted focus:bg-muted"
                         onClick={() => handleDuplicate(instruction)}
                       >
                         Duplicate
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700"
+                        className="cursor-pointer hover:bg-muted focus:bg-muted"
                         onClick={() => handleToggleFavorite(instruction)}
                       >
                         {instruction.isFavorite
@@ -420,7 +420,7 @@ export function InstructionGrid({
                       </DropdownMenuItem>
                       {!instruction.isPublished && (
                         <DropdownMenuItem
-                          className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700"
+                          className="cursor-pointer hover:bg-muted focus:bg-muted"
                           onClick={() => setPublishModal({ isOpen: true, instruction })}
                         >
                           <Share className="mr-2 h-4 w-4" />
@@ -428,7 +428,7 @@ export function InstructionGrid({
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem
-                        className="cursor-pointer hover:bg-zinc-700 focus:bg-zinc-700 text-red-400 hover:text-red-300"
+                        className="cursor-pointer hover:bg-muted focus:bg-muted text-destructive hover:text-destructive/80"
                         onClick={() => setDeleteModal({ isOpen: true, instruction })}
                       >
                         Delete
@@ -441,17 +441,17 @@ export function InstructionGrid({
               {viewMode === 'grid' && (
                 <>
                   <CardContent>
-                    <p className="text-gray-300 text-sm min-h-[60px] line-clamp-3">
+                    <p className="text-foreground text-sm min-h-[60px] line-clamp-3">
                       {instruction.description || 'No description'}
                     </p>
                     <div className="flex flex-wrap gap-2 mt-3">
                       {instruction.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="bg-zinc-800 text-gray-300 text-xs px-2 py-1 rounded-full hover:bg-zinc-700 hover:text-white transition-colors">
+                        <span key={tag} className="bg-muted text-muted-foreground text-xs px-2 py-1 rounded-full hover:bg-muted/80 hover:text-foreground transition-colors">
                           {tag}
                         </span>
                       ))}
                       {instruction.tags.length > 3 && (
-                        <span className="bg-zinc-800 text-gray-300 text-xs px-2 py-1 rounded-full">
+                        <span className="bg-muted text-muted-foreground text-xs px-2 py-1 rounded-full">
                           +
                           {instruction.tags.length - 3}
                         </span>
@@ -459,7 +459,7 @@ export function InstructionGrid({
                     </div>
                   </CardContent>
 
-                  <CardFooter className="border-t border-gray-800 pt-3 text-xs text-gray-400 flex justify-between">
+                  <CardFooter className="border-t border-border pt-3 text-xs text-muted-foreground flex justify-between">
                     <div className="flex items-center">
                       <Clock className="h-3 w-3 mr-1" />
                       {new Date(instruction.updatedAt).toLocaleDateString()}
@@ -478,10 +478,10 @@ export function InstructionGrid({
             </div>
 
             {viewMode === 'list' && (
-              <div className="ml-4 flex items-center gap-4 text-sm text-gray-400">
+              <div className="ml-4 flex items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   {instruction.tags.slice(0, 2).map(tag => (
-                    <Badge key={tag} variant="outline" className="border-gray-700 text-gray-400 text-xs">
+                    <Badge key={tag} variant="outline" className="text-xs">
                       {tag}
                     </Badge>
                   ))}
