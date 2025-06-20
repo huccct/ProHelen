@@ -1,6 +1,5 @@
 'use client'
 
-import type { Edge } from '@xyflow/react'
 import { FlowCanvas } from '@/components/flow-canvas'
 import { HelpPanel } from '@/components/help-panel'
 import { OnboardingTour } from '@/components/onboarding-tour'
@@ -12,6 +11,9 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useState } from 'react'
 
+import { GuidedCanvas } from './_components/guided-canvas'
+import { GuidedHeader } from './_components/guided-header'
+import { GuidedWelcome } from './_components/guided-welcome'
 import { PromptPreview } from './_components/prompt-preview'
 import { SimpleWizard } from './_components/simple-wizard'
 
@@ -25,7 +27,7 @@ interface BuilderState {
 }
 
 // 添加界面模式类型
-type InterfaceMode = 'simple' | 'advanced'
+type InterfaceMode = 'simple' | 'guided' | 'advanced'
 
 function BuilderContent() {
   const searchParams = useSearchParams()
@@ -53,14 +55,20 @@ function BuilderContent() {
   // 添加界面模式状态
   const [interfaceMode, setInterfaceMode] = useState<InterfaceMode>('simple')
 
+  // 添加引导状态
+  const [guidedState, setGuidedState] = useState({
+    step: 'welcome', // welcome, arrange, connect, customize, test
+    isFirstTime: true,
+    showHints: true,
+  })
+
   // 检查是否应该显示简化模式
   useEffect(() => {
-    const hasAdvancedPreference = localStorage.getItem('prohelen-prefer-advanced')
     const hasTemplate = searchParams.get('template')
     const hasInstruction = searchParams.get('instruction')
 
-    // 如果用户之前选择了高级模式，或者是从模板/指令导入，使用高级模式
-    if (hasAdvancedPreference === 'true' || hasTemplate || hasInstruction) {
+    // 只有从模板/指令导入时才使用高级模式，其他情况都从简单模式开始
+    if (hasTemplate || hasInstruction) {
       setInterfaceMode('advanced')
     }
   }, [searchParams])
@@ -249,252 +257,222 @@ function BuilderContent() {
         }
       })
 
-      // 自动创建逻辑连线 - 根据用途创建有意义的连接
-      const edges: Edge[] = []
+      // 智能连接相关的blocks - 根据不同用途创建逻辑连接
+      const edges = []
 
-      // 找到各种类型的节点
-      const nodeMap = new Map()
-      nodes.forEach((node) => {
-        nodeMap.set(node.data.type, node)
-      })
+      // 查找具体的节点 (roleNode已在上面定义)
+      const commStyleNode = nodes.find(n => n.data.type === 'communication_style')
+      const learningStyleNode = nodes.find(n => n.data.type === 'learning_style')
+      const subjectFocusNode = nodes.find(n => n.data.type === 'subject_focus')
+      const difficultyNode = nodes.find(n => n.data.type === 'difficulty_level')
+      const outputFormatNode = nodes.find(n => n.data.type === 'output_format')
+      const creativeNode = nodes.find(n => n.data.type === 'creative_thinking')
+      const contextNode = nodes.find(n => n.data.type === 'context_setting')
+      const prioritizationNode = nodes.find(n => n.data.type === 'prioritization')
+      const personalityNode = nodes.find(n => n.data.type === 'personality_traits')
+      const goalNode = nodes.find(n => n.data.type === 'goal_setting')
+      const stepByStepNode = nodes.find(n => n.data.type === 'step_by_step')
+      const conditionalNode = nodes.find(n => n.data.type === 'conditional_logic')
 
-      const wizardRoleNode = nodeMap.get('role_definition')
-      if (!wizardRoleNode)
-        return
-
-      // 根据用途创建不同的逻辑连线
+      // 根据用途创建逻辑连接
       if (config.purpose) {
         switch (config.purpose.value) {
           case 'learning':
-            // Learning Assistant逻辑: Role → Learning Style → Subject Focus → Difficulty Level
-            if (nodeMap.has('learning_style')) {
+            // Learning Assistant: Role → Learning Style → Subject Focus → Difficulty Level
+            if (roleNode && learningStyleNode) {
               edges.push({
-                id: `edge-${wizardRoleNode.id}-${nodeMap.get('learning_style').id}`,
-                source: wizardRoleNode.id,
-                target: nodeMap.get('learning_style').id,
-                type: 'default',
+                id: `${roleNode.id}-${learningStyleNode.id}`,
+                source: roleNode.id,
+                target: learningStyleNode.id,
               })
-
-              if (nodeMap.has('subject_focus')) {
-                edges.push({
-                  id: `edge-${nodeMap.get('learning_style').id}-${nodeMap.get('subject_focus').id}`,
-                  source: nodeMap.get('learning_style').id,
-                  target: nodeMap.get('subject_focus').id,
-                  type: 'default',
-                })
-
-                if (nodeMap.has('difficulty_level')) {
-                  edges.push({
-                    id: `edge-${nodeMap.get('subject_focus').id}-${nodeMap.get('difficulty_level').id}`,
-                    source: nodeMap.get('subject_focus').id,
-                    target: nodeMap.get('difficulty_level').id,
-                    type: 'default',
-                  })
-                }
-              }
-
-              // Step-by-step连接到learning_style (教学方法相关)
-              if (nodeMap.has('step_by_step')) {
-                edges.push({
-                  id: `edge-${nodeMap.get('learning_style').id}-${nodeMap.get('step_by_step').id}`,
-                  source: nodeMap.get('learning_style').id,
-                  target: nodeMap.get('step_by_step').id,
-                  type: 'default',
-                })
-              }
+            }
+            if (learningStyleNode && subjectFocusNode) {
+              edges.push({
+                id: `${learningStyleNode.id}-${subjectFocusNode.id}`,
+                source: learningStyleNode.id,
+                target: subjectFocusNode.id,
+              })
+            }
+            if (subjectFocusNode && difficultyNode) {
+              edges.push({
+                id: `${subjectFocusNode.id}-${difficultyNode.id}`,
+                source: subjectFocusNode.id,
+                target: difficultyNode.id,
+              })
+            }
+            // 连接经验相关的块
+            if (stepByStepNode && difficultyNode) {
+              edges.push({
+                id: `${difficultyNode.id}-${stepByStepNode.id}`,
+                source: difficultyNode.id,
+                target: stepByStepNode.id,
+              })
+            }
+            if (conditionalNode && difficultyNode) {
+              edges.push({
+                id: `${difficultyNode.id}-${conditionalNode.id}`,
+                source: difficultyNode.id,
+                target: conditionalNode.id,
+              })
             }
             break
 
           case 'writing':
-            // Writing Assistant逻辑: Role → Communication Style → Output Format → Creative Thinking
-            if (nodeMap.has('communication_style')) {
+            // Writing Assistant: Role → Communication Style → Output Format → Creative Thinking
+            if (roleNode && commStyleNode) {
               edges.push({
-                id: `edge-${wizardRoleNode.id}-${nodeMap.get('communication_style').id}`,
-                source: wizardRoleNode.id,
-                target: nodeMap.get('communication_style').id,
-                type: 'default',
+                id: `${roleNode.id}-${commStyleNode.id}`,
+                source: roleNode.id,
+                target: commStyleNode.id,
               })
-
-              if (nodeMap.has('output_format')) {
-                edges.push({
-                  id: `edge-${nodeMap.get('communication_style').id}-${nodeMap.get('output_format').id}`,
-                  source: nodeMap.get('communication_style').id,
-                  target: nodeMap.get('output_format').id,
-                  type: 'default',
-                })
-
-                if (nodeMap.has('creative_thinking')) {
-                  edges.push({
-                    id: `edge-${nodeMap.get('output_format').id}-${nodeMap.get('creative_thinking').id}`,
-                    source: nodeMap.get('output_format').id,
-                    target: nodeMap.get('creative_thinking').id,
-                    type: 'default',
-                  })
-                }
-              }
+            }
+            if (commStyleNode && outputFormatNode) {
+              edges.push({
+                id: `${commStyleNode.id}-${outputFormatNode.id}`,
+                source: commStyleNode.id,
+                target: outputFormatNode.id,
+              })
+            }
+            if (outputFormatNode && creativeNode) {
+              edges.push({
+                id: `${outputFormatNode.id}-${creativeNode.id}`,
+                source: outputFormatNode.id,
+                target: creativeNode.id,
+              })
+            }
+            // 连接经验相关的块
+            if (stepByStepNode && creativeNode) {
+              edges.push({
+                id: `${creativeNode.id}-${stepByStepNode.id}`,
+                source: creativeNode.id,
+                target: stepByStepNode.id,
+              })
+            }
+            if (conditionalNode && creativeNode) {
+              edges.push({
+                id: `${creativeNode.id}-${conditionalNode.id}`,
+                source: creativeNode.id,
+                target: conditionalNode.id,
+              })
             }
             break
 
           case 'work':
-            // Work Assistant逻辑: Role → Context Setting → Output Format, Role → Prioritization
-            if (nodeMap.has('context_setting')) {
+            // Work Assistant: Role → Context Setting → Output Format → Prioritization
+            if (roleNode && contextNode) {
               edges.push({
-                id: `edge-${wizardRoleNode.id}-${nodeMap.get('context_setting').id}`,
-                source: wizardRoleNode.id,
-                target: nodeMap.get('context_setting').id,
-                type: 'default',
+                id: `${roleNode.id}-${contextNode.id}`,
+                source: roleNode.id,
+                target: contextNode.id,
               })
-
-              if (nodeMap.has('output_format')) {
-                edges.push({
-                  id: `edge-${nodeMap.get('context_setting').id}-${nodeMap.get('output_format').id}`,
-                  source: nodeMap.get('context_setting').id,
-                  target: nodeMap.get('output_format').id,
-                  type: 'default',
-                })
-              }
             }
-
-            if (nodeMap.has('prioritization')) {
+            if (contextNode && outputFormatNode) {
               edges.push({
-                id: `edge-${wizardRoleNode.id}-${nodeMap.get('prioritization').id}`,
-                source: wizardRoleNode.id,
-                target: nodeMap.get('prioritization').id,
-                type: 'default',
+                id: `${contextNode.id}-${outputFormatNode.id}`,
+                source: contextNode.id,
+                target: outputFormatNode.id,
+              })
+            }
+            if (outputFormatNode && prioritizationNode) {
+              edges.push({
+                id: `${outputFormatNode.id}-${prioritizationNode.id}`,
+                source: outputFormatNode.id,
+                target: prioritizationNode.id,
+              })
+            }
+            // 连接经验相关的块
+            if (stepByStepNode && prioritizationNode) {
+              edges.push({
+                id: `${prioritizationNode.id}-${stepByStepNode.id}`,
+                source: prioritizationNode.id,
+                target: stepByStepNode.id,
+              })
+            }
+            if (conditionalNode && prioritizationNode) {
+              edges.push({
+                id: `${prioritizationNode.id}-${conditionalNode.id}`,
+                source: prioritizationNode.id,
+                target: conditionalNode.id,
               })
             }
             break
 
           case 'personal':
-            // Personal Assistant逻辑: Role → Communication Style → Personality, Role → Goal Setting
-            if (nodeMap.has('communication_style')) {
+            // Personal Assistant: Role → Communication Style → Personality Traits → Goal Setting
+            if (roleNode && commStyleNode) {
               edges.push({
-                id: `edge-${wizardRoleNode.id}-${nodeMap.get('communication_style').id}`,
-                source: wizardRoleNode.id,
-                target: nodeMap.get('communication_style').id,
-                type: 'default',
+                id: `${roleNode.id}-${commStyleNode.id}`,
+                source: roleNode.id,
+                target: commStyleNode.id,
               })
-
-              if (nodeMap.has('personality_traits')) {
-                edges.push({
-                  id: `edge-${nodeMap.get('communication_style').id}-${nodeMap.get('personality_traits').id}`,
-                  source: nodeMap.get('communication_style').id,
-                  target: nodeMap.get('personality_traits').id,
-                  type: 'default',
-                })
-              }
             }
-
-            if (nodeMap.has('goal_setting')) {
+            if (commStyleNode && personalityNode) {
               edges.push({
-                id: `edge-${wizardRoleNode.id}-${nodeMap.get('goal_setting').id}`,
-                source: wizardRoleNode.id,
-                target: nodeMap.get('goal_setting').id,
-                type: 'default',
+                id: `${commStyleNode.id}-${personalityNode.id}`,
+                source: commStyleNode.id,
+                target: personalityNode.id,
+              })
+            }
+            if (personalityNode && goalNode) {
+              edges.push({
+                id: `${personalityNode.id}-${goalNode.id}`,
+                source: personalityNode.id,
+                target: goalNode.id,
+              })
+            }
+            // 连接经验相关的块
+            if (stepByStepNode && goalNode) {
+              edges.push({
+                id: `${goalNode.id}-${stepByStepNode.id}`,
+                source: goalNode.id,
+                target: stepByStepNode.id,
+              })
+            }
+            if (conditionalNode && goalNode) {
+              edges.push({
+                id: `${goalNode.id}-${conditionalNode.id}`,
+                source: goalNode.id,
+                target: conditionalNode.id,
               })
             }
             break
         }
       }
 
-      // 高级逻辑块连接到Role Definition (作为高级功能)
-      if (nodeMap.has('conditional_logic')) {
-        edges.push({
-          id: `edge-${wizardRoleNode.id}-${nodeMap.get('conditional_logic').id}`,
-          source: wizardRoleNode.id,
-          target: nodeMap.get('conditional_logic').id,
-          type: 'default',
-        })
+      // 如果有独立的目标设置块（非personal类型），连接到主流程
+      if (goalNode && config.purpose?.value !== 'personal') {
+        const lastMainNode = nodes.find(n =>
+          n.data.type === 'difficulty_level'
+          || n.data.type === 'creative_thinking'
+          || n.data.type === 'prioritization',
+        )
+        if (lastMainNode) {
+          edges.push({
+            id: `${lastMainNode.id}-${goalNode.id}`,
+            source: lastMainNode.id,
+            target: goalNode.id,
+          })
+        }
       }
 
-      // 应用连线
       setEdges(edges)
+    }, 100)
 
-      // 确保在连线设置后更新预览
-      setTimeout(() => {
-        const { updatePreview } = useBuilderStore.getState()
-        updatePreview()
-      }, 50)
-    }, 150)
+    // 更新builder state
+    setBuilderState({
+      title: generatedTitle,
+      description: generatedDescription,
+      content: '',
+      tags: [],
+      isTemplate: false,
+      sourceId: null,
+    })
 
-    // 自动生成标题和描述
-    const generateTitleAndDesc = () => {
-      let title = ''
-      let description = ''
-
-      // 提取样式名称，去掉emoji前缀
-      const getStyleName = (label: string) => {
-        if (!label)
-          return 'Professional'
-        // 去掉emoji和"&"后的部分，只保留主要形容词
-        return label.replace(/^[^\w\s]+\s*/, '').split(' & ')[0]
-      }
-
-      // 提取经验级别描述
-      const getExperienceDesc = (label: string) => {
-        if (!label)
-          return 'all'
-        if (label.includes('Beginner'))
-          return 'beginner'
-        if (label.includes('Experience'))
-          return 'intermediate'
-        if (label.includes('Experienced'))
-          return 'advanced'
-        return 'all'
-      }
-
-      const styleName = getStyleName(config.tone?.label)
-      const experienceLevel = getExperienceDesc(config.expertise?.label)
-
-      switch (config.purpose?.value) {
-        case 'learning':
-          title = `${styleName} Learning Assistant`
-          description = `An AI learning coach that provides ${styleName.toLowerCase()} guidance for ${experienceLevel} learners. Specializes in breaking down complex topics and adapting teaching methods to individual learning styles.`
-          break
-        case 'writing':
-          title = `${styleName} Writing Assistant`
-          description = `A creative writing companion that helps with content creation using a ${styleName.toLowerCase()} tone. Perfect for writers of ${experienceLevel} experience levels.`
-          break
-        case 'work':
-          title = `${styleName} Work Assistant`
-          description = `A productivity-focused AI that helps organize tasks, prioritize work, and provide ${styleName.toLowerCase()} business guidance for ${experienceLevel} professionals.`
-          break
-        case 'personal':
-          title = `${styleName} Personal Assistant`
-          description = `A supportive personal AI companion with a ${styleName.toLowerCase()} personality. Designed to help with daily life, goal setting, and personal development.`
-          break
-        default:
-          title = 'Custom AI Assistant'
-          description = 'A versatile AI assistant configured through the simple wizard setup.'
-      }
-
-      // 如果用户有具体目标，添加到描述中
-      if (config.goal?.value) {
-        description += ` Focus: ${config.goal.value}`
-      }
-
-      return { title, description }
-    }
-
-    const { title, description } = generateTitleAndDesc()
-
-    // 更新builder状态和store
-    setBuilderState(prev => ({
-      ...prev,
-      title,
-      description,
-    }))
-
-    // 同时更新store中的title和description
-    setTitle(title)
-    setDescription(description)
-
-    // 切换到高级模式
-    setInterfaceMode('advanced')
-  }, [setInterfaceMode])
+    // 切换到引导模式而不是高级模式
+    setInterfaceMode('guided')
+  }, [])
 
   const handleSwitchToAdvanced = useCallback(() => {
-    localStorage.setItem('prohelen-prefer-advanced', 'true')
     setInterfaceMode('advanced')
   }, [])
 
@@ -674,6 +652,68 @@ function BuilderContent() {
             onComplete={handleWizardComplete}
             onSwitchToAdvanced={handleSwitchToAdvanced}
           />
+        </div>
+      </div>
+    )
+  }
+
+  // 引导模式显示欢迎界面或引导流程
+  if (interfaceMode === 'guided') {
+    if (guidedState.step === 'welcome') {
+      return (
+        <GuidedWelcome
+          onNext={() => setGuidedState(prev => ({ ...prev, step: 'arrange' }))}
+          onBackToSimple={() => setInterfaceMode('simple')}
+          onSkipToAdvanced={handleSwitchToAdvanced}
+        />
+      )
+    }
+
+    // 引导步骤界面
+    const handleNextStep = () => {
+      const steps = ['arrange', 'connect', 'customize', 'test']
+      const currentIndex = steps.indexOf(guidedState.step as string)
+      if (currentIndex < steps.length - 1) {
+        setGuidedState(prev => ({ ...prev, step: steps[currentIndex + 1] as any }))
+      }
+      else {
+        // 完成引导，切换到高级模式
+        setInterfaceMode('advanced')
+      }
+    }
+
+    const handlePreviousStep = () => {
+      const steps = ['arrange', 'connect', 'customize', 'test']
+      const currentIndex = steps.indexOf(guidedState.step as string)
+      if (currentIndex > 0) {
+        setGuidedState(prev => ({ ...prev, step: steps[currentIndex - 1] as any }))
+      }
+      else {
+        setGuidedState(prev => ({ ...prev, step: 'welcome' }))
+      }
+    }
+
+    const canProceed = true // TODO: Add step-specific validation
+
+    return (
+      <div className="flex flex-col h-screen bg-background">
+        <GuidedHeader
+          step={guidedState.step as any}
+          onNext={handleNextStep}
+          onPrevious={handlePreviousStep}
+          onAdvanced={handleSwitchToAdvanced}
+          canProceed={canProceed}
+        />
+
+        <div className="flex-1 relative">
+          <GuidedCanvas
+            step={guidedState.step as any}
+          />
+
+          {/* 简化的预览面板 */}
+          <div className="absolute right-4 top-4 bottom-4 w-80">
+            <PromptPreview className="h-full border rounded-lg shadow-sm" />
+          </div>
         </div>
       </div>
     )
