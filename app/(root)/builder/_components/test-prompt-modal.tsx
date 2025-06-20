@@ -169,7 +169,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
             <div className="p-2 bg-muted/30 rounded-lg">
               <Sparkles className="h-6 w-6 text-muted-foreground" />
             </div>
-            Test Prompt
+            Try Your AI
           </DialogTitle>
         </DialogHeader>
 
@@ -182,7 +182,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
                 ? (
                     <div className="text-center text-muted-foreground py-8">
                       <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                      <p>Type a message below to test your prompt</p>
+                      <p>Type a message below to chat with your AI</p>
                     </div>
                   )
                 : (

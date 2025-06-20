@@ -288,7 +288,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Play className="h-3 w-3 mr-1" />
-            Test
+            Try it
           </Button>
 
           <Button
