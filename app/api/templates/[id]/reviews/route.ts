@@ -8,12 +8,12 @@ const prisma = new PrismaClient()
 // GET - 获取模板的评论列表
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
-    const templateId = params.id
+    const { id: templateId } = await params
 
     // 如果指定了userId，返回该用户的评论
     if (userId) {
@@ -57,7 +57,7 @@ export async function GET(
 // POST - 创建或更新评论
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession()
@@ -70,7 +70,7 @@ export async function POST(
 
     const body = await request.json()
     const { rating, comment } = body
-    const templateId = params.id
+    const { id: templateId } = await params
 
     // 验证评分范围
     if (!rating || rating < 1 || rating > 5) {
