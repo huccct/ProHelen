@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react'
 import { RelatedTemplates } from './_components/related-templates'
 import { TemplateDetails } from './_components/template-details'
 import { TemplatePreview } from './_components/template-preview'
+import { TemplateRating } from './_components/template-rating'
 
 export default function TemplateDetailPage({ params }: { params: any }) {
   const router = useRouter()
@@ -118,6 +119,11 @@ export default function TemplateDetailPage({ params }: { params: any }) {
                     <div className="lg:col-span-2 space-y-8">
                       <TemplateDetails template={template} />
                       <TemplatePreview template={template} />
+                      <TemplateRating
+                        templateId={template.id}
+                        currentRating={template.rating}
+                        ratingCount={template.ratingCount}
+                      />
                     </div>
 
                     <div className="space-y-6">

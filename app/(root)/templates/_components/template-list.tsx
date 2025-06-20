@@ -13,6 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { motion } from 'framer-motion'
 import { Clock, Heart, Star, TrendingUp, Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -30,6 +31,7 @@ export interface Template {
   examples?: { title: string, content: string }[]
   tags?: string[]
   rating?: number
+  ratingCount?: number
   usageCount?: number
   _count?: {
     reviews: number
@@ -193,26 +195,63 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                 </CardDescription>
 
                 {/* Statistics */}
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mt-4">
-                  {template.rating && (
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                      <span>{formatRating(template.rating)}</span>
-                    </div>
-                  )}
-                  {template.usageCount && template.usageCount > 0 && (
-                    <div className="flex items-center gap-1">
-                      <TrendingUp className="w-4 h-4" />
-                      <span>{formatUsageCount(template.usageCount)}</span>
-                    </div>
-                  )}
-                  {template._count?.favorites && template._count.favorites > 0 && (
-                    <div className="flex items-center gap-1">
-                      <Heart className="w-4 h-4" />
-                      <span>{template._count.favorites}</span>
-                    </div>
-                  )}
-                </div>
+                <TooltipProvider>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground mt-4">
+                    {template.rating && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center gap-1 cursor-help">
+                            <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                            <span>{formatRating(template.rating)}</span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            User rating (
+                            {template.rating}
+                            /5.0)
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                    {template.usageCount && template.usageCount > 0 && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center gap-1 cursor-help">
+                            <TrendingUp className="w-4 h-4" />
+                            <span>{formatUsageCount(template.usageCount)}</span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            Used
+                            {template.usageCount}
+                            {' '}
+                            times
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                    {template._count?.favorites && template._count.favorites > 0 && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center gap-1 cursor-help">
+                            <Heart className="w-4 h-4" />
+                            <span>{template._count.favorites}</span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            Favorited
+                            {template._count.favorites}
+                            {' '}
+                            times
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </div>
+                </TooltipProvider>
 
                 {/* Tags */}
                 {template.tags && template.tags.length > 0 && (

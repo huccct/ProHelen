@@ -6,6 +6,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { useBuilderStore } from '@/store/builder'
 import { Loader2, Send, Sparkles, User } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 
 interface TestPromptModalProps {
@@ -204,7 +206,56 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
                               : 'bg-muted text-foreground'
                           }`}
                         >
-                          <p className="whitespace-pre-wrap">{message.content}</p>
+                          {message.role === 'assistant'
+                            ? (
+                                <div className="prose prose-sm max-w-none prose-invert">
+                                  <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                      // 自定义渲染组件
+                                      h1: ({ children }) => <h1 className="text-lg font-bold mb-2 text-foreground">{children}</h1>,
+                                      h2: ({ children }) => <h2 className="text-base font-semibold mb-2 text-foreground">{children}</h2>,
+                                      h3: ({ children }) => <h3 className="text-sm font-medium mb-1 text-foreground">{children}</h3>,
+                                      p: ({ children }) => <p className="mb-2 text-foreground leading-relaxed">{children}</p>,
+                                      ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                                      ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+                                      li: ({ children }) => <li className="text-foreground">{children}</li>,
+                                      code: ({ children }) => (
+                                        <code className="bg-muted/50 px-1 py-0.5 rounded text-xs font-mono text-foreground">
+                                          {children}
+                                        </code>
+                                      ),
+                                      pre: ({ children }) => (
+                                        <pre className="bg-muted/50 p-3 rounded-lg overflow-x-auto mb-2">
+                                          <code className="text-xs font-mono text-foreground">{children}</code>
+                                        </pre>
+                                      ),
+                                      blockquote: ({ children }) => (
+                                        <blockquote className="border-l-2 border-muted-foreground/30 pl-3 mb-2 text-muted-foreground italic">
+                                          {children}
+                                        </blockquote>
+                                      ),
+                                      strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+                                      em: ({ children }) => <em className="italic text-foreground">{children}</em>,
+                                      a: ({ children, href }) => (
+                                        <a
+                                          href={href}
+                                          className="text-primary hover:underline"
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                        >
+                                          {children}
+                                        </a>
+                                      ),
+                                    }}
+                                  >
+                                    {message.content}
+                                  </ReactMarkdown>
+                                </div>
+                              )
+                            : (
+                                <p className="whitespace-pre-wrap">{message.content}</p>
+                              )}
                         </div>
 
                         {message.role === 'user' && (
