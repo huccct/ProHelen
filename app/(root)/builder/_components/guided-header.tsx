@@ -16,7 +16,7 @@ const steps = [
   { id: 'arrange', label: 'Arrange Cards', icon: Move },
   { id: 'connect', label: 'Connect Flow', icon: ArrowRight },
   { id: 'customize', label: 'Edit Content', icon: Edit },
-  { id: 'test', label: 'Try & Save', icon: Zap },
+  { id: 'test', label: 'Test & Save', icon: Zap },
 ]
 
 export function GuidedHeader({ step, onNext, onPrevious, onAdvanced, canProceed }: GuidedHeaderProps) {

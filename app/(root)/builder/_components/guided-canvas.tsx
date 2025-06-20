@@ -105,10 +105,10 @@ export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCa
         }
       default:
         return {
-          title: 'Ready to Try',
+          title: 'Ready to Test',
           message: 'Your instruction flow is complete! Time to see how it works.',
           icon: Lightbulb,
-          tip: 'Try your AI early and often to refine your instructions.',
+          tip: 'Test early and often to refine your instructions.',
         }
     }
   }
