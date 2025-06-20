@@ -83,12 +83,31 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       y: Math.random() * 500,
     }
 
+    // 特殊的label映射
+    const labelMap: Record<string, string> = {
+      step_by_step: 'Step by Step',
+      role_definition: 'Role Definition',
+      context_setting: 'Context Setting',
+      output_format: 'Output Format',
+      goal_setting: 'Goal Setting',
+      learning_style: 'Learning Style',
+      subject_focus: 'Subject Focus',
+      difficulty_level: 'Difficulty Level',
+      communication_style: 'Communication Style',
+      creative_thinking: 'Creative Thinking',
+      conditional_logic: 'Conditional Logic',
+      personality_traits: 'Personality Traits',
+      error_handling: 'Error Handling',
+    }
+
+    const label = labelMap[type] || type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+
     const newNode: Node<CustomNodeData> = {
       id: `${type}-${nodes.length + 1}`,
       type: 'custom',
       position: nodePosition,
       data: {
-        label: type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+        label,
         type,
       },
     }
@@ -265,13 +284,13 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
           contentByType.system.push(`Goals: ${content}`)
           break
         case 'learning_style':
-          contentByType.behavior.push(`Learning Style: ${content}`)
+          contentByType.process.push(`Learning Style: ${content}`)
           break
         case 'subject_focus':
           contentByType.context.push(`Subject Focus: ${content}`)
           break
         case 'difficulty_level':
-          contentByType.constraints.push(`Difficulty Level: ${content}`)
+          contentByType.process.push(`Difficulty Level: ${content}`)
           break
 
         // Communication and feedback style
@@ -287,7 +306,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
 
         // Workflow and process instructions
         case 'step_by_step':
-          contentByType.process.push(`Process: ${content}`)
+          contentByType.process.push(`Step by Step: ${content}`)
           break
         case 'time_management':
           contentByType.process.push(`Time Management: ${content}`)
@@ -356,46 +375,69 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
 
     // 如果有连接关系，构建流程路径
     if (edges.length > 0) {
-      // 构建流程路径
-      const getFlowPath = () => {
-        // 找到起始节点（没有入边的节点）
+      // 构建更复杂的流程路径，支持分支
+      const getFlowDescription = () => {
+        // 找到起始节点（通常是role_definition）
         const startNodes = nodes.filter(node =>
           !edges.some(edge => edge.target === node.id),
         )
 
         if (startNodes.length === 0)
-          return []
+          return ''
 
-        // 从起始节点开始，构建线性路径
-        const path: string[] = []
+        const startNode = startNodes[0]
         const visited = new Set<string>()
+        const paths: string[] = []
 
-        const buildPath = (nodeId: string) => {
+        // 递归构建所有路径
+        const buildPaths = (nodeId: string, currentPath: string[] = []) => {
           if (visited.has(nodeId))
             return
-          visited.add(nodeId)
 
           const node = nodes.find(n => n.id === nodeId)
-          if (node) {
-            path.push(node.data.label)
-          }
+          if (!node)
+            return
 
-          // 找到下一个节点
-          const nextEdge = edges.find(edge => edge.source === nodeId)
-          if (nextEdge) {
-            buildPath(nextEdge.target)
+          const newPath = [...currentPath, node.data.label]
+
+          // 找到所有出边
+          const outgoingEdges = edges.filter(edge => edge.source === nodeId)
+
+          if (outgoingEdges.length === 0) {
+            // 叶子节点，保存路径
+            if (newPath.length > 1) {
+              paths.push(newPath.join(' → '))
+            }
+          }
+          else if (outgoingEdges.length === 1) {
+            // 单个连接，继续构建
+            visited.add(nodeId)
+            buildPaths(outgoingEdges[0].target, newPath)
+          }
+          else {
+            // 多个分支，为每个分支创建路径
+            visited.add(nodeId)
+            outgoingEdges.forEach((edge) => {
+              buildPaths(edge.target, newPath)
+            })
           }
         }
 
-        // 从第一个起始节点开始构建路径
-        buildPath(startNodes[0].id)
+        buildPaths(startNode.id)
 
-        return path
+        if (paths.length === 1) {
+          return `Logical flow: ${paths[0]}`
+        }
+        else if (paths.length > 1) {
+          return `Logical flows:\n${paths.map(path => `• ${path}`).join('\n')}`
+        }
+
+        return ''
       }
 
-      const flowPath = getFlowPath()
-      if (flowPath.length > 1) {
-        systemPrompt += `\n\n## Workflow\nLogical flow: ${flowPath.join(' → ')}`
+      const flowDescription = getFlowDescription()
+      if (flowDescription) {
+        systemPrompt += `\n\n## Workflow\n${flowDescription}`
       }
     }
 
