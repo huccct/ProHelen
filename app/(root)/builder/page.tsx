@@ -57,7 +57,7 @@ function BuilderContent() {
 
   // 添加引导状态
   const [guidedState, setGuidedState] = useState({
-    step: 'welcome', // welcome, arrange, connect, customize, test
+    step: 'welcome', // welcome, arrange, customize, test
     isFirstTime: true,
     showHints: true,
   })
@@ -671,7 +671,7 @@ function BuilderContent() {
 
     // 引导步骤界面
     const handleNextStep = () => {
-      const steps = ['arrange', 'connect', 'customize', 'test']
+      const steps = ['arrange', 'customize', 'test']
       const currentIndex = steps.indexOf(guidedState.step as string)
       if (currentIndex < steps.length - 1) {
         setGuidedState(prev => ({ ...prev, step: steps[currentIndex + 1] as any }))
@@ -683,7 +683,7 @@ function BuilderContent() {
     }
 
     const handlePreviousStep = () => {
-      const steps = ['arrange', 'connect', 'customize', 'test']
+      const steps = ['arrange', 'customize', 'test']
       const currentIndex = steps.indexOf(guidedState.step as string)
       if (currentIndex > 0) {
         setGuidedState(prev => ({ ...prev, step: steps[currentIndex - 1] as any }))

@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, ArrowRight, CheckCircle, ChevronRight, Edit, Move, Zap } from 'lucide-react'
+import { ArrowLeft, CheckCircle, ChevronRight, Edit, Move, Zap } from 'lucide-react'
 import Link from 'next/link'
 
 interface GuidedHeaderProps {
@@ -14,7 +14,6 @@ interface GuidedHeaderProps {
 
 const steps = [
   { id: 'arrange', label: 'Arrange Cards', icon: Move },
-  { id: 'connect', label: 'Connect Flow', icon: ArrowRight },
   { id: 'customize', label: 'Edit Content', icon: Edit },
   { id: 'test', label: 'Test & Save', icon: Zap },
 ]

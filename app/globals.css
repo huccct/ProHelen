@@ -176,19 +176,31 @@
   --xy-controls-box-shadow-default: 0 2px 4px hsl(var(--foreground) / 0.1);
 }
 
+/* Handle样式 - 可见但不可交互 */
 .react-flow__handle {
   background: hsl(var(--muted));
   border: 2px solid hsl(var(--border));
+  opacity: 0.6;
+  pointer-events: none; /* 禁用交互 */
+  transition: opacity 0.2s ease;
 }
 
+/* 节点悬停时稍微提高Handle的可见度 */
+.react-flow__node:hover .react-flow__handle {
+  opacity: 0.8;
+}
+
+/* 连接状态的样式 - 虽然用户不能手动连接，但保留样式 */
 .react-flow__handle.connecting {
   background: hsl(var(--primary));
   border: 2px solid hsl(var(--primary));
+  opacity: 1;
 }
 
 .react-flow__handle.valid {
   background: hsl(var(--primary));
   border: 2px solid hsl(var(--primary));
+  opacity: 1;
 }
 
 .react-flow__minimap {

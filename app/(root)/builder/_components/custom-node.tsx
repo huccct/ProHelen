@@ -4,31 +4,9 @@ import type { Node, NodeProps } from '@xyflow/react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useBuilderStore } from '@/store/builder'
+
 import { Handle, Position } from '@xyflow/react'
-import {
-  AlertTriangle,
-  BarChart3,
-  Book,
-  Brain,
-  CheckCircle,
-  Clock,
-  Compass,
-  Edit3,
-  FileText,
-  Filter,
-  Globe,
-  Heart,
-  Lightbulb,
-  MessageCircle,
-  MessageSquare,
-  Save,
-  Star,
-  Target,
-  Trash2,
-  Users,
-  Workflow,
-  X,
-} from 'lucide-react'
+import { AlertTriangle, BarChart3, Book, Brain, CheckCircle, Clock, Compass, Edit3, FileText, Filter, Globe, Heart, Lightbulb, MessageCircle, MessageSquare, Save, Star, Target, Trash2, Users, Workflow, X } from 'lucide-react'
 import { useState } from 'react'
 
 export interface CustomNodeData extends Record<string, unknown> {
@@ -40,7 +18,7 @@ export interface CustomNodeData extends Record<string, unknown> {
 
 type CustomNodeType = Node<CustomNodeData>
 
-export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType>) {
+export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(data.content || '')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -94,11 +72,12 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
 
   return (
     <div className="group relative min-w-[240px] max-w-[320px]">
+      {/* Target Handle - 用于接收连接，但不可交互 */}
       <Handle
         type="target"
         position={Position.Top}
-        className="!bg-muted !border-border !w-3 !h-3 hover:!bg-foreground hover:!border-foreground transition-colors !z-50"
-        isConnectable={isConnectable}
+        className="!bg-muted !border-border !w-3 !h-3 !opacity-60 !pointer-events-none !z-10"
+        isConnectable={false}
       />
 
       <div
@@ -129,80 +108,75 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
               </div>
             </div>
 
-            {!isEditing && (
-              <div className="flex gap-1 opacity-80 group-hover:opacity-100 transition-all duration-300">
+            {/* Action buttons */}
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              {!isEditing && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleEdit}
-                  className="h-7 w-7 p-0 text-foreground/70 hover:text-foreground hover:bg-foreground/10 flex-shrink-0 rounded-md cursor-pointer"
+                  className="h-6 w-6 p-0 hover:bg-white/20 cursor-pointer"
                 >
                   <Edit3 className="h-3 w-3" />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleDelete}
-                  className="h-7 w-7 p-0 text-foreground/70 hover:text-destructive hover:bg-destructive/10 flex-shrink-0 rounded-md cursor-pointer"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDelete}
+                className="h-6 w-6 p-0 hover:bg-red-500/20 cursor-pointer"
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-4">
+        <div className="px-4 py-3">
           {isEditing
             ? (
                 <div className="space-y-3">
                   <textarea
                     value={editContent}
                     onChange={e => setEditContent(e.target.value)}
-                    placeholder={getNodePlaceholder(data.type)}
-                    className="w-full h-20 p-3 bg-background border border-border rounded-lg text-foreground text-sm placeholder-muted-foreground resize-none focus:outline-none focus:border-border/80 scrollbar"
+                    placeholder={`Enter ${data.label.toLowerCase()} instructions...`}
+                    className="w-full min-h-[80px] p-2 text-sm bg-background border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
                     autoFocus
                   />
-                  <div className="flex gap-2">
+                  <div className="flex justify-end gap-2">
                     <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={handleSave}
-                      className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 h-7 text-xs font-medium"
+                      onClick={handleCancel}
+                      className="text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
                     >
-                      <Save className="h-3 w-3 mr-1" />
-                      Save
+                      <X className="h-3 w-3 mr-1" />
+                      Cancel
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={handleCancel}
-                      className="flex-1 h-7 text-xs font-medium"
+                      onClick={handleSave}
+                      className="text-foreground border-border hover:bg-muted cursor-pointer"
                     >
-                      <X className="h-3 w-3 mr-1" />
-                      Cancel
+                      <Save className="h-3 w-3 mr-1" />
+                      Save
                     </Button>
                   </div>
                 </div>
               )
             : (
-                <div className="min-h-[60px] flex items-center">
-                  {data.content
-                    ? (
-                        <p className="text-foreground text-sm leading-relaxed">
-                          {data.content}
-                        </p>
-                      )
-                    : (
-                        <p className="text-foreground/60 text-sm italic">
-                          Click edit to add content...
-                        </p>
-                      )}
+                <div className="text-sm text-muted-foreground leading-relaxed">
+                  {data.content || (
+                    <span className="italic text-muted-foreground/70">
+                      Click to add instructions...
+                    </span>
+                  )}
                 </div>
               )}
         </div>
 
-        {/* Status indicator */}
         {data.content && !isEditing && (
           <div className="absolute top-2 right-2">
             <div className="w-2 h-2 bg-green-500 rounded-full opacity-60" />
@@ -210,11 +184,12 @@ export function CustomNode({ data, isConnectable, id }: NodeProps<CustomNodeType
         )}
       </div>
 
+      {/* Source Handle - 用于发出连接，但不可交互 */}
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!bg-muted !border-border !w-3 !h-3 hover:!bg-foreground hover:!border-foreground transition-colors !z-50"
-        isConnectable={isConnectable}
+        className="!bg-muted !border-border !w-3 !h-3 !opacity-60 !pointer-events-none !z-10"
+        isConnectable={false}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -357,40 +332,4 @@ function getNodeColors(type: string) {
   }
 
   return colorMap[type] || { gradient: 'from-gray-500 to-gray-600', border: 'border-gray-500/30' }
-}
-
-function getNodePlaceholder(type: string) {
-  const placeholders: Record<string, string> = {
-    // Core blocks
-    role_definition: 'You are a helpful AI assistant specialized in...',
-    context_setting: 'The conversation is about... The user is...',
-    output_format: 'Format your response as: 1. Summary 2. Details 3. Next steps',
-
-    // Educational blocks
-    goal_setting: 'Help me set SMART goals for learning programming...',
-    learning_style: 'I learn best through visual examples and hands-on practice...',
-    subject_focus: 'Focus on web development, specifically React and JavaScript...',
-    difficulty_level: 'Explain concepts at intermediate level with practical examples...',
-
-    // Behavior blocks
-    communication_style: 'Use a friendly, encouraging tone. Be patient and supportive...',
-    feedback_style: 'Provide constructive feedback with specific suggestions...',
-    personality_traits: 'Be enthusiastic, patient, and encouraging...',
-
-    // Workflow blocks
-    step_by_step: 'Break down complex tasks into manageable steps...',
-    time_management: 'Help me create a study schedule for 2 hours daily...',
-    prioritization: 'Focus on the most important concepts first...',
-
-    // Advanced blocks
-    conditional_logic: 'If the user asks about basics, provide fundamentals. If advanced...',
-    creative_thinking: 'Encourage out-of-the-box thinking and multiple solutions...',
-    error_handling: 'When I make mistakes, explain what went wrong and how to fix it...',
-
-    // Planning blocks
-    career_planning: 'Help me plan a career path in software development...',
-    skill_assessment: 'Assess my current skills and identify areas for improvement...',
-  }
-
-  return placeholders[type] || 'Enter your instruction content here...'
 }

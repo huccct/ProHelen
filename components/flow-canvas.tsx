@@ -25,7 +25,6 @@ function selector(state: any) {
     edges: state.edges,
     onNodesChange: state.onNodesChange,
     onEdgesChange: state.onEdgesChange,
-    onConnect: state.onConnect,
     addNode: state.addNode,
   }
 }
@@ -46,7 +45,6 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
     edges,
     onNodesChange,
     onEdgesChange,
-    onConnect,
     addNode,
   } = useBuilderStore(useShallow(selector))
 
@@ -81,19 +79,6 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
     event.dataTransfer.dropEffect = 'move'
   }, [])
 
-  // 验证连接是否有效
-  const isValidConnection = useCallback((connection: any) => {
-    // 防止重复连接
-    const isDuplicateConnection = edges.some((edge: any) =>
-      edge.source === connection.source && edge.target === connection.target,
-    )
-
-    // 防止自环连接（节点连接到自己）
-    const isSelfConnection = connection.source === connection.target
-
-    return !isDuplicateConnection && !isSelfConnection
-  }, [edges])
-
   return (
     <ReactFlowProvider>
       <div className={className}>
@@ -107,7 +92,6 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                 edges={edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
                 onDrop={onDrop}
                 onDragOver={onDragOver}
                 onNodeClick={(_event, node) => {
@@ -115,7 +99,8 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                   setShowRecommendations(true)
                 }}
                 nodeTypes={nodeTypes}
-                isValidConnection={isValidConnection}
+                // 禁用手动连接功能
+                nodesConnectable={false}
                 colorMode={theme === 'light' ? 'light' : 'dark'}
                 fitView
                 proOptions={{

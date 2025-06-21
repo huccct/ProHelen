@@ -2,8 +2,8 @@
 
 import { useBuilderStore } from '@/store/builder'
 import { Background, Panel, ReactFlow, ReactFlowProvider } from '@xyflow/react'
-import { ArrowRight, Edit, Lightbulb, Move } from 'lucide-react'
-import { useCallback, useMemo } from 'react'
+import { Edit, Lightbulb, Move } from 'lucide-react'
+import { useMemo } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { CustomNode } from './custom-node'
 import '@xyflow/react/dist/style.css'
@@ -23,7 +23,7 @@ function selector(state: any) {
 }
 
 interface GuidedCanvasProps {
-  step: 'arrange' | 'connect' | 'customize' | 'test'
+  step: 'arrange' | 'customize' | 'test'
   onStepComplete?: () => void
 }
 
@@ -33,7 +33,6 @@ export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCa
     edges,
     onNodesChange,
     onEdgesChange,
-    onConnect,
   } = useBuilderStore(useShallow(selector))
 
   // 根据步骤决定可交互性
@@ -43,13 +42,6 @@ export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCa
         return {
           nodesDraggable: true,
           nodesConnectable: false,
-          elementsSelectable: false,
-          panOnDrag: false,
-        }
-      case 'connect':
-        return {
-          nodesDraggable: false,
-          nodesConnectable: true,
           elementsSelectable: false,
           panOnDrag: false,
         }
@@ -70,31 +62,15 @@ export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCa
     }
   }, [step])
 
-  // 验证连接是否有效
-  const isValidConnection = useCallback((connection: any) => {
-    const isDuplicateConnection = edges.some((edge: any) =>
-      edge.source === connection.source && edge.target === connection.target,
-    )
-    const isSelfConnection = connection.source === connection.target
-    return !isDuplicateConnection && !isSelfConnection
-  }, [edges])
-
   // 获取步骤指导配置
   const getGuidanceConfig = () => {
     switch (step) {
       case 'arrange':
         return {
           title: 'Arrange Your Cards',
-          message: 'Drag the instruction cards to organize them visually. This helps you understand your workflow layout.',
+          message: 'Drag the instruction cards to organize them visually. The connections are automatically created based on logical flow.',
           icon: Move,
-          tip: 'Arrange cards in a clear visual layout for better readability - the logical connections are automatic.',
-        }
-      case 'connect':
-        return {
-          title: 'Connect Instructions',
-          message: 'Draw lines between cards to set the execution order. The AI will follow these connections.',
-          icon: ArrowRight,
-          tip: 'Arrows show the flow direction. Connect from general instructions to specific ones.',
+          tip: 'Arrange cards in a clear visual layout for better readability - the connections are smart and automatic.',
         }
       case 'customize':
         return {
@@ -124,9 +100,7 @@ export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCa
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
           nodeTypes={nodeTypes}
-          isValidConnection={isValidConnection}
           fitView
           fitViewOptions={{ padding: 0.2 }}
           proOptions={{ hideAttribution: true }}
@@ -164,23 +138,23 @@ export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCa
             <Panel position="bottom-center">
               <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                 <p className="text-sm text-green-700">
-                  Great! Try moving the cards around to see how the layout affects readability.
+                  Great! Your cards are automatically connected in a logical flow. Try moving them around to see how the layout affects readability.
                 </p>
               </div>
             </Panel>
           )}
 
-          {step === 'connect' && edges.length > 0 && (
+          {step === 'customize' && nodes.some((node: any) => node.data.content) && (
             <Panel position="bottom-center">
               <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                 <p className="text-sm text-green-700">
-                  Perfect! You've connected
+                  Perfect! You've customized
                   {' '}
-                  {edges.length}
+                  {nodes.filter((node: any) => node.data.content).length}
                   {' '}
-                  instruction
-                  {edges.length > 1 ? 's' : ''}
-                  . The AI will follow this flow.
+                  card
+                  {nodes.filter((node: any) => node.data.content).length > 1 ? 's' : ''}
+                  . Your AI assistant is getting smarter!
                 </p>
               </div>
             </Panel>

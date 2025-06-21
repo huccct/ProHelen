@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ArrowRight, HelpCircle, Plus, Sparkles, Zap } from 'lucide-react'
+import { Edit, HelpCircle, Lightbulb, PlayCircle, Plus, Zap } from 'lucide-react'
 
 interface EmptyStateGuideProps {
   onAddBlock: () => void
@@ -11,77 +11,78 @@ interface EmptyStateGuideProps {
 
 export function EmptyStateGuide({ onAddBlock, onStartTour, onShowHelp }: EmptyStateGuideProps) {
   return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[100]">
-      <div className="max-w-md text-center space-y-6 p-8 pointer-events-auto relative z-[101]">
-        {/* Icon */}
-        <div className="flex justify-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-muted to-accent rounded-2xl flex items-center justify-center">
-            <Zap className="h-8 w-8 text-foreground" />
-          </div>
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[200]">
+      <div className="max-w-md mx-auto text-center pointer-events-auto">
+        <div className="w-16 h-16 bg-muted/50 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <Lightbulb className="h-8 w-8 text-muted-foreground" />
         </div>
+        <h3 className="text-lg font-semibold text-foreground mb-2">
+          Ready to build your AI assistant?
+        </h3>
+        <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
+          Start by adding instruction blocks to the canvas. They'll automatically connect in a logical flow, making prompt creation simple and intuitive.
+        </p>
 
-        {/* Title */}
-        <div>
-          <h2 className="text-2xl font-semibold text-foreground mb-2">
-            Ready to Build Something Amazing?
-          </h2>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            Start by adding instruction blocks to create your custom AI prompt.
-            Each block adds specific behavior to your AI assistant.
-          </p>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
           <Button
             onClick={onAddBlock}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium flex items-center justify-center gap-2 h-11 cursor-pointer"
+            className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             Add Your First Block
-            <ArrowRight className="h-4 w-4" />
           </Button>
+          <Button
+            variant="outline"
+            onClick={onStartTour}
+            className="w-full sm:w-auto flex items-center gap-2 cursor-pointer"
+          >
+            <PlayCircle className="h-4 w-4" />
+            Take the Tour
+          </Button>
+        </div>
 
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={onStartTour}
-              className="flex-1 flex items-center gap-2 cursor-pointer"
-            >
-              <Sparkles className="h-4 w-4" />
-              Take Tour
-            </Button>
-            <Button
-              variant="outline"
-              onClick={onShowHelp}
-              className="flex-1 flex items-center gap-2 cursor-pointer"
-            >
-              <HelpCircle className="h-4 w-4" />
-              Get Help
-            </Button>
+        <div className="mt-8 pt-6 border-t border-border">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Plus className="h-4 w-4 text-blue-600" />
+              </div>
+              <div>
+                <h4 className="font-medium text-foreground text-sm">Add Blocks</h4>
+                <p className="text-xs text-muted-foreground">Choose from 15+ instruction types</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Zap className="h-4 w-4 text-green-600" />
+              </div>
+              <div>
+                <h4 className="font-medium text-foreground text-sm">Auto-Connect</h4>
+                <p className="text-xs text-muted-foreground">Smart connections create logical flow</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Edit className="h-4 w-4 text-purple-600" />
+              </div>
+              <div>
+                <h4 className="font-medium text-foreground text-sm">Customize</h4>
+                <p className="text-xs text-muted-foreground">Edit content to fit your needs</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Tips */}
-        <div className="mt-8 space-y-2 text-xs text-muted-foreground/70">
-          <p>
-            💡
-            <strong>Pro Tip:</strong>
-            {' '}
-            Start with a "Role Definition" block
-          </p>
-          <p>
-            ⌨️
-            <strong>Shortcut:</strong>
-            {' '}
-            Press F1 for help anytime
-          </p>
-          <p>
-            🔗
-            <strong>Connect:</strong>
-            {' '}
-            Drag from one block to another to link them
-          </p>
+        <div className="mt-6 flex justify-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onShowHelp}
+            className="text-muted-foreground hover:text-foreground flex items-center gap-2 cursor-pointer"
+          >
+            <HelpCircle className="h-4 w-4" />
+            Need help? View guide
+          </Button>
         </div>
       </div>
     </div>

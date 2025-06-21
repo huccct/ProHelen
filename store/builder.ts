@@ -52,6 +52,141 @@ interface BuilderActions {
   canRedo: () => boolean
 }
 
+// 定义块的优先级和连接规则
+const BLOCK_PRIORITY: Record<string, number> = {
+  role_definition: 1, // 最高优先级，通常是起始点
+  context_setting: 2,
+  communication_style: 3,
+  learning_style: 3,
+  personality_traits: 4,
+  subject_focus: 4,
+  output_format: 5,
+  goal_setting: 6,
+  difficulty_level: 7,
+  creative_thinking: 8,
+  step_by_step: 9,
+  time_management: 9,
+  prioritization: 9,
+  conditional_logic: 10, // 逻辑性块，较后执行
+  error_handling: 11, // 错误处理，最后执行
+  career_planning: 8,
+  skill_assessment: 8,
+  feedback_style: 8,
+}
+
+// 定义块之间的逻辑连接规则
+const CONNECTION_RULES: Record<string, string[]> = {
+  role_definition: ['context_setting', 'communication_style', 'learning_style'],
+  context_setting: ['output_format', 'goal_setting', 'subject_focus'],
+  communication_style: ['personality_traits', 'feedback_style', 'output_format'],
+  learning_style: ['subject_focus', 'difficulty_level'],
+  personality_traits: ['goal_setting', 'creative_thinking'],
+  subject_focus: ['difficulty_level', 'output_format'],
+  output_format: ['step_by_step', 'prioritization', 'creative_thinking'],
+  goal_setting: ['time_management', 'prioritization', 'step_by_step'],
+  difficulty_level: ['step_by_step', 'conditional_logic'],
+  creative_thinking: ['conditional_logic', 'error_handling'],
+  step_by_step: ['time_management', 'error_handling'],
+  time_management: ['prioritization', 'error_handling'],
+  prioritization: ['conditional_logic', 'error_handling'],
+  conditional_logic: ['error_handling'],
+  career_planning: ['skill_assessment', 'goal_setting'],
+  skill_assessment: ['difficulty_level', 'prioritization'],
+  feedback_style: ['step_by_step', 'error_handling'],
+}
+
+// 自动连接算法
+function autoConnect(nodes: Node<CustomNodeData>[]): Edge[] {
+  if (nodes.length === 0)
+    return []
+
+  // 按优先级排序节点
+  const sortedNodes = [...nodes].sort((a, b) => {
+    const priorityA = BLOCK_PRIORITY[a.data.type] || 999
+    const priorityB = BLOCK_PRIORITY[b.data.type] || 999
+    return priorityA - priorityB
+  })
+
+  const edges: Edge[] = []
+  const nodeTypes = nodes.map(n => n.data.type)
+
+  // 为每个节点找到合适的连接目标
+  sortedNodes.forEach((sourceNode, index) => {
+    const sourceType = sourceNode.data.type
+    const possibleTargets = CONNECTION_RULES[sourceType] || []
+
+    // 在可能的目标中找到实际存在的节点
+    const availableTargets = possibleTargets.filter(targetType =>
+      nodeTypes.includes(targetType),
+    ).map(targetType =>
+      nodes.find(n => n.data.type === targetType)!,
+    )
+
+    // 连接到最高优先级的可用目标
+    if (availableTargets.length > 0) {
+      // 按优先级排序目标
+      availableTargets.sort((a, b) => {
+        const priorityA = BLOCK_PRIORITY[a.data.type] || 999
+        const priorityB = BLOCK_PRIORITY[b.data.type] || 999
+        return priorityA - priorityB
+      })
+
+      // 连接到第一个（优先级最高的）目标
+      const targetNode = availableTargets[0]
+
+      // 检查是否已存在连接
+      const existingConnection = edges.find(edge =>
+        edge.source === sourceNode.id && edge.target === targetNode.id,
+      )
+
+      if (!existingConnection) {
+        edges.push({
+          id: `auto-${sourceNode.id}-${targetNode.id}`,
+          source: sourceNode.id,
+          target: targetNode.id,
+        })
+      }
+    }
+
+    // 如果没有预定义规则，连接到下一个优先级更高的节点
+    if (availableTargets.length === 0 && index < sortedNodes.length - 1) {
+      const nextNode = sortedNodes[index + 1]
+      const existingConnection = edges.find(edge =>
+        edge.source === sourceNode.id && edge.target === nextNode.id,
+      )
+
+      if (!existingConnection) {
+        edges.push({
+          id: `auto-${sourceNode.id}-${nextNode.id}`,
+          source: sourceNode.id,
+          target: nextNode.id,
+        })
+      }
+    }
+  })
+
+  // 确保没有孤立的节点（除了最后一个）
+  const connectedSources = new Set(edges.map(e => e.source))
+  const connectedTargets = new Set(edges.map(e => e.target))
+
+  sortedNodes.forEach((node, index) => {
+    const isConnected = connectedSources.has(node.id) || connectedTargets.has(node.id)
+    const isLastNode = index === sortedNodes.length - 1
+
+    if (!isConnected && !isLastNode && index < sortedNodes.length - 1) {
+      // 连接到下一个节点
+      const nextNode = sortedNodes[index + 1]
+      edges.push({
+        id: `auto-fallback-${node.id}-${nextNode.id}`,
+        source: node.id,
+        target: nextNode.id,
+      })
+    }
+  })
+
+  return edges
+}
+
 export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) => ({
   // Initial state
   nodes: [],
@@ -112,7 +247,15 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       },
     }
 
-    set({ nodes: [...nodes, newNode] })
+    const newNodes = [...nodes, newNode]
+
+    // 自动生成连接
+    const autoEdges = autoConnect(newNodes)
+
+    set({
+      nodes: newNodes,
+      edges: autoEdges,
+    })
     get().updatePreview()
   },
 
@@ -124,14 +267,12 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
     // 删除节点
     const newNodes = state.nodes.filter(node => node.id !== nodeId)
 
-    // 删除与该节点相关的所有连接边
-    const newEdges = state.edges.filter(edge =>
-      edge.source !== nodeId && edge.target !== nodeId,
-    )
+    // 重新生成所有连接
+    const autoEdges = autoConnect(newNodes)
 
     set({
       nodes: newNodes,
-      edges: newEdges,
+      edges: autoEdges,
     })
     get().updatePreview()
   },
