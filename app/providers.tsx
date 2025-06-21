@@ -3,6 +3,7 @@
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ThemeProvider } from '@/lib/theme-context'
 import { SessionProvider } from 'next-auth/react'
+import '@/lib/i18n'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (

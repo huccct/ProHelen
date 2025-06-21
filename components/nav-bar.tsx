@@ -1,6 +1,7 @@
 'use client'
 
 import logo from '@/assets/icons/logo.png'
+import LanguageSwitcher from '@/components/language-switcher'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,6 +16,7 @@ import { BookText, Files, LogOut, Wrench } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 interface NavBarProps {
@@ -24,10 +26,11 @@ interface NavBarProps {
 export function NavBar({ hideSignIn = false }: NavBarProps) {
   const { data: session } = useSession()
   const router = useRouter()
+  const { t } = useTranslation()
 
   const handleSignOut = () => {
     signOut({ redirect: false })
-    toast.success('Signed out successfully')
+    toast.success(t('auth.signOut'))
     router.push('/sign-in')
   }
 
@@ -50,6 +53,7 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
           </div>
 
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeToggle />
             {session
               ? (
@@ -72,21 +76,21 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
                         onClick={() => router.push('/builder')}
                       >
                         <Wrench className="w-4 h-4" />
-                        Builder
+                        {t('nav.builder')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="cursor-pointer flex items-center gap-2"
                         onClick={() => router.push('/templates')}
                       >
                         <Files className="w-4 h-4" />
-                        Templates
+                        {t('nav.templates')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="cursor-pointer flex items-center gap-2"
                         onClick={() => router.push('/my-instructions')}
                       >
                         <BookText className="w-4 h-4" />
-                        My Instructions
+                        {t('nav.myInstructions')}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -94,7 +98,7 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
                         onClick={handleSignOut}
                       >
                         <LogOut className="w-4 h-4" />
-                        Sign out
+                        {t('auth.signOut')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -104,7 +108,7 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
                     onClick={() => router.push('/sign-in')}
                     className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
                   >
-                    Sign in
+                    {t('auth.signIn')}
                   </Button>
                 )}
           </div>
