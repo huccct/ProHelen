@@ -148,16 +148,15 @@ function BuilderContent() {
       addNode('conditional_logic', { x: 450, y: 200 })
     }
 
-    // 如果有具体目标，添加目标设置块
-    if (config.goal?.value) {
+    // 如果有具体目标且不是personal类型（personal类型已经添加过goal_setting），添加目标设置块
+    if (config.goal?.value && config.purpose?.value !== 'personal') {
       addNode('goal_setting', { x: 450, y: 300 })
     }
 
-    // 等待节点创建完成后填充内容和连线
+    // 等待节点创建完成后填充内容
     setTimeout(() => {
       const state = useBuilderStore.getState()
       const nodes = state.nodes
-      const { setEdges } = useBuilderStore.getState()
 
       // 填充Role Definition内容
       const roleNode = nodes.find(n => n.data.type === 'role_definition')
@@ -257,205 +256,7 @@ function BuilderContent() {
         }
       })
 
-      // 智能连接相关的blocks - 根据不同用途创建逻辑连接
-      const edges = []
-
-      // 查找具体的节点 (roleNode已在上面定义)
-      const commStyleNode = nodes.find(n => n.data.type === 'communication_style')
-      const learningStyleNode = nodes.find(n => n.data.type === 'learning_style')
-      const subjectFocusNode = nodes.find(n => n.data.type === 'subject_focus')
-      const difficultyNode = nodes.find(n => n.data.type === 'difficulty_level')
-      const outputFormatNode = nodes.find(n => n.data.type === 'output_format')
-      const creativeNode = nodes.find(n => n.data.type === 'creative_thinking')
-      const contextNode = nodes.find(n => n.data.type === 'context_setting')
-      const prioritizationNode = nodes.find(n => n.data.type === 'prioritization')
-      const personalityNode = nodes.find(n => n.data.type === 'personality_traits')
-      const goalNode = nodes.find(n => n.data.type === 'goal_setting')
-      const stepByStepNode = nodes.find(n => n.data.type === 'step_by_step')
-      const conditionalNode = nodes.find(n => n.data.type === 'conditional_logic')
-
-      // 根据用途创建逻辑连接
-      if (config.purpose) {
-        switch (config.purpose.value) {
-          case 'learning':
-            // Learning Assistant: Role → Learning Style → Subject Focus → Difficulty Level
-            if (roleNode && learningStyleNode) {
-              edges.push({
-                id: `${roleNode.id}-${learningStyleNode.id}`,
-                source: roleNode.id,
-                target: learningStyleNode.id,
-              })
-            }
-            if (learningStyleNode && subjectFocusNode) {
-              edges.push({
-                id: `${learningStyleNode.id}-${subjectFocusNode.id}`,
-                source: learningStyleNode.id,
-                target: subjectFocusNode.id,
-              })
-            }
-            if (subjectFocusNode && difficultyNode) {
-              edges.push({
-                id: `${subjectFocusNode.id}-${difficultyNode.id}`,
-                source: subjectFocusNode.id,
-                target: difficultyNode.id,
-              })
-            }
-            // 连接经验相关的块
-            if (stepByStepNode && difficultyNode) {
-              edges.push({
-                id: `${difficultyNode.id}-${stepByStepNode.id}`,
-                source: difficultyNode.id,
-                target: stepByStepNode.id,
-              })
-            }
-            if (conditionalNode && difficultyNode) {
-              edges.push({
-                id: `${difficultyNode.id}-${conditionalNode.id}`,
-                source: difficultyNode.id,
-                target: conditionalNode.id,
-              })
-            }
-            break
-
-          case 'writing':
-            // Writing Assistant: Role → Communication Style → Output Format → Creative Thinking
-            if (roleNode && commStyleNode) {
-              edges.push({
-                id: `${roleNode.id}-${commStyleNode.id}`,
-                source: roleNode.id,
-                target: commStyleNode.id,
-              })
-            }
-            if (commStyleNode && outputFormatNode) {
-              edges.push({
-                id: `${commStyleNode.id}-${outputFormatNode.id}`,
-                source: commStyleNode.id,
-                target: outputFormatNode.id,
-              })
-            }
-            if (outputFormatNode && creativeNode) {
-              edges.push({
-                id: `${outputFormatNode.id}-${creativeNode.id}`,
-                source: outputFormatNode.id,
-                target: creativeNode.id,
-              })
-            }
-            // 连接经验相关的块
-            if (stepByStepNode && creativeNode) {
-              edges.push({
-                id: `${creativeNode.id}-${stepByStepNode.id}`,
-                source: creativeNode.id,
-                target: stepByStepNode.id,
-              })
-            }
-            if (conditionalNode && creativeNode) {
-              edges.push({
-                id: `${creativeNode.id}-${conditionalNode.id}`,
-                source: creativeNode.id,
-                target: conditionalNode.id,
-              })
-            }
-            break
-
-          case 'work':
-            // Work Assistant: Role → Context Setting → Output Format → Prioritization
-            if (roleNode && contextNode) {
-              edges.push({
-                id: `${roleNode.id}-${contextNode.id}`,
-                source: roleNode.id,
-                target: contextNode.id,
-              })
-            }
-            if (contextNode && outputFormatNode) {
-              edges.push({
-                id: `${contextNode.id}-${outputFormatNode.id}`,
-                source: contextNode.id,
-                target: outputFormatNode.id,
-              })
-            }
-            if (outputFormatNode && prioritizationNode) {
-              edges.push({
-                id: `${outputFormatNode.id}-${prioritizationNode.id}`,
-                source: outputFormatNode.id,
-                target: prioritizationNode.id,
-              })
-            }
-            // 连接经验相关的块
-            if (stepByStepNode && prioritizationNode) {
-              edges.push({
-                id: `${prioritizationNode.id}-${stepByStepNode.id}`,
-                source: prioritizationNode.id,
-                target: stepByStepNode.id,
-              })
-            }
-            if (conditionalNode && prioritizationNode) {
-              edges.push({
-                id: `${prioritizationNode.id}-${conditionalNode.id}`,
-                source: prioritizationNode.id,
-                target: conditionalNode.id,
-              })
-            }
-            break
-
-          case 'personal':
-            // Personal Assistant: Role → Communication Style → Personality Traits → Goal Setting
-            if (roleNode && commStyleNode) {
-              edges.push({
-                id: `${roleNode.id}-${commStyleNode.id}`,
-                source: roleNode.id,
-                target: commStyleNode.id,
-              })
-            }
-            if (commStyleNode && personalityNode) {
-              edges.push({
-                id: `${commStyleNode.id}-${personalityNode.id}`,
-                source: commStyleNode.id,
-                target: personalityNode.id,
-              })
-            }
-            if (personalityNode && goalNode) {
-              edges.push({
-                id: `${personalityNode.id}-${goalNode.id}`,
-                source: personalityNode.id,
-                target: goalNode.id,
-              })
-            }
-            // 连接经验相关的块
-            if (stepByStepNode && goalNode) {
-              edges.push({
-                id: `${goalNode.id}-${stepByStepNode.id}`,
-                source: goalNode.id,
-                target: stepByStepNode.id,
-              })
-            }
-            if (conditionalNode && goalNode) {
-              edges.push({
-                id: `${goalNode.id}-${conditionalNode.id}`,
-                source: goalNode.id,
-                target: conditionalNode.id,
-              })
-            }
-            break
-        }
-      }
-
-      // 如果有独立的目标设置块（非personal类型），连接到主流程
-      if (goalNode && config.purpose?.value !== 'personal') {
-        const lastMainNode = nodes.find(n =>
-          n.data.type === 'difficulty_level'
-          || n.data.type === 'creative_thinking'
-          || n.data.type === 'prioritization',
-        )
-        if (lastMainNode) {
-          edges.push({
-            id: `${lastMainNode.id}-${goalNode.id}`,
-            source: lastMainNode.id,
-            target: goalNode.id,
-          })
-        }
-      }
-
-      setEdges(edges)
+      // 自动连接系统会处理所有连接，不需要手动创建
     }, 100)
 
     // 更新builder state
@@ -470,7 +271,7 @@ function BuilderContent() {
 
     // 切换到引导模式而不是高级模式
     setInterfaceMode('guided')
-  }, [])
+  }, [setInterfaceMode])
 
   const handleSwitchToAdvanced = useCallback(() => {
     setInterfaceMode('advanced')
