@@ -304,16 +304,22 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   },
 
   onEdgesChange: (changes) => {
+    // 过滤掉删除操作，因为连接线是自动生成的，用户删除后无法重新连接
+    const filteredChanges = changes.filter(change => change.type !== 'remove')
+
     // Save to history for non-selection changes
-    const hasNonSelectionChanges = changes.some(change => change.type !== 'select')
+    const hasNonSelectionChanges = filteredChanges.some(change => change.type !== 'select')
     if (hasNonSelectionChanges) {
       get().saveToHistory()
     }
 
     set(state => ({
-      edges: applyEdgeChanges(changes, state.edges),
+      edges: applyEdgeChanges(filteredChanges, state.edges),
     }))
-    get().updatePreview()
+
+    if (hasNonSelectionChanges) {
+      get().updatePreview()
+    }
   },
 
   onConnect: (connection) => {
