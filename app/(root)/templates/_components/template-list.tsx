@@ -18,6 +18,7 @@ import { motion } from 'framer-motion'
 import { Clock, Heart, Star, TrendingUp, Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export interface Template {
   id: string
@@ -54,6 +55,7 @@ interface PaginationInfo {
 }
 
 export function TemplateList({ searchQuery, category }: TemplateListProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [templates, setTemplates] = useState<Template[]>([])
   const [loading, setLoading] = useState(true)
@@ -144,9 +146,9 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-destructive mb-4">{error}</p>
+        <p className="text-destructive mb-4">{t('templates.list.error')}</p>
         <Button onClick={() => fetchTemplates(currentPage)} variant="outline">
-          Try Again
+          {t('templates.list.tryAgain')}
         </Button>
       </div>
     )
@@ -155,7 +157,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
   if (templates.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">No templates found for your search criteria.</p>
+        <p className="text-muted-foreground">{t('templates.list.noResults')}</p>
       </div>
     )
   }
@@ -181,7 +183,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                   </Badge>
                   {template.isPremium && (
                     <Badge className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/30 pointer-events-none">
-                      Premium
+                      {t('templates.list.premium')}
                     </Badge>
                   )}
                 </div>
@@ -207,7 +209,9 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            User rating (
+                            {t('templates.stats.rating')}
+                            {' '}
+                            (
                             {template.rating}
                             /5.0)
                           </p>
@@ -224,10 +228,11 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            Used
+                            {t('templates.stats.usage')}
+                            {' '}
                             {template.usageCount}
                             {' '}
-                            times
+                            {t('templates.stats.times')}
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -242,10 +247,9 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            Favorited
                             {template._count.favorites}
                             {' '}
-                            times
+                            {t('templates.stats.favorites')}
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -282,7 +286,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                     onClick={() => router.push(`/templates/${template.id}`)}
                   >
                     <Clock className="w-4 h-4 mr-2" />
-                    Preview
+                    {t('templates.actions.viewDetails')}
                   </Button>
                   <Button
                     size="sm"
@@ -290,7 +294,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                     onClick={() => router.push(`/builder?template=${template.id}`)}
                   >
                     <Users className="w-4 h-4 mr-2" />
-                    Use Template
+                    {t('templates.actions.useTemplate')}
                   </Button>
                 </div>
               </CardHeader>

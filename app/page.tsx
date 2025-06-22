@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { IoArrowForward, IoCodeSlash, IoCube, IoDocumentText, IoFlash, IoGrid, IoLayers, IoRocket, IoSparkles, IoTrendingUp } from 'react-icons/io5'
 
 const fadeIn = {
@@ -15,17 +16,75 @@ const fadeIn = {
 }
 
 function TypewriterEffect() {
-  const phrases = [
-    'Visual Prompt Design',
-    'AI Behavior Control',
-    'Smart Instructions',
-    'LLM Customization',
-  ]
-  const [currentPhrase, setCurrentPhrase] = useState(0)
+  const { t, i18n } = useTranslation()
+
   const [displayText, setDisplayText] = useState('')
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [currentIndex, setCurrentIndex] = useState(0)
   const [showCursor, setShowCursor] = useState(true)
+
+  useEffect(() => {
+    const isChinese = i18n.language === 'zh'
+    const typingSpeed = isChinese ? 150 : 100
+    const deleteSpeed = isChinese ? 80 : 50
+    const pauseTime = isChinese ? 3000 : 2500
+    const restartDelay = isChinese ? 1000 : 800
+
+    const phrases = [
+      t('home.hero.typewriter.visualPromptDesign'),
+      t('home.hero.typewriter.aiBehaviorControl'),
+      t('home.hero.typewriter.smartInstructions'),
+      t('home.hero.typewriter.llmCustomization'),
+    ]
+
+    let currentPhrase = 0
+    let currentIndex = 0
+    let isDeleting = false
+    let animationId: NodeJS.Timeout
+
+    const animate = () => {
+      const phrase = phrases[currentPhrase]
+      if (!phrase)
+        return
+
+      if (!isDeleting) {
+        if (currentIndex < phrase.length) {
+          setDisplayText(phrase.substring(0, currentIndex + 1))
+          currentIndex++
+          animationId = setTimeout(animate, typingSpeed)
+        }
+        else {
+          animationId = setTimeout(() => {
+            isDeleting = true
+            animate()
+          }, pauseTime)
+        }
+      }
+      else {
+        if (currentIndex > 0) {
+          setDisplayText(phrase.substring(0, currentIndex - 1))
+          currentIndex--
+          animationId = setTimeout(animate, deleteSpeed)
+        }
+        else {
+          isDeleting = false
+          currentPhrase = (currentPhrase + 1) % phrases.length
+          animationId = setTimeout(animate, restartDelay)
+        }
+      }
+    }
+
+    // 重置并开始动画
+    currentPhrase = 0
+    currentIndex = 0
+    isDeleting = false
+    setDisplayText('')
+    animate()
+
+    return () => {
+      if (animationId) {
+        clearTimeout(animationId)
+      }
+    }
+  }, [t, i18n.language])
 
   useEffect(() => {
     const cursorInterval = setInterval(() => {
@@ -34,38 +93,6 @@ function TypewriterEffect() {
 
     return () => clearInterval(cursorInterval)
   }, [])
-
-  useEffect(() => {
-    const phrase = phrases[currentPhrase]
-
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        if (currentIndex < phrase.length) {
-          setDisplayText(prev => prev + phrase[currentIndex])
-          setCurrentIndex(prev => prev + 1)
-        }
-        else {
-          setTimeout(() => {
-            setIsDeleting(true)
-          }, 2500)
-        }
-      }
-      else {
-        if (currentIndex > 0) {
-          setDisplayText(phrase.substring(0, currentIndex - 1))
-          setCurrentIndex(prev => prev - 1)
-        }
-        else {
-          setTimeout(() => {
-            setIsDeleting(false)
-            setCurrentPhrase(prev => (prev + 1) % phrases.length)
-          }, 800)
-        }
-      }
-    }, isDeleting ? 50 : 100)
-
-    return () => clearTimeout(timeout)
-  }, [currentIndex, isDeleting, currentPhrase])
 
   return (
     <>
@@ -186,6 +213,7 @@ function UseCaseCard({ title, description, icon: Icon, delay = 0 }: {
 }
 
 export default function Home() {
+  const { t } = useTranslation()
   const router = useRouter()
 
   return (
@@ -289,7 +317,7 @@ export default function Home() {
               >
                 <Badge variant="outline" className="px-3 py-1">
                   <IoSparkles className="w-3 h-3 mr-1" />
-                  ProHelen v1.0
+                  {t('home.hero.badge')}
                 </Badge>
               </motion.div>
 
@@ -303,14 +331,14 @@ export default function Home() {
                 }}
               >
                 <span className="text-foreground block mb-4">
-                  The Future of
+                  {t('home.hero.mainTitle')}
                 </span>
                 <span className="text-foreground">
                   <TypewriterEffect />
                 </span>
               </motion.h1>
 
-              <motion.p
+              <motion.div
                 className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -319,12 +347,8 @@ export default function Home() {
                   duration: 0.8,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-              >
-                Transform how you interact with AI through
-                {' '}
-                <span className="text-foreground font-medium">intuitive visual building blocks</span>
-                . Create sophisticated LLM instructions without coding, deploy instantly, and achieve precise AI behavior control with our revolutionary drag-and-drop interface.
-              </motion.p>
+                dangerouslySetInnerHTML={{ __html: t('home.hero.description') }}
+              />
 
               {/* Enhanced workflow visualization */}
               <motion.div
@@ -344,9 +368,9 @@ export default function Home() {
                       <IoGrid className="text-2xl text-foreground group-hover:scale-110 transition-transform" />
                     </div>
                     <span className="text-foreground text-center font-medium">
-                      Drag & Drop
+                      {t('home.workflow.dragDrop')}
                       <br />
-                      <span className="text-sm text-muted-foreground">Visual Blocks</span>
+                      <span className="text-sm text-muted-foreground">{t('home.workflow.visualBlocks')}</span>
                     </span>
                   </motion.div>
 
@@ -370,9 +394,9 @@ export default function Home() {
                       <IoFlash className="text-2xl text-foreground group-hover:scale-110 transition-transform" />
                     </div>
                     <span className="text-foreground text-center font-medium">
-                      Generate
+                      {t('home.workflow.generate')}
                       <br />
-                      <span className="text-sm text-muted-foreground">Smart Prompts</span>
+                      <span className="text-sm text-muted-foreground">{t('home.workflow.smartPrompts')}</span>
                     </span>
                   </motion.div>
 
@@ -396,9 +420,9 @@ export default function Home() {
                       <IoRocket className="text-2xl text-foreground group-hover:scale-110 transition-transform" />
                     </div>
                     <span className="text-foreground text-center font-medium">
-                      Deploy
+                      {t('home.workflow.deploy')}
                       <br />
-                      <span className="text-sm text-muted-foreground">Instantly</span>
+                      <span className="text-sm text-muted-foreground">{t('home.workflow.instantly')}</span>
                     </span>
                   </motion.div>
                 </div>
@@ -423,7 +447,7 @@ export default function Home() {
                     onClick={() => router.push('/builder')}
                   >
                     <IoSparkles className="h-5 w-5 mr-2" />
-                    Start Creating
+                    {t('home.hero.startCreating')}
                     <motion.div
                       className="inline-block ml-2"
                       animate={{
@@ -454,7 +478,7 @@ export default function Home() {
                     onClick={() => router.push('/templates')}
                   >
                     <IoDocumentText className="h-5 w-5 mr-2" />
-                    Explore Templates
+                    {t('home.hero.exploreTemplates')}
                   </Button>
                 </motion.div>
               </div>
@@ -467,15 +491,15 @@ export default function Home() {
               >
                 <span className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  No coding required
+                  {t('home.hero.features.noCoding')}
                 </span>
                 <span className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  Real-time preview
+                  {t('home.hero.features.realTime')}
                 </span>
                 <span className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                  Free to start
+                  {t('home.hero.features.freeStart')}
                 </span>
               </motion.div>
             </motion.div>
@@ -490,50 +514,50 @@ export default function Home() {
           transition={{ delay: 1.0, duration: 0.8 }}
         >
           <div className="text-center space-y-4">
-            <h2 className="text-4xl font-light text-foreground">Powerful Features</h2>
+            <h2 className="text-4xl font-light text-foreground">{t('home.features.title')}</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Everything you need to build, manage, and deploy sophisticated AI instructions
+              {t('home.features.subtitle')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard
               icon={IoGrid}
-              title="Visual Block System"
-              description="Intuitive drag-and-drop interface with intelligent block connections. Build complex AI behaviors using our comprehensive library of pre-designed components."
-              highlight="Core Feature"
+              title={t('home.features.visualBlockSystem.title')}
+              description={t('home.features.visualBlockSystem.description')}
+              highlight={t('home.features.visualBlockSystem.highlight')}
               delay={0.8}
             />
             <FeatureCard
               icon={IoDocumentText}
-              title="Smart Templates"
-              description="Pre-built instruction templates for common AI tasks. Educational, productivity, and creative use cases with customizable parameters and examples."
-              highlight="Popular"
+              title={t('home.features.smartTemplates.title')}
+              description={t('home.features.smartTemplates.description')}
+              highlight={t('home.features.smartTemplates.highlight')}
               delay={0.9}
             />
             <FeatureCard
               icon={IoFlash}
-              title="Real-time Preview"
-              description="See your AI's behavior change instantly as you modify instructions. Live testing environment with immediate feedback and iteration."
-              highlight="Pro"
+              title={t('home.features.realTimePreview.title')}
+              description={t('home.features.realTimePreview.description')}
+              highlight={t('home.features.realTimePreview.highlight')}
               delay={1.0}
             />
             <FeatureCard
               icon={IoLayers}
-              title="Instruction Management"
-              description="Organize, categorize, and version your AI instructions. Advanced search, favorites, and sharing capabilities with team collaboration features."
+              title={t('home.features.instructionManagement.title')}
+              description={t('home.features.instructionManagement.description')}
               delay={1.1}
             />
             <FeatureCard
               icon={IoCodeSlash}
-              title="Export & Integration"
-              description="Export your instructions in multiple formats. Direct API integration with popular AI models and platforms for seamless deployment."
+              title={t('home.features.exportIntegration.title')}
+              description={t('home.features.exportIntegration.description')}
               delay={1.2}
             />
             <FeatureCard
               icon={IoTrendingUp}
-              title="Analytics & Insights"
-              description="Track usage patterns, performance metrics, and optimization suggestions. Data-driven insights to improve your AI instruction effectiveness."
+              title={t('home.features.analyticsInsights.title')}
+              description={t('home.features.analyticsInsights.description')}
               delay={1.3}
             />
           </div>
@@ -547,9 +571,9 @@ export default function Home() {
           transition={{ delay: 1.2, duration: 0.8 }}
         >
           <div className="text-center space-y-4">
-            <h2 className="text-4xl font-light text-foreground">Perfect For</h2>
+            <h2 className="text-4xl font-light text-foreground">{t('home.useCases.title')}</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Whether you're an educator, developer, or AI enthusiast
+              {t('home.useCases.subtitle')}
             </p>
           </div>
 
@@ -557,40 +581,40 @@ export default function Home() {
             <div className="space-y-6">
               <UseCaseCard
                 icon={IoCodeSlash}
-                title="Developers & Engineers"
-                description="Rapid prototyping of AI-powered features, API prompt optimization, and integration testing"
+                title={t('home.useCases.developers.title')}
+                description={t('home.useCases.developers.description')}
                 delay={1.3}
               />
               <UseCaseCard
                 icon={IoDocumentText}
-                title="Content Creators"
-                description="Custom writing assistants, content generation workflows, and creative AI collaborations"
+                title={t('home.useCases.contentCreators.title')}
+                description={t('home.useCases.contentCreators.description')}
                 delay={1.4}
               />
               <UseCaseCard
                 icon={IoSparkles}
-                title="Educators & Trainers"
-                description="Interactive learning experiences, automated grading systems, and personalized tutoring"
+                title={t('home.useCases.educators.title')}
+                description={t('home.useCases.educators.description')}
                 delay={1.5}
               />
             </div>
             <div className="space-y-6">
               <UseCaseCard
                 icon={IoRocket}
-                title="Startup Teams"
-                description="MVP development, customer support automation, and product feature enhancement"
+                title={t('home.useCases.startups.title')}
+                description={t('home.useCases.startups.description')}
                 delay={1.6}
               />
               <UseCaseCard
                 icon={IoTrendingUp}
-                title="Business Analysts"
-                description="Data analysis workflows, report generation, and decision support systems"
+                title={t('home.useCases.analysts.title')}
+                description={t('home.useCases.analysts.description')}
                 delay={1.7}
               />
               <UseCaseCard
                 icon={IoCube}
-                title="AI Researchers"
-                description="Prompt engineering experiments, behavior analysis, and model comparison studies"
+                title={t('home.useCases.researchers.title')}
+                description={t('home.useCases.researchers.description')}
                 delay={1.8}
               />
             </div>
@@ -606,11 +630,19 @@ export default function Home() {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { label: 'Block Types', value: '30+', description: 'Versatile components' },
-              { label: 'Templates', value: '25+', description: 'Ready-to-use patterns' },
-              { label: 'Instructions', value: '500+', description: 'Community created' },
-              { label: 'Response Time', value: '<100ms', description: 'Lightning fast' },
-            ].map((stat, index) => (
+              {
+                ...t('home.stats.blockTypes', { returnObjects: true }),
+              },
+              {
+                ...t('home.stats.templates', { returnObjects: true }),
+              },
+              {
+                ...t('home.stats.instructions', { returnObjects: true }),
+              },
+              {
+                ...t('home.stats.responseTime', { returnObjects: true }),
+              },
+            ].map((stat: any, index) => (
               <motion.div
                 key={stat.label}
                 className="space-y-3 group"
@@ -641,13 +673,13 @@ export default function Home() {
           transition={{ delay: 1.6, duration: 0.8 }}
         >
           <div className="flex items-center justify-center gap-8 text-muted-foreground">
-            <span className="hover:text-foreground transition-colors cursor-pointer">Privacy</span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">Terms</span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">Documentation</span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">Support</span>
+            <span className="hover:text-foreground transition-colors cursor-pointer">{t('home.footer.privacy')}</span>
+            <span className="hover:text-foreground transition-colors cursor-pointer">{t('home.footer.terms')}</span>
+            <span className="hover:text-foreground transition-colors cursor-pointer">{t('home.footer.documentation')}</span>
+            <span className="hover:text-foreground transition-colors cursor-pointer">{t('home.footer.support')}</span>
           </div>
           <div>
-            © 2025 ProHelen. Revolutionizing AI instruction design for everyone.
+            {t('home.footer.copyright')}
           </div>
         </motion.div>
       </div>

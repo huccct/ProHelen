@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Star } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 interface TemplateRatingProps {
@@ -26,6 +27,7 @@ interface Review {
 }
 
 export function TemplateRating({ templateId, currentRating, ratingCount }: TemplateRatingProps) {
+  const { t } = useTranslation()
   const { data: session } = useSession()
   const [userRating, setUserRating] = useState(0)
   const [hoverRating, setHoverRating] = useState(0)
@@ -77,12 +79,12 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
 
   const handleSubmitReview = async () => {
     if (!session?.user?.id) {
-      toast.error('Please sign in to rate this template')
+      toast.error(t('templateDetail.signInToRate'))
       return
     }
 
     if (userRating === 0) {
-      toast.error('Please select a rating')
+      toast.error(t('templateDetail.selectRating'))
       return
     }
 
@@ -100,7 +102,7 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
       })
 
       if (response.ok) {
-        toast.success(hasUserReviewed ? 'Review updated!' : 'Review submitted!')
+        toast.success(hasUserReviewed ? t('templateDetail.reviewUpdated') : t('templateDetail.reviewSubmitted'))
         setHasUserReviewed(true)
         fetchReviews()
       }
@@ -109,7 +111,7 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
       }
     }
     catch (error) {
-      toast.error('Failed to submit review')
+      toast.error(t('templateDetail.reviewFailed'))
       console.error('Error submitting review:', error)
     }
     finally {
@@ -138,12 +140,45 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
     )
   }
 
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date()
+    const date = new Date(dateString)
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+    if (diffInSeconds < 60) {
+      return t('templateDetail.now')
+    }
+
+    const diffInMinutes = Math.floor(diffInSeconds / 60)
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} ${diffInMinutes === 1 ? t('templateDetail.timeUnits.minute') : t('templateDetail.timeUnits.minutes')} ${t('templateDetail.ago')}`
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60)
+    if (diffInHours < 24) {
+      return `${diffInHours} ${diffInHours === 1 ? t('templateDetail.timeUnits.hour') : t('templateDetail.timeUnits.hours')} ${t('templateDetail.ago')}`
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24)
+    if (diffInDays < 30) {
+      return `${diffInDays} ${diffInDays === 1 ? t('templateDetail.timeUnits.day') : t('templateDetail.timeUnits.days')} ${t('templateDetail.ago')}`
+    }
+
+    const diffInMonths = Math.floor(diffInDays / 30)
+    if (diffInMonths < 12) {
+      return `${diffInMonths} ${diffInMonths === 1 ? t('templateDetail.timeUnits.month') : t('templateDetail.timeUnits.months')} ${t('templateDetail.ago')}`
+    }
+
+    const diffInYears = Math.floor(diffInDays / 365)
+    return `${diffInYears} ${diffInYears === 1 ? t('templateDetail.timeUnits.year') : t('templateDetail.timeUnits.years')} ${t('templateDetail.ago')}`
+  }
+
   const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 3)
 
   return (
     <Card className="bg-card/50 border-border">
       <CardHeader>
-        <CardTitle className="text-xl font-bold text-foreground">Ratings & Reviews</CardTitle>
+        <CardTitle className="text-xl font-bold text-foreground">{t('templateDetail.ratingsReviews')}</CardTitle>
         {currentRating && ratingCount && (
           <div className="flex items-center gap-3">
             {renderStarRating(currentRating)}
@@ -152,7 +187,8 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
               (
               {ratingCount}
               {' '}
-              reviews)
+              {t('templateDetail.reviews')}
+              )
             </span>
           </div>
         )}
@@ -164,25 +200,25 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
           ? (
               <div className="border-b border-border pb-6">
                 <h3 className="text-lg font-medium mb-3">
-                  {hasUserReviewed ? 'Your Review' : 'Rate This Template'}
+                  {hasUserReviewed ? t('templateDetail.yourReview') : t('templateDetail.rateTemplate')}
                 </h3>
 
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-foreground block mb-2">
-                      Rating
+                      {t('templateDetail.rating')}
                     </label>
                     {renderStarRating(userRating, true, 'w-6 h-6')}
                   </div>
 
                   <div>
                     <label className="text-sm font-medium text-foreground block mb-2">
-                      Comment (optional)
+                      {t('templateDetail.comment')}
                     </label>
                     <Textarea
                       value={comment}
                       onChange={e => setComment(e.target.value)}
-                      placeholder="Share your thoughts about this template..."
+                      placeholder={t('templateDetail.commentPlaceholder')}
                       className="min-h-[80px]"
                     />
                   </div>
@@ -192,7 +228,7 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
                     disabled={isSubmitting || userRating === 0}
                     className="w-full bg-muted hover:bg-muted/80 text-foreground border border-border cursor-pointer"
                   >
-                    {isSubmitting ? 'Submitting...' : hasUserReviewed ? 'Update Review' : 'Submit Review'}
+                    {isSubmitting ? t('templateDetail.submitting') : hasUserReviewed ? t('templateDetail.updateReview') : t('templateDetail.submitReview')}
                   </Button>
                 </div>
               </div>
@@ -200,7 +236,7 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
           : (
               <div className="border-b border-border pb-6">
                 <div className="text-center py-4 bg-muted/30 rounded-lg">
-                  <p className="text-muted-foreground">Sign in to rate and review this template</p>
+                  <p className="text-muted-foreground">{t('templateDetail.signInToReview')}</p>
                 </div>
               </div>
             )}
@@ -208,7 +244,7 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
         {/* Reviews List */}
         {reviews.length > 0 && (
           <div>
-            <h3 className="text-lg font-medium mb-4">Reviews</h3>
+            <h3 className="text-lg font-medium mb-4">{t('templateDetail.reviews')}</h3>
             <div className="space-y-4">
               {displayedReviews.map(review => (
                 <div key={review.id} className="border border-border rounded-lg p-4">
@@ -220,7 +256,7 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
                       </span>
                     </div>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(review.createdAt).toLocaleDateString()}
+                      {formatTimeAgo(review.createdAt)}
                     </span>
                   </div>
                   {review.comment && (
@@ -229,17 +265,15 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
                 </div>
               ))}
 
-              {reviews.length > 3 && !showAllReviews && (
+              {reviews.length > 3 && (
                 <Button
                   variant="outline"
-                  onClick={() => setShowAllReviews(true)}
+                  onClick={() => setShowAllReviews(!showAllReviews)}
                   className="w-full border-border text-muted-foreground hover:text-foreground hover:bg-muted/50 cursor-pointer"
                 >
-                  Show all
-                  {' '}
-                  {reviews.length}
-                  {' '}
-                  reviews
+                  {showAllReviews
+                    ? t('templateDetail.showLessReviews')
+                    : `${t('templateDetail.showAllReviews')} (${reviews.length})`}
                 </Button>
               )}
             </div>

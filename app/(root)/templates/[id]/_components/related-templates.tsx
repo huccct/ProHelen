@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface Template {
   id: string
@@ -18,6 +19,7 @@ interface RelatedTemplatesProps {
 }
 
 export function RelatedTemplates({ currentTemplateId, category }: RelatedTemplatesProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [relatedTemplates, setRelatedTemplates] = useState<Template[]>([])
 
@@ -41,7 +43,7 @@ export function RelatedTemplates({ currentTemplateId, category }: RelatedTemplat
   return (
     <Card className="bg-card/50 border-border">
       <CardHeader>
-        <CardTitle className="text-xl font-bold text-foreground">Related Templates</CardTitle>
+        <CardTitle className="text-xl font-bold text-foreground">{t('templateDetail.relatedTemplates')}</CardTitle>
 
         <div className="mt-4 space-y-4">
           {relatedTemplates.map(template => (
@@ -62,7 +64,7 @@ export function RelatedTemplates({ currentTemplateId, category }: RelatedTemplat
             className="w-full mt-2 cursor-pointer"
             onClick={() => router.push('/templates')}
           >
-            View All Templates
+            {t('templateDetail.viewAllTemplates')}
           </Button>
         </div>
       </CardHeader>

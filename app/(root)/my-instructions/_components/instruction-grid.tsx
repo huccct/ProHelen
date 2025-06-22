@@ -17,6 +17,7 @@ import {
 import { Clock, Edit, Globe, Heart, HeartOff, MoreVertical, Share, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 // Instruction data type
@@ -113,6 +114,7 @@ export function InstructionGrid({
   viewMode = 'grid',
   sortBy = 'updated',
 }: InstructionGridProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [instructions, setInstructions] = useState<Instruction[]>([])
   const [loading, setLoading] = useState(true)
@@ -152,7 +154,7 @@ export function InstructionGrid({
       const response = await fetch(`/api/instructions?${params}`)
 
       if (!response.ok) {
-        throw new Error('Failed to fetch instructions')
+        throw new Error(t('myInstructions.failedToLoad'))
       }
 
       const data = await response.json()
@@ -167,7 +169,7 @@ export function InstructionGrid({
     }
     catch (err) {
       console.error('Error fetching instructions:', err)
-      setError(err instanceof Error ? err.message : 'Failed to load instructions')
+      setError(err instanceof Error ? err.message : t('myInstructions.failedToLoad'))
     }
     finally {
       setLoading(false)
@@ -198,7 +200,7 @@ export function InstructionGrid({
         throw new Error('Failed to delete instruction')
       }
 
-      toast.success('Instruction deleted successfully')
+      toast.success(t('myInstructions.instructionDeleted'))
       // If we deleted the last item on the current page and it's not page 1, go to previous page
       if (instructions.length === 1 && currentPage > 1) {
         fetchInstructions(currentPage - 1)
@@ -209,7 +211,7 @@ export function InstructionGrid({
     }
     catch (error) {
       console.error('Error deleting instruction:', error)
-      toast.error('Failed to delete, please try again')
+      toast.error(t('myInstructions.deleteFailed'))
     }
   }
 
@@ -231,12 +233,12 @@ export function InstructionGrid({
         throw new Error('Failed to update favorite status')
       }
 
-      toast.success(instruction.isFavorite ? 'Removed from favorites' : 'Added to favorites')
+      toast.success(instruction.isFavorite ? t('myInstructions.removedFromFavorites') : t('myInstructions.addedToFavorites'))
       fetchInstructions(currentPage) // Refresh current page
     }
     catch (error) {
       console.error('Error toggling favorite:', error)
-      toast.error('Operation failed, please try again')
+      toast.error(t('myInstructions.favoriteOperationFailed'))
     }
   }
 
@@ -262,12 +264,12 @@ export function InstructionGrid({
         throw new Error('Failed to duplicate instruction')
       }
 
-      toast.success('Instruction duplicated successfully')
+      toast.success(t('myInstructions.instructionDuplicated'))
       fetchInstructions(currentPage) // Refresh current page
     }
     catch (error) {
       console.error('Error duplicating instruction:', error)
-      toast.error('Failed to duplicate, please try again')
+      toast.error(t('myInstructions.duplicateFailed'))
     }
   }
 
@@ -285,12 +287,12 @@ export function InstructionGrid({
         throw new Error('Failed to publish instruction')
       }
 
-      toast.success('Instruction published to template library')
+      toast.success(t('myInstructions.instructionPublished'))
       fetchInstructions(currentPage) // Refresh current page
     }
     catch (error) {
       console.error('Error publishing instruction:', error)
-      toast.error('Failed to publish, please try again')
+      toast.error(t('myInstructions.publishFailed'))
     }
   }
 
@@ -321,7 +323,7 @@ export function InstructionGrid({
       <div className="text-center py-12">
         <p className="text-destructive mb-4">{error}</p>
         <Button onClick={() => fetchInstructions(currentPage)} variant="outline">
-          Try Again
+          {t('myInstructions.tryAgain')}
         </Button>
       </div>
     )
@@ -331,13 +333,13 @@ export function InstructionGrid({
     return (
       <div className="text-center py-12">
         <div className="text-muted-foreground mb-4">
-          {searchQuery ? 'No matching instructions found' : 'You haven\'t created any instructions yet'}
+          {searchQuery ? t('myInstructions.noMatchingInstructions') : t('myInstructions.noInstructionsYet')}
         </div>
         <Button
           onClick={() => router.push('/builder')}
           className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
         >
-          Create New Instruction
+          {t('myInstructions.createNewInstruction')}
         </Button>
       </div>
     )
@@ -367,7 +369,7 @@ export function InstructionGrid({
                       {instruction.isPublished && (
                         <Badge variant="secondary" className="bg-green-900/30 text-green-300 border-green-700 pointer-events-none">
                           <Globe className="w-3 h-3 mr-1" />
-                          Published
+                          {t('myInstructions.published')}
                         </Badge>
                       )}
                       {instruction.isFavorite && (
@@ -392,13 +394,13 @@ export function InstructionGrid({
                         onClick={() => router.push(`/builder?instruction=${instruction.id}`)}
                       >
                         <Edit className="mr-2 h-4 w-4" />
-                        Edit
+                        {t('myInstructions.edit')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="cursor-pointer hover:bg-muted focus:bg-muted"
                         onClick={() => handleDuplicate(instruction)}
                       >
-                        Duplicate
+                        {t('myInstructions.duplicate')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="cursor-pointer hover:bg-muted focus:bg-muted"
@@ -408,13 +410,13 @@ export function InstructionGrid({
                           ? (
                               <>
                                 <HeartOff className="mr-2 h-4 w-4" />
-                                Remove from favorites
+                                {t('myInstructions.removeFromFavorites')}
                               </>
                             )
                           : (
                               <>
                                 <Heart className="mr-2 h-4 w-4" />
-                                Add to favorites
+                                {t('myInstructions.addToFavorites')}
                               </>
                             )}
                       </DropdownMenuItem>
@@ -424,14 +426,14 @@ export function InstructionGrid({
                           onClick={() => setPublishModal({ isOpen: true, instruction })}
                         >
                           <Share className="mr-2 h-4 w-4" />
-                          Publish to template library
+                          {t('myInstructions.publishToLibrary')}
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem
                         className="cursor-pointer hover:bg-muted focus:bg-muted text-destructive hover:text-destructive/80"
                         onClick={() => setDeleteModal({ isOpen: true, instruction })}
                       >
-                        Delete
+                        {t('myInstructions.delete')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -442,7 +444,7 @@ export function InstructionGrid({
                 <>
                   <CardContent>
                     <p className="text-foreground text-sm min-h-[60px] line-clamp-3">
-                      {instruction.description || 'No description'}
+                      {instruction.description || t('myInstructions.noDescription')}
                     </p>
                     <div className="flex flex-wrap gap-2 mt-3">
                       {instruction.tags.slice(0, 3).map(tag => (
@@ -466,11 +468,7 @@ export function InstructionGrid({
                     </div>
                     <div className="flex items-center">
                       <Sparkles className="h-3 w-3 mr-1" />
-                      Used
-                      {' '}
-                      {instruction.usageCount}
-                      {' '}
-                      times
+                      {t('myInstructions.usedTimes', { count: instruction.usageCount })}
                     </div>
                   </CardFooter>
                 </>
@@ -569,10 +567,10 @@ export function InstructionGrid({
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, instruction: null })}
         onConfirm={() => deleteModal.instruction && handleDelete(deleteModal.instruction.id)}
-        title="Delete Instruction"
-        description="Are you sure you want to delete this instruction? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('myInstructions.deleteInstruction.title')}
+        description={t('myInstructions.deleteInstruction.description')}
+        confirmText={t('myInstructions.deleteInstruction.confirm')}
+        cancelText={t('myInstructions.deleteInstruction.cancel')}
         variant="destructive"
       />
 
@@ -581,10 +579,10 @@ export function InstructionGrid({
         isOpen={publishModal.isOpen}
         onClose={() => setPublishModal({ isOpen: false, instruction: null })}
         onConfirm={() => publishModal.instruction && handlePublish(publishModal.instruction)}
-        title="Publish to Template Library"
-        description="Are you sure you want to publish this instruction to the template library? Other users will be able to see and use it."
-        confirmText="Publish"
-        cancelText="Cancel"
+        title={t('myInstructions.publishInstruction.title')}
+        description={t('myInstructions.publishInstruction.description')}
+        confirmText={t('myInstructions.publishInstruction.confirm')}
+        cancelText={t('myInstructions.publishInstruction.cancel')}
       />
     </div>
   )

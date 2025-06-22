@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface TourStep {
   id: string
@@ -13,58 +14,6 @@ interface TourStep {
   spotlight?: boolean
 }
 
-const tourSteps: TourStep[] = [
-  {
-    id: 'welcome',
-    target: '',
-    title: 'Welcome to ProHelen!',
-    content: 'ProHelen is a visual prompt design tool that helps you create custom AI instructions using drag-and-drop blocks. Let\'s take a quick tour!',
-    position: 'top',
-  },
-  {
-    id: 'title-input',
-    target: '[data-tour="title-input"]',
-    title: 'Name Your Creation',
-    content: 'Start by giving your instruction a descriptive title and optional description to help organize your work.',
-    position: 'bottom',
-  },
-  {
-    id: 'add-block',
-    target: '[data-tour="add-block"]',
-    title: 'Add Building Blocks',
-    content: 'Click "Add Block" to choose from 18 different instruction blocks. Each block serves a specific purpose in building your AI prompt.',
-    position: 'bottom',
-  },
-  {
-    id: 'canvas',
-    target: '[data-tour="canvas"]',
-    title: 'Visual Canvas',
-    content: 'This is your workspace! Drag blocks here, connect them, and watch your instruction come to life. You can drag blocks around and connect them to create complex flows.',
-    position: 'bottom',
-  },
-  {
-    id: 'smart-suggestions',
-    target: '[data-tour="smart-suggestions"]',
-    title: 'Smart Suggestions',
-    content: 'Get AI-powered recommendations for blocks that work well together. Our system learns from successful prompt combinations.',
-    position: 'bottom',
-  },
-  {
-    id: 'preview-panel',
-    target: '[data-tour="preview-panel"]',
-    title: 'Live Preview',
-    content: 'See your instruction generated in real-time! Switch between different formats and test your prompts instantly.',
-    position: 'left',
-  },
-  {
-    id: 'toolbar',
-    target: '[data-tour="toolbar"]',
-    title: 'Powerful Tools',
-    content: 'Use undo/redo, zoom controls, and layout tools to perfect your design. Pro tip: Try Ctrl+Z for undo!',
-    position: 'bottom',
-  },
-]
-
 interface OnboardingTourProps {
   isOpen: boolean
   onClose: () => void
@@ -72,8 +21,61 @@ interface OnboardingTourProps {
 }
 
 export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourProps) {
+  const { t } = useTranslation()
   const [currentStep, setCurrentStep] = useState(0)
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null)
+
+  const tourSteps: TourStep[] = [
+    {
+      id: 'welcome',
+      target: '',
+      title: t('builder.components.onboardingTour.steps.welcome.title'),
+      content: t('builder.components.onboardingTour.steps.welcome.content'),
+      position: 'top',
+    },
+    {
+      id: 'title-input',
+      target: '[data-tour="title-input"]',
+      title: t('builder.components.onboardingTour.steps.titleInput.title'),
+      content: t('builder.components.onboardingTour.steps.titleInput.content'),
+      position: 'bottom',
+    },
+    {
+      id: 'add-block',
+      target: '[data-tour="add-block"]',
+      title: t('builder.components.onboardingTour.steps.addBlock.title'),
+      content: t('builder.components.onboardingTour.steps.addBlock.content'),
+      position: 'bottom',
+    },
+    {
+      id: 'canvas',
+      target: '[data-tour="canvas"]',
+      title: t('builder.components.onboardingTour.steps.canvas.title'),
+      content: t('builder.components.onboardingTour.steps.canvas.content'),
+      position: 'bottom',
+    },
+    {
+      id: 'smart-suggestions',
+      target: '[data-tour="smart-suggestions"]',
+      title: t('builder.components.onboardingTour.steps.smartSuggestions.title'),
+      content: t('builder.components.onboardingTour.steps.smartSuggestions.content'),
+      position: 'bottom',
+    },
+    {
+      id: 'preview-panel',
+      target: '[data-tour="preview-panel"]',
+      title: t('builder.components.onboardingTour.steps.previewPanel.title'),
+      content: t('builder.components.onboardingTour.steps.previewPanel.content'),
+      position: 'left',
+    },
+    {
+      id: 'toolbar',
+      target: '[data-tour="toolbar"]',
+      title: t('builder.components.onboardingTour.steps.toolbar.title'),
+      content: t('builder.components.onboardingTour.steps.toolbar.content'),
+      position: 'bottom',
+    },
+  ]
 
   const currentTourStep = tourSteps[currentStep]
 
@@ -117,7 +119,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
   if (isWelcomeStep) {
     return (
       <Dialog open={isOpen} onOpenChange={handleSkip}>
-        <DialogContent className="bg-background border-border text-foreground max-w-md">
+        <DialogContent className="bg-background border-border text-foreground max-w-lg sm:max-w-xl">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-foreground">
               {currentTourStep.title}
@@ -130,11 +132,10 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
           {/* Progress bar */}
           <div className="my-4">
             <div className="flex justify-between text-xs text-muted-foreground mb-2">
-              <span>
-                Step
+              <span className="whitespace-nowrap">
+                {t('builder.components.onboardingTour.progress.step')}
                 {currentStep + 1}
-                {' '}
-                of
+                {t('builder.components.onboardingTour.progress.of')}
                 {tourSteps.length}
               </span>
             </div>
@@ -147,22 +148,22 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
           </div>
 
           <DialogFooter>
-            <div className="flex justify-between items-center w-full">
+            <div className="flex justify-between items-center w-full gap-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleSkip}
-                className="text-muted-foreground cursor-pointer"
+                className="text-muted-foreground flex-shrink-0 cursor-pointer"
               >
-                Skip Tour
+                {t('builder.components.onboardingTour.buttons.skip')}
               </Button>
 
               <Button
                 size="sm"
                 onClick={handleNext}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0 cursor-pointer"
               >
-                Next
+                {t('builder.components.onboardingTour.buttons.next')}
               </Button>
             </div>
           </DialogFooter>
@@ -219,46 +220,165 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
       <div
         className="fixed z-[10000] pointer-events-none"
         style={{
-          left: currentTourStep.id === 'canvas' ? targetElement.getBoundingClientRect().left + 50 : targetElement.getBoundingClientRect().left,
-          top: currentTourStep.id === 'canvas' ? targetElement.getBoundingClientRect().top + 50 : targetElement.getBoundingClientRect().top,
-          width: currentTourStep.id === 'canvas' ? 200 : targetElement.getBoundingClientRect().width,
-          height: currentTourStep.id === 'canvas' ? 100 : targetElement.getBoundingClientRect().height,
+          left: targetElement.getBoundingClientRect().left,
+          top: targetElement.getBoundingClientRect().top,
+          width: targetElement.getBoundingClientRect().width,
+          height: targetElement.getBoundingClientRect().height,
         }}
       >
         <div
-          className={`absolute bg-background border border-border text-foreground p-4 max-w-sm rounded-lg shadow-xl pointer-events-auto ${
-            currentTourStep.position === 'top'
-              ? 'bottom-full mb-3 left-1/2 transform -translate-x-1/2'
-              : currentTourStep.position === 'bottom'
-                ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
-                : currentTourStep.position === 'left'
+          className={`absolute bg-background border border-border text-foreground p-4 w-80 max-w-[90vw] rounded-lg shadow-xl pointer-events-auto ${
+            (() => {
+              // 画布特殊处理：显示在画布内部的固定位置
+              if (currentTourStep.id === 'canvas') {
+                return 'top-4 left-4'
+              }
+
+              const rect = targetElement.getBoundingClientRect()
+              const tooltipWidth = 320 // w-80 = 320px
+              const tooltipHeight = 200 // 估计高度
+              const margin = 12 // mb-3/mt-3 = 12px
+
+              // 检查各方向是否有足够空间
+              const canPlaceLeft = rect.left - tooltipWidth - margin >= 0
+              const canPlaceRight = rect.right + tooltipWidth + margin <= window.innerWidth
+              const canPlaceTop = rect.top - tooltipHeight - margin >= 0
+              const canPlaceBottom = rect.bottom + tooltipHeight + margin <= window.innerHeight
+
+              // 检查水平居中时是否会超出边界
+              const centerX = rect.left + rect.width / 2
+              const tooltipHalfWidth = tooltipWidth / 2
+              const canCenterHorizontally = centerX - tooltipHalfWidth >= 0 && centerX + tooltipHalfWidth <= window.innerWidth
+
+              // 根据原始位置和边界条件调整
+              if (currentTourStep.position === 'left' && !canPlaceLeft) {
+                return canPlaceRight
+                  ? 'left-full ml-3 top-1/2 transform -translate-y-1/2'
+                  : canPlaceBottom && canCenterHorizontally
+                    ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
+                    : 'top-full mt-3 left-0'
+              }
+              else if (currentTourStep.position === 'right' && !canPlaceRight) {
+                return canPlaceLeft
                   ? 'right-full mr-3 top-1/2 transform -translate-y-1/2'
-                  : currentTourStep.position === 'right'
-                    ? 'left-full ml-3 top-1/2 transform -translate-y-1/2'
-                    : 'bottom-full mb-3 left-1/2 transform -translate-x-1/2'
+                  : canPlaceBottom && canCenterHorizontally
+                    ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
+                    : 'top-full mt-3 right-0'
+              }
+              else if (currentTourStep.position === 'top' && !canPlaceTop) {
+                return canCenterHorizontally
+                  ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
+                  : centerX < tooltipHalfWidth
+                    ? 'top-full mt-3 left-0'
+                    : 'top-full mt-3 right-0'
+              }
+              else if (currentTourStep.position === 'bottom' && !canPlaceBottom) {
+                return canCenterHorizontally
+                  ? 'bottom-full mb-3 left-1/2 transform -translate-x-1/2'
+                  : centerX < tooltipHalfWidth
+                    ? 'bottom-full mb-3 left-0'
+                    : 'bottom-full mb-3 right-0'
+              }
+
+              // 使用原始位置，但检查水平居中
+              if ((currentTourStep.position === 'top' || currentTourStep.position === 'bottom') && !canCenterHorizontally) {
+                const positionClass = currentTourStep.position === 'top' ? 'bottom-full mb-3' : 'top-full mt-3'
+                return centerX < tooltipHalfWidth
+                  ? `${positionClass} left-0`
+                  : `${positionClass} right-0`
+              }
+
+              // 使用原始位置
+              return currentTourStep.position === 'top'
+                ? 'bottom-full mb-3 left-1/2 transform -translate-x-1/2'
+                : currentTourStep.position === 'bottom'
+                  ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
+                  : currentTourStep.position === 'left'
+                    ? 'right-full mr-3 top-1/2 transform -translate-y-1/2'
+                    : currentTourStep.position === 'right'
+                      ? 'left-full ml-3 top-1/2 transform -translate-y-1/2'
+                      : 'bottom-full mb-3 left-1/2 transform -translate-x-1/2'
+            })()
           }`}
         >
           {/* Arrow */}
           <div
             className={`absolute w-2 h-2 bg-background border-border transform rotate-45 ${
-              currentTourStep.position === 'top'
-                ? 'top-full -mt-1 left-1/2 transform -translate-x-1/2 border-b border-r'
-                : currentTourStep.position === 'bottom'
-                  ? 'bottom-full -mb-1 left-1/2 transform -translate-x-1/2 border-t border-l'
-                  : currentTourStep.position === 'left'
-                    ? 'left-full -ml-1 top-1/2 transform -translate-y-1/2 border-t border-r'
-                    : currentTourStep.position === 'right'
-                      ? 'right-full -mr-1 top-1/2 transform -translate-y-1/2 border-b border-l'
-                      : 'top-full -mt-1 left-1/2 transform -translate-x-1/2 border-b border-r'
+              (() => {
+                // 画布特殊处理：隐藏箭头或显示在合适位置
+                if (currentTourStep.id === 'canvas') {
+                  return 'hidden' // 画布tooltip不需要箭头
+                }
+
+                const rect = targetElement.getBoundingClientRect()
+                const tooltipWidth = 320
+                const tooltipHeight = 200
+                const margin = 12
+
+                const canPlaceLeft = rect.left - tooltipWidth - margin >= 0
+                const canPlaceRight = rect.right + tooltipWidth + margin <= window.innerWidth
+                const canPlaceTop = rect.top - tooltipHeight - margin >= 0
+                const canPlaceBottom = rect.bottom + tooltipHeight + margin <= window.innerHeight
+
+                const centerX = rect.left + rect.width / 2
+                const tooltipHalfWidth = tooltipWidth / 2
+                const canCenterHorizontally = centerX - tooltipHalfWidth >= 0 && centerX + tooltipHalfWidth <= window.innerWidth
+
+                // 确定实际位置和箭头位置
+                if (currentTourStep.position === 'left' && !canPlaceLeft) {
+                  if (canPlaceRight) {
+                    return 'right-full -mr-1 top-1/2 transform -translate-y-1/2 border-b border-l'
+                  }
+                  else {
+                    return `top-full -mt-1 border-b border-r`
+                  }
+                }
+                else if (currentTourStep.position === 'right' && !canPlaceRight) {
+                  if (canPlaceLeft) {
+                    return 'left-full -ml-1 top-1/2 transform -translate-y-1/2 border-t border-r'
+                  }
+                  else {
+                    return `top-full -mt-1 border-b border-r`
+                  }
+                }
+                else if (currentTourStep.position === 'top' && !canPlaceTop) {
+                  return canCenterHorizontally
+                    ? 'bottom-full -mb-1 left-1/2 transform -translate-x-1/2 border-t border-l'
+                    : 'bottom-full -mb-1 left-4 border-t border-l'
+                }
+                else if (currentTourStep.position === 'bottom' && !canPlaceBottom) {
+                  return canCenterHorizontally
+                    ? 'top-full -mt-1 left-1/2 transform -translate-x-1/2 border-b border-r'
+                    : 'top-full -mt-1 left-4 border-b border-r'
+                }
+
+                // 原始位置但检查水平居中
+                if ((currentTourStep.position === 'top' || currentTourStep.position === 'bottom') && !canCenterHorizontally) {
+                  const borderClass = currentTourStep.position === 'top' ? 'border-b border-r' : 'border-t border-l'
+                  const positionClass = currentTourStep.position === 'top' ? 'top-full -mt-1' : 'bottom-full -mb-1'
+                  return `${positionClass} left-4 ${borderClass}`
+                }
+
+                // 使用原始位置
+                return currentTourStep.position === 'top'
+                  ? 'top-full -mt-1 left-1/2 transform -translate-x-1/2 border-b border-r'
+                  : currentTourStep.position === 'bottom'
+                    ? 'bottom-full -mb-1 left-1/2 transform -translate-x-1/2 border-t border-l'
+                    : currentTourStep.position === 'left'
+                      ? 'left-full -ml-1 top-1/2 transform -translate-y-1/2 border-t border-r'
+                      : currentTourStep.position === 'right'
+                        ? 'right-full -mr-1 top-1/2 transform -translate-y-1/2 border-b border-l'
+                        : 'top-full -mt-1 left-1/2 transform -translate-x-1/2 border-b border-r'
+              })()
             }`}
           />
 
           <div className="space-y-3">
             <div>
-              <h3 className="text-sm font-semibold text-foreground mb-1">
+              <h3 className="text-sm font-semibold text-foreground mb-1 break-words">
                 {currentTourStep.title}
               </h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed break-words">
                 {currentTourStep.content}
               </p>
             </div>
@@ -266,13 +386,10 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
             {/* Progress bar */}
             <div>
               <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                <span>
-                  Step
-                  {' '}
+                <span className="whitespace-nowrap">
+                  {t('builder.components.onboardingTour.progress.step')}
                   {currentStep + 1}
-                  {' '}
-                  of
-                  {' '}
+                  {t('builder.components.onboardingTour.progress.of')}
                   {tourSteps.length}
                 </span>
               </div>
@@ -285,33 +402,33 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
             </div>
 
             {/* Actions */}
-            <div className="flex justify-between items-center pt-1">
+            <div className="flex justify-between items-center pt-1 gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleSkip}
-                className="text-muted-foreground text-xs h-7 px-3 cursor-pointer"
+                className="text-muted-foreground text-xs h-7 px-2 flex-shrink-0 cursor-pointer"
               >
-                Skip
+                {t('builder.components.onboardingTour.buttons.skip')}
               </Button>
 
-              <div className="flex gap-1">
+              <div className="flex gap-1 flex-shrink-0">
                 {currentStep > 1 && (
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handlePrevious}
-                    className="text-xs h-7 px-3 cursor-pointer"
+                    className="text-xs h-7 px-2 cursor-pointer"
                   >
-                    Back
+                    {t('builder.components.onboardingTour.buttons.back')}
                   </Button>
                 )}
                 <Button
                   size="sm"
                   onClick={handleNext}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-7 px-3 cursor-pointer"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-7 px-2 cursor-pointer"
                 >
-                  {isLastStep ? 'Done!' : 'Next'}
+                  {isLastStep ? t('builder.components.onboardingTour.buttons.done') : t('builder.components.onboardingTour.buttons.next')}
                 </Button>
               </div>
             </div>

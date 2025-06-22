@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowRight, CheckCircle, Sparkles } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface GuidedWelcomeProps {
   onNext: () => void
@@ -11,6 +12,8 @@ interface GuidedWelcomeProps {
 }
 
 export function GuidedWelcome({ onNext, onBackToSimple, onSkipToAdvanced }: GuidedWelcomeProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-br from-background to-muted/20">
       <div className="max-w-2xl text-center space-y-8 p-8">
@@ -18,9 +21,9 @@ export function GuidedWelcome({ onNext, onBackToSimple, onSkipToAdvanced }: Guid
           <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-3xl flex items-center justify-center mx-auto shadow-lg">
             <Sparkles className="h-10 w-10 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold">🎉 Great! Your AI instruction is ready</h1>
+          <h1 className="text-3xl font-bold">{t('builder.guided.welcome.title')}</h1>
           <p className="text-lg text-muted-foreground">
-            Now let me show you how to fine-tune these settings to make your AI work even better for you
+            {t('builder.guided.welcome.description')}
           </p>
         </div>
 
@@ -56,13 +59,13 @@ export function GuidedWelcome({ onNext, onBackToSimple, onSkipToAdvanced }: Guid
             onClick={onBackToSimple}
             className="hover:bg-muted/50 cursor-pointer"
           >
-            Back to Simple Mode
+            {t('builder.guided.welcome.backToSimple')}
           </Button>
           <Button
             onClick={onNext}
             className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 shadow-sm cursor-pointer"
           >
-            Start Learning
+            {t('builder.guided.welcome.getStarted')}
             {' '}
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
@@ -76,7 +79,7 @@ export function GuidedWelcome({ onNext, onBackToSimple, onSkipToAdvanced }: Guid
             onClick={onSkipToAdvanced}
             className="text-muted-foreground hover:text-foreground"
           >
-            Go to Full Editor
+            {t('builder.guided.welcome.skipToAdvanced')}
           </Button>
         </div>
       </div>

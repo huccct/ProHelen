@@ -3,6 +3,7 @@
 import type { TemplateCategory } from '../page'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface CategoryFilterProps {
   activeCategory: TemplateCategory
@@ -10,8 +11,21 @@ interface CategoryFilterProps {
 }
 
 export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFilterProps) {
+  const { t } = useTranslation()
   const [categories, setCategories] = useState<TemplateCategory[]>(['All'])
   const [loading, setLoading] = useState(true)
+
+  // 分类名称翻译映射
+  const getCategoryDisplayName = (category: string) => {
+    const categoryMap: Record<string, string> = {
+      'All': t('templates.categories.all'),
+      'Goal Setting': t('templates.categories.goalSetting'),
+      'Education': t('templates.categories.education'),
+      'Career': t('templates.categories.career'),
+      'Productivity': t('templates.categories.productivity'),
+    }
+    return categoryMap[category] || category
+  }
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -45,6 +59,9 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
             className="px-4 py-2 rounded-full bg-muted animate-pulse h-8 w-20"
           />
         ))}
+        <div className="text-sm text-muted-foreground self-center ml-2">
+          {t('templates.filter.loading')}
+        </div>
       </div>
     )
   }
@@ -63,7 +80,7 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
         >
-          {category}
+          {getCategoryDisplayName(category)}
         </motion.button>
       ))}
     </div>

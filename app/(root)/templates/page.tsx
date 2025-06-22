@@ -2,6 +2,7 @@
 
 import { NavBar } from '@/components/nav-bar'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CategoryFilter } from './_components/category-filter'
 import { SearchBar } from './_components/search-bar'
 import { TemplateList } from './_components/template-list'
@@ -10,6 +11,7 @@ import { TemplateList } from './_components/template-list'
 export type TemplateCategory = string
 
 export default function TemplatesPage() {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<TemplateCategory>('All')
 
@@ -30,12 +32,11 @@ export default function TemplatesPage() {
       </div>
       <main className="container mx-auto px-4 py-8 pt-28">
         <div className="flex flex-col space-y-6">
-          <h1 className="text-3xl font-bold">Templates</h1>
+          <h1 className="text-3xl font-bold">{t('templates.title')}</h1>
 
           <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
             <p className="text-muted-foreground max-w-2xl">
-              Choose from our pre-built templates to quickly create customized instructions
-              for different educational and productivity needs.
+              {t('templates.subtitle')}
             </p>
             <SearchBar onSearch={handleSearchChange} />
           </div>

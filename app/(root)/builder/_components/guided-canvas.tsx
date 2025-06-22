@@ -4,6 +4,7 @@ import { useBuilderStore } from '@/store/builder'
 import { Background, Panel, ReactFlow, ReactFlowProvider } from '@xyflow/react'
 import { Edit, Lightbulb, Move } from 'lucide-react'
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useShallow } from 'zustand/shallow'
 import { CustomNode } from './custom-node'
 import '@xyflow/react/dist/style.css'
@@ -28,6 +29,7 @@ interface GuidedCanvasProps {
 }
 
 export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCanvasProps) {
+  const { t } = useTranslation()
   const {
     nodes,
     edges,
@@ -67,30 +69,32 @@ export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCa
     switch (step) {
       case 'arrange':
         return {
-          title: 'Arrange Your Cards',
-          message: 'Drag the instruction cards to organize them visually. The connections are automatically created based on logical flow.',
+          title: t('builder.guided.canvas.arrangeCards'),
+          message: t('builder.guided.canvas.arrangeMessage'),
           icon: Move,
-          tip: 'Arrange cards in a clear visual layout for better readability - the connections are smart and automatic.',
+          tip: t('builder.guided.canvas.arrangeTip'),
         }
       case 'customize':
         return {
-          title: 'Customize Content',
-          message: 'Click on any card to edit its content. Make it specific to get better AI responses.',
+          title: t('builder.guided.canvas.customizeContent'),
+          message: t('builder.guided.canvas.customizeMessage'),
           icon: Edit,
-          tip: 'The more detailed your instructions, the better your AI will perform.',
+          tip: t('builder.guided.canvas.customizeTip'),
         }
       default:
         return {
-          title: 'Ready to Test',
-          message: 'Your instruction flow is complete! Time to see how it works.',
+          title: t('builder.guided.canvas.readyToTest'),
+          message: t('builder.guided.canvas.readyMessage'),
           icon: Lightbulb,
-          tip: 'Test early and often to refine your instructions.',
+          tip: t('builder.guided.canvas.readyTip'),
         }
     }
   }
 
   const guidance = getGuidanceConfig()
   const GuidanceIcon = guidance.icon
+
+  const customizedCount = nodes.filter((node: any) => node.data.content).length
 
   return (
     <ReactFlowProvider>
@@ -138,23 +142,20 @@ export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCa
             <Panel position="bottom-center">
               <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                 <p className="text-sm text-green-700">
-                  Great! Your cards are automatically connected in a logical flow. Try moving them around to see how the layout affects readability.
+                  {t('builder.guided.canvas.arrangeComplete')}
                 </p>
               </div>
             </Panel>
           )}
 
-          {step === 'customize' && nodes.some((node: any) => node.data.content) && (
+          {step === 'customize' && customizedCount > 0 && (
             <Panel position="bottom-center">
               <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                 <p className="text-sm text-green-700">
-                  Perfect! You've customized
-                  {' '}
-                  {nodes.filter((node: any) => node.data.content).length}
-                  {' '}
-                  card
-                  {nodes.filter((node: any) => node.data.content).length > 1 ? 's' : ''}
-                  . Your AI assistant is getting smarter!
+                  {t('builder.guided.canvas.customizeComplete', {
+                    count: customizedCount,
+                    s: customizedCount > 1 ? 's' : '',
+                  })}
                 </p>
               </div>
             </Panel>

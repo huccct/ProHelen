@@ -2,17 +2,20 @@
 
 import type { Template } from '../../_components/template-list'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useTranslation } from 'react-i18next'
 
 interface TemplateDetailsProps {
   template: Template
 }
 
 export function TemplateDetails({ template }: TemplateDetailsProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="space-y-6">
       <Card className="bg-card/50 border-border">
         <CardHeader>
-          <CardTitle className="text-xl font-bold text-foreground">Overview</CardTitle>
+          <CardTitle className="text-xl font-bold text-foreground">{t('templateDetail.overview')}</CardTitle>
           <CardDescription className="text-base text-muted-foreground">
             {template.overview || template.description}
           </CardDescription>
@@ -22,7 +25,7 @@ export function TemplateDetails({ template }: TemplateDetailsProps) {
       {template.features && template.features.length > 0 && (
         <Card className="bg-card/50 border-border">
           <CardHeader>
-            <CardTitle className="text-xl font-bold text-foreground">Features</CardTitle>
+            <CardTitle className="text-xl font-bold text-foreground">{t('templateDetail.features')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
@@ -40,9 +43,9 @@ export function TemplateDetails({ template }: TemplateDetailsProps) {
       {template.examples && template.examples.length > 0 && (
         <Card className="bg-card/50 border-border">
           <CardHeader>
-            <CardTitle className="text-xl font-bold text-foreground">Examples</CardTitle>
+            <CardTitle className="text-xl font-bold text-foreground">{t('templateDetail.examples')}</CardTitle>
             <CardDescription className="text-base text-muted-foreground">
-              See how this template can be applied in real scenarios
+              {t('templateDetail.examplesDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

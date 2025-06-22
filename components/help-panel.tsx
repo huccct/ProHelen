@@ -12,6 +12,7 @@ import {
   X,
 } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface HelpPanelProps {
   isOpen: boolean
@@ -19,73 +20,74 @@ interface HelpPanelProps {
   onStartTour: () => void
 }
 
-const shortcuts = [
-  { key: 'Ctrl + Z', description: 'Undo last action' },
-  { key: 'Ctrl + Y', description: 'Redo last action' },
-  { key: 'F1', description: 'Open help panel' },
-  { key: 'Escape', description: 'Close dialogs and panels' },
-  { key: 'Click + Drag', description: 'Move blocks on canvas' },
-  { key: 'Click block', description: 'Get smart suggestions' },
-  { key: 'Double click', description: 'Edit block content' },
-  { key: 'Enter', description: 'Confirm in dialogs' },
-  { key: 'Mouse wheel', description: 'Zoom in/out on canvas' },
-]
-
-const faqs = [
-  {
-    question: 'How do blocks connect automatically?',
-    answer: 'Blocks are connected automatically based on logical flow and best practices. The system analyzes block types and creates the most appropriate connections for effective prompt building.',
-  },
-  {
-    question: 'Why are connections automatic?',
-    answer: 'Automatic connections make the tool easier to use, especially for non-technical users. The system ensures proper flow and sequence based on proven prompt engineering patterns.',
-  },
-  {
-    question: 'What happens when I delete a block?',
-    answer: 'When you delete a block, the remaining blocks are automatically reconnected to maintain a logical flow. The generated prompt updates automatically.',
-  },
-  {
-    question: 'Can I reuse blocks I\'ve created?',
-    answer: 'Yes! Save your instruction as a template or copy content from one block to another. You can also duplicate existing blocks by copying them.',
-  },
-  {
-    question: 'How do I improve my prompts?',
-    answer: 'Add specific content to each block, test your prompts regularly, and use the Smart Suggestions feature to discover relevant blocks you might have missed.',
-  },
-]
-
-const blockGuide = [
-  {
-    category: 'Core Blocks',
-    description: 'Essential building blocks for any instruction',
-    blocks: [
-      { name: 'Role Definition', use: 'Define what role the AI should take (teacher, assistant, expert, etc.)' },
-      { name: 'Context Setting', use: 'Provide background information and situational context' },
-      { name: 'Output Format', use: 'Specify how you want the AI to structure its responses' },
-    ],
-  },
-  {
-    category: 'Educational Blocks',
-    description: 'Specialized for learning and teaching scenarios',
-    blocks: [
-      { name: 'Goal Setting', use: 'Define specific learning objectives and outcomes' },
-      { name: 'Learning Style', use: 'Customize approach based on learning preferences' },
-      { name: 'Subject Focus', use: 'Specify the subject area and level of detail needed' },
-    ],
-  },
-  {
-    category: 'Behavior Blocks',
-    description: 'Control AI personality and communication style',
-    blocks: [
-      { name: 'Communication Style', use: 'Set tone, formality, and conversation approach' },
-      { name: 'Feedback Style', use: 'Define how the AI should provide corrections and guidance' },
-      { name: 'Personality', use: 'Add character traits and behavioral patterns' },
-    ],
-  },
-]
-
 export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<'guide' | 'shortcuts' | 'faq'>('guide')
+
+  const shortcuts = [
+    { key: 'Ctrl + Z', description: t('builder.components.helpPanel.shortcuts.undo') },
+    { key: 'Ctrl + Y', description: t('builder.components.helpPanel.shortcuts.redo') },
+    { key: 'F1', description: t('builder.components.helpPanel.shortcuts.openHelp') },
+    { key: 'Escape', description: t('builder.components.helpPanel.shortcuts.closeDialogs') },
+    { key: 'Click + Drag', description: t('builder.components.helpPanel.shortcuts.moveBlocks') },
+    { key: 'Click block', description: t('builder.components.helpPanel.shortcuts.getSuggestions') },
+    { key: 'Double click', description: t('builder.components.helpPanel.shortcuts.editBlock') },
+    { key: 'Enter', description: t('builder.components.helpPanel.shortcuts.confirmDialogs') },
+    { key: 'Mouse wheel', description: t('builder.components.helpPanel.shortcuts.zoom') },
+  ]
+
+  const faqs = [
+    {
+      question: t('builder.components.helpPanel.faqs.autoConnect.question'),
+      answer: t('builder.components.helpPanel.faqs.autoConnect.answer'),
+    },
+    {
+      question: t('builder.components.helpPanel.faqs.whyAutomatic.question'),
+      answer: t('builder.components.helpPanel.faqs.whyAutomatic.answer'),
+    },
+    {
+      question: t('builder.components.helpPanel.faqs.deleteBlock.question'),
+      answer: t('builder.components.helpPanel.faqs.deleteBlock.answer'),
+    },
+    {
+      question: t('builder.components.helpPanel.faqs.reuseBlocks.question'),
+      answer: t('builder.components.helpPanel.faqs.reuseBlocks.answer'),
+    },
+    {
+      question: t('builder.components.helpPanel.faqs.improvePrompts.question'),
+      answer: t('builder.components.helpPanel.faqs.improvePrompts.answer'),
+    },
+  ]
+
+  const blockGuide = [
+    {
+      category: t('builder.components.helpPanel.blockGuide.core.title'),
+      description: t('builder.components.helpPanel.blockGuide.core.description'),
+      blocks: [
+        { name: t('builder.components.helpPanel.blockGuide.core.blocks.roleDefinition.name'), use: t('builder.components.helpPanel.blockGuide.core.blocks.roleDefinition.use') },
+        { name: t('builder.components.helpPanel.blockGuide.core.blocks.contextSetting.name'), use: t('builder.components.helpPanel.blockGuide.core.blocks.contextSetting.use') },
+        { name: t('builder.components.helpPanel.blockGuide.core.blocks.outputFormat.name'), use: t('builder.components.helpPanel.blockGuide.core.blocks.outputFormat.use') },
+      ],
+    },
+    {
+      category: t('builder.components.helpPanel.blockGuide.educational.title'),
+      description: t('builder.components.helpPanel.blockGuide.educational.description'),
+      blocks: [
+        { name: t('builder.components.helpPanel.blockGuide.educational.blocks.goalSetting.name'), use: t('builder.components.helpPanel.blockGuide.educational.blocks.goalSetting.use') },
+        { name: t('builder.components.helpPanel.blockGuide.educational.blocks.learningStyle.name'), use: t('builder.components.helpPanel.blockGuide.educational.blocks.learningStyle.use') },
+        { name: t('builder.components.helpPanel.blockGuide.educational.blocks.subjectFocus.name'), use: t('builder.components.helpPanel.blockGuide.educational.blocks.subjectFocus.use') },
+      ],
+    },
+    {
+      category: t('builder.components.helpPanel.blockGuide.behavior.title'),
+      description: t('builder.components.helpPanel.blockGuide.behavior.description'),
+      blocks: [
+        { name: t('builder.components.helpPanel.blockGuide.behavior.blocks.communicationStyle.name'), use: t('builder.components.helpPanel.blockGuide.behavior.blocks.communicationStyle.use') },
+        { name: t('builder.components.helpPanel.blockGuide.behavior.blocks.feedbackStyle.name'), use: t('builder.components.helpPanel.blockGuide.behavior.blocks.feedbackStyle.use') },
+        { name: t('builder.components.helpPanel.blockGuide.behavior.blocks.personality.name'), use: t('builder.components.helpPanel.blockGuide.behavior.blocks.personality.use') },
+      ],
+    },
+  ]
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -94,7 +96,7 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
               <HelpCircle className="h-5 w-5 text-foreground" />
-              ProHelen Help Center
+              {t('builder.components.helpPanel.title')}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -120,7 +122,7 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               )}
             >
               <Book className="h-4 w-4" />
-              Block Guide
+              {t('builder.components.helpPanel.tabs.guide')}
             </Button>
             <Button
               variant={activeTab === 'shortcuts' ? 'default' : 'ghost'}
@@ -134,7 +136,7 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               )}
             >
               <Keyboard className="h-4 w-4" />
-              Shortcuts
+              {t('builder.components.helpPanel.tabs.shortcuts')}
             </Button>
             <Button
               variant={activeTab === 'faq' ? 'default' : 'ghost'}
@@ -148,7 +150,7 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               )}
             >
               <MessageCircle className="h-4 w-4" />
-              FAQ
+              {t('builder.components.helpPanel.tabs.faq')}
             </Button>
           </div>
         </DialogHeader>
@@ -158,15 +160,15 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
           <div className="mb-6 p-4 bg-muted border border-border rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium text-foreground mb-1">New to ProHelen?</h4>
-                <p className="text-sm text-muted-foreground">Take a guided tour to learn the basics in 2 minutes!</p>
+                <h4 className="font-medium text-foreground mb-1">{t('builder.components.helpPanel.tourCta.title')}</h4>
+                <p className="text-sm text-muted-foreground">{t('builder.components.helpPanel.tourCta.description')}</p>
               </div>
               <Button
                 onClick={onStartTour}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 cursor-pointer whitespace-nowrap"
               >
                 <PlayCircle className="h-4 w-4" />
-                Start Tour
+                {t('builder.components.helpPanel.tourCta.button')}
               </Button>
             </div>
           </div>
@@ -175,9 +177,9 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
           {activeTab === 'guide' && (
             <div className="space-y-8">
               <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Understanding Blocks</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">{t('builder.components.helpPanel.guide.understandingBlocks.title')}</h3>
                 <p className="text-muted-foreground mb-6">
-                  Blocks are the building pieces of your AI instructions. Each block serves a specific purpose and can be combined to create powerful, customized prompts.
+                  {t('builder.components.helpPanel.guide.understandingBlocks.description')}
                 </p>
 
                 <div className="space-y-6">
@@ -205,27 +207,27 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Best Practices</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">{t('builder.components.helpPanel.guide.bestPractices.title')}</h3>
                 <div className="space-y-3">
                   <div className="flex gap-3">
                     <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-muted-foreground">Start with a Role Definition block to establish the AI's perspective</p>
+                    <p className="text-muted-foreground">{t('builder.components.helpPanel.guide.bestPractices.tips.startWithRole')}</p>
                   </div>
                   <div className="flex gap-3">
                     <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-muted-foreground">Use Context Setting early to provide necessary background information</p>
+                    <p className="text-muted-foreground">{t('builder.components.helpPanel.guide.bestPractices.tips.useContext')}</p>
                   </div>
                   <div className="flex gap-3">
                     <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-muted-foreground">Add Output Format blocks to ensure consistent response structure</p>
+                    <p className="text-muted-foreground">{t('builder.components.helpPanel.guide.bestPractices.tips.addOutputFormat')}</p>
                   </div>
                   <div className="flex gap-3">
                     <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-muted-foreground">Test your instructions frequently using the Preview panel</p>
+                    <p className="text-muted-foreground">{t('builder.components.helpPanel.guide.bestPractices.tips.testFrequently')}</p>
                   </div>
                   <div className="flex gap-3">
                     <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-muted-foreground">Use Smart Suggestions to discover complementary blocks</p>
+                    <p className="text-muted-foreground">{t('builder.components.helpPanel.guide.bestPractices.tips.useSmartSuggestions')}</p>
                   </div>
                 </div>
               </div>
@@ -236,9 +238,9 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
           {activeTab === 'shortcuts' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Keyboard Shortcuts</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">{t('builder.components.helpPanel.shortcuts.title')}</h3>
                 <p className="text-muted-foreground mb-6">
-                  Speed up your workflow with these keyboard shortcuts.
+                  {t('builder.components.helpPanel.shortcuts.description')}
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -254,23 +256,23 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Mouse Actions</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">{t('builder.components.helpPanel.mouseActions.title')}</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 bg-muted border border-border rounded-lg">
-                    <span className="text-muted-foreground">Pan canvas</span>
-                    <span className="text-sm text-muted-foreground/80">Click and drag on empty space</span>
+                    <span className="text-muted-foreground">{t('builder.components.helpPanel.mouseActions.panCanvas')}</span>
+                    <span className="text-sm text-muted-foreground/80">{t('builder.components.helpPanel.mouseActions.panCanvasHow')}</span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted border border-border rounded-lg">
-                    <span className="text-muted-foreground">Connect blocks</span>
-                    <span className="text-sm text-muted-foreground/80">Drag from output to input handle</span>
+                    <span className="text-muted-foreground">{t('builder.components.helpPanel.mouseActions.connectBlocks')}</span>
+                    <span className="text-sm text-muted-foreground/80">{t('builder.components.helpPanel.mouseActions.connectBlocksHow')}</span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted border border-border rounded-lg">
-                    <span className="text-muted-foreground">Select multiple blocks</span>
-                    <span className="text-sm text-muted-foreground/80">Ctrl + click</span>
+                    <span className="text-muted-foreground">{t('builder.components.helpPanel.mouseActions.selectMultiple')}</span>
+                    <span className="text-sm text-muted-foreground/80">{t('builder.components.helpPanel.mouseActions.selectMultipleHow')}</span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted border border-border rounded-lg">
-                    <span className="text-muted-foreground">Zoom</span>
-                    <span className="text-sm text-muted-foreground/80">Mouse wheel or zoom controls</span>
+                    <span className="text-muted-foreground">{t('builder.components.helpPanel.mouseActions.zoom')}</span>
+                    <span className="text-sm text-muted-foreground/80">{t('builder.components.helpPanel.mouseActions.zoomHow')}</span>
                   </div>
                 </div>
               </div>
@@ -281,7 +283,7 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
           {activeTab === 'faq' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Frequently Asked Questions</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">{t('builder.components.helpPanel.faq.title')}</h3>
                 <div className="space-y-4">
                   {faqs.map((faq, index) => (
                     <div key={index} className="border border-border bg-muted/50 rounded-lg p-4">
@@ -293,13 +295,13 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
               </div>
 
               <div className="bg-muted border border-border rounded-lg p-4">
-                <h4 className="font-medium text-foreground mb-2">Still need help?</h4>
+                <h4 className="font-medium text-foreground mb-2">{t('builder.components.helpPanel.support.title')}</h4>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Can't find what you're looking for? We're here to help!
+                  {t('builder.components.helpPanel.support.description')}
                 </p>
                 <div className="flex gap-2">
                   <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer">
-                    Contact Support
+                    {t('builder.components.helpPanel.support.contactButton')}
                   </Button>
                   <Button
                     size="sm"
@@ -307,7 +309,7 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
                     onClick={onStartTour}
                     className="cursor-pointer"
                   >
-                    Take Tour Again
+                    {t('builder.components.helpPanel.support.tourAgainButton')}
                   </Button>
                 </div>
               </div>

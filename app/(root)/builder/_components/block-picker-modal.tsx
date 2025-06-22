@@ -17,24 +17,22 @@ import {
   Filter,
   Globe,
   Heart,
-  Layers,
   Lightbulb,
   MessageCircle,
   MessageSquare,
-  Settings,
   Star,
   Target,
   Users,
   Workflow,
-  Zap,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface BlockType {
   type: string
-  label: string
+  labelKey: string
   icon: ReactNode
-  description: string
+  descriptionKey: string
   category: string
   color: string
 }
@@ -43,25 +41,25 @@ const blockTypes: BlockType[] = [
   // Core Instruction Blocks
   {
     type: 'role_definition',
-    label: 'Role Definition',
+    labelKey: 'builder.components.blockPicker.blocks.roleDefinition.label',
     icon: <Users className="h-5 w-5" />,
-    description: 'Define AI assistant role and expertise',
+    descriptionKey: 'builder.components.blockPicker.blocks.roleDefinition.description',
     category: 'core',
     color: 'from-blue-500 to-blue-600',
   },
   {
     type: 'context_setting',
-    label: 'Context Setting',
+    labelKey: 'builder.components.blockPicker.blocks.contextSetting.label',
     icon: <Globe className="h-5 w-5" />,
-    description: 'Set conversation context and background',
+    descriptionKey: 'builder.components.blockPicker.blocks.contextSetting.description',
     category: 'core',
     color: 'from-purple-500 to-purple-600',
   },
   {
     type: 'output_format',
-    label: 'Output Format',
+    labelKey: 'builder.components.blockPicker.blocks.outputFormat.label',
     icon: <FileText className="h-5 w-5" />,
-    description: 'Specify response format and structure',
+    descriptionKey: 'builder.components.blockPicker.blocks.outputFormat.description',
     category: 'core',
     color: 'from-green-500 to-green-600',
   },
@@ -69,33 +67,33 @@ const blockTypes: BlockType[] = [
   // Educational Blocks
   {
     type: 'goal_setting',
-    label: 'Goal Setting',
+    labelKey: 'builder.components.blockPicker.blocks.goalSetting.label',
     icon: <Target className="h-5 w-5" />,
-    description: 'Set SMART learning goals',
+    descriptionKey: 'builder.components.blockPicker.blocks.goalSetting.description',
     category: 'education',
     color: 'from-orange-500 to-orange-600',
   },
   {
     type: 'learning_style',
-    label: 'Learning Style',
+    labelKey: 'builder.components.blockPicker.blocks.learningStyle.label',
     icon: <Brain className="h-5 w-5" />,
-    description: 'Customize learning approach',
+    descriptionKey: 'builder.components.blockPicker.blocks.learningStyle.description',
     category: 'education',
     color: 'from-pink-500 to-pink-600',
   },
   {
     type: 'subject_focus',
-    label: 'Subject Focus',
+    labelKey: 'builder.components.blockPicker.blocks.subjectFocus.label',
     icon: <Book className="h-5 w-5" />,
-    description: 'Subject specific instructions',
+    descriptionKey: 'builder.components.blockPicker.blocks.subjectFocus.description',
     category: 'education',
     color: 'from-indigo-500 to-indigo-600',
   },
   {
     type: 'difficulty_level',
-    label: 'Difficulty Level',
+    labelKey: 'builder.components.blockPicker.blocks.difficultyLevel.label',
     icon: <BarChart3 className="h-5 w-5" />,
-    description: 'Set appropriate complexity level',
+    descriptionKey: 'builder.components.blockPicker.blocks.difficultyLevel.description',
     category: 'education',
     color: 'from-yellow-500 to-yellow-600',
   },
@@ -103,25 +101,25 @@ const blockTypes: BlockType[] = [
   // Behavior & Style Blocks
   {
     type: 'communication_style',
-    label: 'Communication Style',
+    labelKey: 'builder.components.blockPicker.blocks.communicationStyle.label',
     icon: <MessageCircle className="h-5 w-5" />,
-    description: 'Set tone and communication approach',
+    descriptionKey: 'builder.components.blockPicker.blocks.communicationStyle.description',
     category: 'behavior',
     color: 'from-teal-500 to-teal-600',
   },
   {
     type: 'feedback_style',
-    label: 'Feedback Style',
+    labelKey: 'builder.components.blockPicker.blocks.feedbackStyle.label',
     icon: <MessageSquare className="h-5 w-5" />,
-    description: 'Customize feedback approach',
+    descriptionKey: 'builder.components.blockPicker.blocks.feedbackStyle.description',
     category: 'behavior',
     color: 'from-cyan-500 to-cyan-600',
   },
   {
     type: 'personality_traits',
-    label: 'Personality',
+    labelKey: 'builder.components.blockPicker.blocks.personalityTraits.label',
     icon: <Heart className="h-5 w-5" />,
-    description: 'Add personality characteristics',
+    descriptionKey: 'builder.components.blockPicker.blocks.personalityTraits.description',
     category: 'behavior',
     color: 'from-rose-500 to-rose-600',
   },
@@ -129,25 +127,25 @@ const blockTypes: BlockType[] = [
   // Workflow & Process Blocks
   {
     type: 'step_by_step',
-    label: 'Step-by-Step',
+    labelKey: 'builder.components.blockPicker.blocks.stepByStep.label',
     icon: <Workflow className="h-5 w-5" />,
-    description: 'Break down into sequential steps',
+    descriptionKey: 'builder.components.blockPicker.blocks.stepByStep.description',
     category: 'workflow',
     color: 'from-violet-500 to-violet-600',
   },
   {
     type: 'time_management',
-    label: 'Time Management',
+    labelKey: 'builder.components.blockPicker.blocks.timeManagement.label',
     icon: <Clock className="h-5 w-5" />,
-    description: 'Plan study schedule and timing',
+    descriptionKey: 'builder.components.blockPicker.blocks.timeManagement.description',
     category: 'workflow',
     color: 'from-amber-500 to-amber-600',
   },
   {
     type: 'prioritization',
-    label: 'Prioritization',
+    labelKey: 'builder.components.blockPicker.blocks.prioritization.label',
     icon: <Star className="h-5 w-5" />,
-    description: 'Set priorities and importance levels',
+    descriptionKey: 'builder.components.blockPicker.blocks.prioritization.description',
     category: 'workflow',
     color: 'from-emerald-500 to-emerald-600',
   },
@@ -155,25 +153,25 @@ const blockTypes: BlockType[] = [
   // Advanced Features
   {
     type: 'conditional_logic',
-    label: 'Conditional Logic',
+    labelKey: 'builder.components.blockPicker.blocks.conditionalLogic.label',
     icon: <Filter className="h-5 w-5" />,
-    description: 'Add if-then conditional responses',
+    descriptionKey: 'builder.components.blockPicker.blocks.conditionalLogic.description',
     category: 'advanced',
     color: 'from-gray-500 to-gray-600',
   },
   {
     type: 'creative_thinking',
-    label: 'Creative Thinking',
+    labelKey: 'builder.components.blockPicker.blocks.creativeThinking.label',
     icon: <Lightbulb className="h-5 w-5" />,
-    description: 'Encourage creative problem solving',
+    descriptionKey: 'builder.components.blockPicker.blocks.creativeThinking.description',
     category: 'advanced',
     color: 'from-lime-500 to-lime-600',
   },
   {
     type: 'error_handling',
-    label: 'Error Handling',
+    labelKey: 'builder.components.blockPicker.blocks.errorHandling.label',
     icon: <AlertTriangle className="h-5 w-5" />,
-    description: 'Handle mistakes and corrections',
+    descriptionKey: 'builder.components.blockPicker.blocks.errorHandling.description',
     category: 'advanced',
     color: 'from-red-500 to-red-600',
   },
@@ -181,30 +179,30 @@ const blockTypes: BlockType[] = [
   // Career & Life Planning
   {
     type: 'career_planning',
-    label: 'Career Planning',
+    labelKey: 'builder.components.blockPicker.blocks.careerPlanning.label',
     icon: <Compass className="h-5 w-5" />,
-    description: 'Career development guidance',
+    descriptionKey: 'builder.components.blockPicker.blocks.careerPlanning.description',
     category: 'planning',
     color: 'from-blue-600 to-indigo-600',
   },
   {
     type: 'skill_assessment',
-    label: 'Skill Assessment',
+    labelKey: 'builder.components.blockPicker.blocks.skillAssessment.label',
     icon: <CheckCircle className="h-5 w-5" />,
-    description: 'Evaluate current skills and gaps',
+    descriptionKey: 'builder.components.blockPicker.blocks.skillAssessment.description',
     category: 'planning',
     color: 'from-green-600 to-teal-600',
   },
 ]
 
 const categories = [
-  { id: 'all', label: 'All Blocks', icon: <Layers className="h-4 w-4" /> },
-  { id: 'core', label: 'Core', icon: <Settings className="h-4 w-4" /> },
-  { id: 'education', label: 'Education', icon: <Book className="h-4 w-4" /> },
-  { id: 'behavior', label: 'Behavior', icon: <MessageSquare className="h-4 w-4" /> },
-  { id: 'workflow', label: 'Workflow', icon: <Workflow className="h-4 w-4" /> },
-  { id: 'advanced', label: 'Advanced', icon: <Zap className="h-4 w-4" /> },
-  { id: 'planning', label: 'Planning', icon: <Target className="h-4 w-4" /> },
+  { id: 'all', labelKey: 'builder.components.blockPicker.categories.all' },
+  { id: 'core', labelKey: 'builder.components.blockPicker.categories.core' },
+  { id: 'education', labelKey: 'builder.components.blockPicker.categories.education' },
+  { id: 'behavior', labelKey: 'builder.components.blockPicker.categories.behavior' },
+  { id: 'workflow', labelKey: 'builder.components.blockPicker.categories.workflow' },
+  { id: 'advanced', labelKey: 'builder.components.blockPicker.categories.advanced' },
+  { id: 'planning', labelKey: 'builder.components.blockPicker.categories.planning' },
 ]
 
 interface BlockPickerModalProps {
@@ -214,6 +212,7 @@ interface BlockPickerModalProps {
 }
 
 export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerModalProps) {
+  const { t } = useTranslation()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [showScrollButtons, setShowScrollButtons] = useState(false)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
@@ -296,8 +295,8 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-background border-border text-foreground sm:max-w-[800px] max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-foreground text-xl">Add Instruction Block</DialogTitle>
-          <p className="text-muted-foreground text-sm">Choose a block type to add to your prompt</p>
+          <DialogTitle className="text-foreground text-xl">{t('builder.components.blockPicker.title')}</DialogTitle>
+          <p className="text-muted-foreground text-sm">{t('builder.components.blockPicker.description')}</p>
         </DialogHeader>
 
         {/* Category Filter */}
@@ -323,8 +322,7 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
-                {category.icon}
-                {category.label}
+                {t(category.labelKey)}
               </Button>
             ))}
           </div>
@@ -401,10 +399,10 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
               {/* Content */}
               <div className="text-center space-y-1">
                 <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors duration-300">
-                  {block.label}
+                  {t(block.labelKey)}
                 </h3>
                 <p className="text-xs text-muted-foreground leading-tight">
-                  {block.description}
+                  {t(block.descriptionKey)}
                 </p>
               </div>
 
@@ -423,7 +421,9 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
         {/* Help Text */}
         <div className="px-4 py-3 border-t border-border bg-muted/50">
           <p className="text-xs text-muted-foreground text-center">
-            💡 Click to add instantly or drag to position on canvas
+            💡
+            {' '}
+            {t('builder.components.blockPicker.helpText')}
           </p>
         </div>
       </DialogContent>

@@ -8,6 +8,7 @@ import { useBuilderStore } from '@/store/builder'
 import { Handle, Position } from '@xyflow/react'
 import { AlertTriangle, BarChart3, Book, Brain, CheckCircle, Clock, Compass, Edit3, FileText, Filter, Globe, Heart, Lightbulb, MessageCircle, MessageSquare, Save, Star, Target, Trash2, Users, Workflow, X } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export interface CustomNodeData extends Record<string, unknown> {
   label: string
@@ -19,6 +20,7 @@ export interface CustomNodeData extends Record<string, unknown> {
 type CustomNodeType = Node<CustomNodeData>
 
 export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
+  const { t } = useTranslation()
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(data.content || '')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -140,7 +142,7 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
                   <textarea
                     value={editContent}
                     onChange={e => setEditContent(e.target.value)}
-                    placeholder={`Enter ${data.label.toLowerCase()} instructions...`}
+                    placeholder={t('builder.components.customNode.enterInstructions', { label: data.label.toLowerCase() })}
                     className="w-full min-h-[80px] p-2 text-sm bg-background border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
                     autoFocus
                   />
@@ -152,7 +154,7 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
                       className="text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
                     >
                       <X className="h-3 w-3 mr-1" />
-                      Cancel
+                      {t('common.cancel')}
                     </Button>
                     <Button
                       variant="outline"
@@ -161,7 +163,7 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
                       className="text-foreground border-border hover:bg-muted cursor-pointer"
                     >
                       <Save className="h-3 w-3 mr-1" />
-                      Save
+                      {t('common.save')}
                     </Button>
                   </div>
                 </div>
@@ -170,7 +172,7 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
                 <div className="text-sm text-muted-foreground leading-relaxed">
                   {data.content || (
                     <span className="italic text-muted-foreground/70">
-                      Click to add instructions...
+                      {t('builder.components.customNode.clickToAdd')}
                     </span>
                   )}
                 </div>
@@ -196,28 +198,25 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <DialogContent className="bg-card border-border [&>button]:text-muted-foreground [&>button]:hover:text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-foreground">Delete Block</DialogTitle>
+            <DialogTitle className="text-foreground">{t('builder.components.customNode.confirmDelete.title')}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              Are you sure you want to delete "
-              {data.label}
-              "? This action cannot be undone and will also remove all connections to this block.
+              {t('builder.components.customNode.confirmDelete.description')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
+              variant="ghost"
               onClick={handleCancelDelete}
-              className="cursor-pointer"
+              className="text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
             >
-              Cancel
+              {t('builder.components.customNode.confirmDelete.cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={confirmDelete}
-              className="cursor-pointer"
+              className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete
+              {t('builder.components.customNode.confirmDelete.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

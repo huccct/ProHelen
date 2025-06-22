@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button'
 import { Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { InstructionGrid } from './_components/instruction-grid'
 
 export default function MyInstructionsPage() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'created' | 'updated' | 'usage'>('updated')
@@ -24,12 +26,12 @@ export default function MyInstructionsPage() {
       <main className="container mx-auto px-4 py-8 pt-28">
         <div className="flex flex-col space-y-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">My Instructions</h1>
+            <h1 className="text-3xl font-bold">{t('myInstructions.title')}</h1>
             <Button
               onClick={() => router.push('/builder')}
               className="bg-primary text-primary-foreground font-semibold shadow-sm hover:bg-primary/90 cursor-pointer"
             >
-              Create New Instruction
+              {t('myInstructions.createNewInstruction')}
             </Button>
           </div>
 
@@ -38,7 +40,7 @@ export default function MyInstructionsPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <input
                 type="text"
-                placeholder="Search instructions..."
+                placeholder={t('myInstructions.searchPlaceholder')}
                 className="bg-card border border-border rounded-md py-2 pl-10 pr-4 w-full focus:outline-none focus:ring-1 focus:ring-ring text-foreground"
                 value={searchQuery}
                 onChange={handleSearch}
@@ -52,7 +54,7 @@ export default function MyInstructionsPage() {
                   sortBy === 'created' ? 'bg-muted border-border' : ''
                 }`}
               >
-                Date Created
+                {t('myInstructions.dateCreated')}
               </Button>
               <Button
                 variant="outline"
@@ -61,7 +63,7 @@ export default function MyInstructionsPage() {
                   sortBy === 'usage' ? 'bg-muted border-border' : ''
                 }`}
               >
-                Most Used
+                {t('myInstructions.mostUsed')}
               </Button>
             </div>
           </div>

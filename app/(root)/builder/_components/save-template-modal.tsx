@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 interface SaveTemplateModalProps {
@@ -20,17 +21,8 @@ export interface TemplateFormData {
   isPublic: boolean
 }
 
-const categories = [
-  'Goal Setting',
-  'Education',
-  'Career',
-  'Productivity',
-  'Communication',
-  'Planning',
-  'Other',
-]
-
 export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: SaveTemplateModalProps) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState<TemplateFormData>({
     title: '',
     description: '',
@@ -40,16 +32,26 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
   })
   const [tagInput, setTagInput] = useState('')
 
+  const categories = [
+    t('builder.modals.saveTemplate.categories.goalSetting'),
+    t('builder.modals.saveTemplate.categories.education'),
+    t('builder.modals.saveTemplate.categories.career'),
+    t('builder.modals.saveTemplate.categories.productivity'),
+    t('builder.modals.saveTemplate.categories.communication'),
+    t('builder.modals.saveTemplate.categories.planning'),
+    t('builder.modals.saveTemplate.categories.other'),
+  ]
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formData.title.trim()) {
-      toast.error('Please enter a title')
+      toast.error(t('builder.modals.saveTemplate.titleRequired'))
       return
     }
 
     if (!formData.description.trim()) {
-      toast.error('Please enter a description')
+      toast.error(t('builder.modals.saveTemplate.descriptionRequired'))
       return
     }
 
@@ -85,49 +87,49 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-background border-border text-foreground max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Save as Template</DialogTitle>
+          <DialogTitle className="text-xl font-bold">{t('builder.modals.saveTemplate.title')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Title</label>
+            <label className="block text-sm font-medium text-foreground mb-2">{t('builder.modals.saveTemplate.titleLabel')}</label>
             <input
               type="text"
               value={formData.title}
               onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-border/80"
-              placeholder="Enter template title..."
+              placeholder={t('builder.modals.saveTemplate.titlePlaceholder')}
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Description</label>
+            <label className="block text-sm font-medium text-foreground mb-2">{t('builder.modals.saveTemplate.descriptionLabel')}</label>
             <textarea
               value={formData.description}
               onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-border/80 h-20 resize-none"
-              placeholder="Describe what this template does..."
+              placeholder={t('builder.modals.saveTemplate.descriptionPlaceholder')}
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Category</label>
+            <label className="block text-sm font-medium text-foreground mb-2">{t('builder.modals.saveTemplate.categoryLabel')}</label>
             <select
               value={formData.category}
               onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-border/80"
               disabled={isLoading}
             >
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
+              {categories.map((category, index) => (
+                <option key={index} value={category}>{category}</option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Tags</label>
+            <label className="block text-sm font-medium text-foreground mb-2">{t('builder.modals.saveTemplate.tagsLabel')}</label>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
@@ -135,7 +137,7 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
                 onChange={e => setTagInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 className="flex-1 px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-border/80"
-                placeholder="Add tags..."
+                placeholder={t('builder.modals.saveTemplate.tagsPlaceholder')}
                 disabled={isLoading}
               />
               <Button
@@ -144,7 +146,7 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
                 className="px-4 py-2 bg-muted hover:bg-muted/80"
                 disabled={isLoading}
               >
-                Add
+                {t('builder.modals.saveTemplate.addTag')}
               </Button>
             </div>
             <div className="flex flex-wrap gap-1">
@@ -172,7 +174,7 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
               disabled={isLoading}
             />
             <label htmlFor="isPublic" className="text-sm text-foreground">
-              Make this template public (others can discover and use it)
+              {t('builder.modals.saveTemplate.makePublic')}
             </label>
           </div>
 
@@ -184,14 +186,14 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
               className="flex-1"
               disabled={isLoading}
             >
-              Cancel
+              {t('builder.modals.saveTemplate.cancel')}
             </Button>
             <Button
               type="submit"
               className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={isLoading}
             >
-              {isLoading ? 'Saving...' : 'Save Template'}
+              {isLoading ? t('builder.modals.saveTemplate.saving') : t('builder.modals.saveTemplate.save')}
             </Button>
           </div>
         </form>

@@ -5,9 +5,10 @@ import { CustomNode } from '@/app/(root)/builder/_components/custom-node'
 import { Toolbar } from '@/app/(root)/builder/_components/toolbar'
 import { useTheme } from '@/lib/theme-context'
 import { useBuilderStore } from '@/store/builder'
-import { Background, MiniMap, Panel, ReactFlow, ReactFlowProvider } from '@xyflow/react'
+import { Background, Panel, ReactFlow, ReactFlowProvider } from '@xyflow/react'
 import { Plus, Sparkles } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useShallow } from 'zustand/shallow'
 import { EmptyStateGuide } from './empty-state-guide'
 import { RecommendationPanel } from './recommendation-panel'
@@ -36,6 +37,7 @@ interface FlowCanvasProps {
 }
 
 export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasProps) {
+  const { t } = useTranslation()
   const { theme } = useTheme()
   const [open, setOpen] = useState(false)
   const [showRecommendations, setShowRecommendations] = useState(false)
@@ -129,12 +131,12 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                           className="transition-colors cursor-pointer"
                         >
                           <Plus className="h-4 w-4 mr-2" />
-                          Add Block
+                          {t('builder.components.flowCanvas.addBlock')}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Browse and add instruction blocks to your canvas</p>
-                        <p className="text-xs text-muted-foreground mt-1">18 different block types available</p>
+                        <p>{t('builder.components.flowCanvas.addBlockTooltip')}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('builder.components.flowCanvas.addBlockTooltipSub')}</p>
                       </TooltipContent>
                     </Tooltip>
 
@@ -147,22 +149,17 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                           data-tour="smart-suggestions"
                         >
                           <Sparkles className="h-4 w-4 mr-2" />
-                          Smart Suggestions
+                          {t('builder.components.flowCanvas.smartSuggestions')}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Get AI-powered block recommendations</p>
-                        <p className="text-xs text-muted-foreground mt-1">Based on your current blocks and best practices</p>
+                        <p>{t('builder.components.flowCanvas.smartSuggestionsTooltip')}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('builder.components.flowCanvas.smartSuggestionsTooltipSub')}</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
                 </Panel>
 
-                <MiniMap
-                  className="border border-border rounded-xl bg-background shadow-lg"
-                  nodeColor="hsl(var(--muted))"
-                  maskColor="hsl(var(--background) / 0.8)"
-                />
                 <Background
                   gap={12}
                   size={1}

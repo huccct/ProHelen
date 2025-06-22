@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { notFound, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { RelatedTemplates } from './_components/related-templates'
 import { TemplateDetails } from './_components/template-details'
 import { TemplatePreview } from './_components/template-preview'
 import { TemplateRating } from './_components/template-rating'
 
 export default function TemplateDetailPage({ params }: { params: any }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [template, setTemplate] = useState<Template | null>(null)
   const [loading, setLoading] = useState(true)
@@ -37,7 +39,7 @@ export default function TemplateDetailPage({ params }: { params: any }) {
         setTemplate(templateData)
       }
       catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load template')
+        setError(err instanceof Error ? err.message : t('templateDetail.error'))
       }
       finally {
         setLoading(false)
@@ -61,7 +63,7 @@ export default function TemplateDetailPage({ params }: { params: any }) {
           <div className="text-center py-12">
             <p className="text-destructive mb-4">{error}</p>
             <Button onClick={() => window.location.reload()} variant="outline">
-              Try Again
+              {t('templateDetail.tryAgain')}
             </Button>
           </div>
         </main>
@@ -79,7 +81,7 @@ export default function TemplateDetailPage({ params }: { params: any }) {
         {loading
           ? (
               <div className="flex items-center justify-center h-64">
-                <div className="text-muted-foreground">Loading template...</div>
+                <div className="text-muted-foreground">{t('templateDetail.loading')}</div>
               </div>
             )
           : template
@@ -92,7 +94,7 @@ export default function TemplateDetailPage({ params }: { params: any }) {
                         className="flex items-center text-muted-foreground hover:text-foreground mb-3 transition-colors cursor-pointer"
                       >
                         <ArrowLeft className="h-4 w-4 mr-1" />
-                        Back to templates
+                        {t('templateDetail.backToTemplates')}
                       </button>
                       <h1 className="text-3xl font-bold">{template.title}</h1>
                       <p className="text-muted-foreground mt-2">{template.category}</p>
@@ -104,13 +106,13 @@ export default function TemplateDetailPage({ params }: { params: any }) {
                         className="cursor-pointer"
                         onClick={() => window.open(`mailto:?subject=Check out this template&body=I found this great template on ProHelen: ${template.title}`)}
                       >
-                        Share
+                        {t('templateDetail.share')}
                       </Button>
                       <Button
                         className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
                         onClick={() => router.push(`/builder?template=${template.id}`)}
                       >
-                        Use Template
+                        {t('templateDetail.useTemplate')}
                       </Button>
                     </div>
                   </div>

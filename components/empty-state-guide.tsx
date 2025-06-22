@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Edit, HelpCircle, Lightbulb, PlayCircle, Plus, Zap } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface EmptyStateGuideProps {
   onAddBlock: () => void
@@ -10,6 +11,8 @@ interface EmptyStateGuideProps {
 }
 
 export function EmptyStateGuide({ onAddBlock, onStartTour, onShowHelp }: EmptyStateGuideProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[200]">
       <div className="max-w-md mx-auto text-center pointer-events-auto">
@@ -17,10 +20,10 @@ export function EmptyStateGuide({ onAddBlock, onStartTour, onShowHelp }: EmptySt
           <Lightbulb className="h-8 w-8 text-muted-foreground" />
         </div>
         <h3 className="text-lg font-semibold text-foreground mb-2">
-          Ready to build your AI assistant?
+          {t('builder.components.emptyStateGuide.title')}
         </h3>
         <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
-          Start by adding instruction blocks to the canvas. They'll automatically connect in a logical flow, making prompt creation simple and intuitive.
+          {t('builder.components.emptyStateGuide.description')}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
@@ -29,7 +32,7 @@ export function EmptyStateGuide({ onAddBlock, onStartTour, onShowHelp }: EmptySt
             className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 cursor-pointer"
           >
             <Plus className="h-4 w-4" />
-            Add Your First Block
+            {t('builder.components.emptyStateGuide.addFirstBlock')}
           </Button>
           <Button
             variant="outline"
@@ -37,7 +40,7 @@ export function EmptyStateGuide({ onAddBlock, onStartTour, onShowHelp }: EmptySt
             className="w-full sm:w-auto flex items-center gap-2 cursor-pointer"
           >
             <PlayCircle className="h-4 w-4" />
-            Take the Tour
+            {t('builder.components.emptyStateGuide.takeTour')}
           </Button>
         </div>
 
@@ -48,8 +51,8 @@ export function EmptyStateGuide({ onAddBlock, onStartTour, onShowHelp }: EmptySt
                 <Plus className="h-4 w-4 text-blue-600" />
               </div>
               <div>
-                <h4 className="font-medium text-foreground text-sm">Add Blocks</h4>
-                <p className="text-xs text-muted-foreground">Choose from 15+ instruction types</p>
+                <h4 className="font-medium text-foreground text-sm">{t('builder.components.emptyStateGuide.features.addBlocks.title')}</h4>
+                <p className="text-xs text-muted-foreground">{t('builder.components.emptyStateGuide.features.addBlocks.description')}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -57,8 +60,8 @@ export function EmptyStateGuide({ onAddBlock, onStartTour, onShowHelp }: EmptySt
                 <Zap className="h-4 w-4 text-green-600" />
               </div>
               <div>
-                <h4 className="font-medium text-foreground text-sm">Auto-Connect</h4>
-                <p className="text-xs text-muted-foreground">Smart connections create logical flow</p>
+                <h4 className="font-medium text-foreground text-sm">{t('builder.components.emptyStateGuide.features.autoConnect.title')}</h4>
+                <p className="text-xs text-muted-foreground">{t('builder.components.emptyStateGuide.features.autoConnect.description')}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -66,8 +69,8 @@ export function EmptyStateGuide({ onAddBlock, onStartTour, onShowHelp }: EmptySt
                 <Edit className="h-4 w-4 text-purple-600" />
               </div>
               <div>
-                <h4 className="font-medium text-foreground text-sm">Customize</h4>
-                <p className="text-xs text-muted-foreground">Edit content to fit your needs</p>
+                <h4 className="font-medium text-foreground text-sm">{t('builder.components.emptyStateGuide.features.customize.title')}</h4>
+                <p className="text-xs text-muted-foreground">{t('builder.components.emptyStateGuide.features.customize.description')}</p>
               </div>
             </div>
           </div>
@@ -81,7 +84,7 @@ export function EmptyStateGuide({ onAddBlock, onStartTour, onShowHelp }: EmptySt
             className="text-muted-foreground hover:text-foreground flex items-center gap-2 cursor-pointer"
           >
             <HelpCircle className="h-4 w-4" />
-            Need help? View guide
+            {t('builder.components.emptyStateGuide.helpButton')}
           </Button>
         </div>
       </div>

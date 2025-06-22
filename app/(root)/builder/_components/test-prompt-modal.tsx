@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useBuilderStore } from '@/store/builder'
 import { Loader2, Send, Sparkles, User } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
@@ -22,6 +23,7 @@ interface Message {
 }
 
 export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
+  const { t } = useTranslation()
   const preview = useBuilderStore(state => state.preview)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -40,7 +42,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
   // Auto-send a test message when modal opens
   useEffect(() => {
     if (open && !hasAutoSent && preview.system.trim()) {
-      const autoTestMessage = 'Hello! Please introduce yourself and explain what you can help me with.'
+      const autoTestMessage = t('builder.modals.testPrompt.autoMessage')
 
       const userMessage: Message = {
         role: 'user',
@@ -92,7 +94,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
 
       sendAutoMessage()
     }
-  }, [open, hasAutoSent, preview.system])
+  }, [open, hasAutoSent, preview.system, t])
 
   // Reset auto-send state when modal closes
   useEffect(() => {
@@ -169,7 +171,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
             <div className="p-2 bg-muted/30 rounded-lg">
               <Sparkles className="h-6 w-6 text-muted-foreground" />
             </div>
-            Try Your AI
+            {t('builder.modals.testPrompt.title')}
           </DialogTitle>
         </DialogHeader>
 
@@ -182,7 +184,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
                 ? (
                     <div className="text-center text-muted-foreground py-8">
                       <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                      <p>Type a message below to chat with your AI</p>
+                      <p>{t('builder.modals.testPrompt.emptyState')}</p>
                     </div>
                   )
                 : (
@@ -275,7 +277,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
                   <div className="bg-muted rounded-lg p-3">
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-muted-foreground">Thinking...</span>
+                      <span className="text-muted-foreground">{t('builder.modals.testPrompt.thinking')}</span>
                     </div>
                   </div>
                 </div>
@@ -290,7 +292,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Type your test message... (Press Enter to send)"
+                  placeholder={t('builder.modals.testPrompt.inputPlaceholder')}
                   className="text-sm text-foreground placeholder-muted-foreground h-[52px] max-h-24 pr-12 scrollbar bg-background border border-border rounded-lg"
                   disabled={isLoading}
                 />

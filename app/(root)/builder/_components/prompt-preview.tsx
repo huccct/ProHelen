@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useBuilderStore } from '@/store/builder'
 import { Code2, Copy, Download, Eye, Play, Save, Sparkles } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/shallow'
 import { SaveInstructionModal } from './save-instruction-modal'
@@ -28,6 +29,7 @@ function selector(state: any) {
 type FormatType = 'custom-instructions' | 'system-prompt' | 'raw-text'
 
 export function PromptPreview({ className, style }: PromptPreviewProps) {
+  const { t } = useTranslation()
   const { preview, nodes, title, description, exportFlowData } = useBuilderStore(useShallow(selector))
   const [currentFormat, setCurrentFormat] = useState<FormatType>('custom-instructions')
   const [showSaveModal, setShowSaveModal] = useState(false)
@@ -36,7 +38,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
 
   const generateCustomInstructions = () => {
     if (!preview.system && !preview.human && !preview.assistant) {
-      return 'Start building your custom instructions by adding blocks to the canvas...'
+      return t('builder.components.promptPreview.placeholder')
     }
 
     let content = ''
@@ -58,7 +60,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
 
   const generateSystemPrompt = () => {
     if (!preview.system) {
-      return 'No system prompt configured yet. Add instruction blocks to generate a system prompt.'
+      return t('builder.components.promptPreview.systemPromptPlaceholder')
     }
 
     return preview.system
@@ -73,7 +75,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     if (preview.assistant && preview.assistant.trim())
       parts.push(`Assistant:\n${preview.assistant}`)
 
-    return parts.length > 0 ? parts.join('\n\n') : 'No content to display'
+    return parts.length > 0 ? parts.join('\n\n') : t('builder.components.promptPreview.rawTextPlaceholder')
   }
 
   const formatContent = (format: FormatType) => {
@@ -94,10 +96,10 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(preview.system)
-      toast.success('Prompt copied to clipboard!')
+      toast.success(t('builder.components.promptPreview.messages.copied'))
     }
     catch {
-      toast.error('Failed to copy prompt')
+      toast.error(t('builder.components.promptPreview.messages.copyFailed'))
     }
   }
 
@@ -120,19 +122,19 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    toast.success('Prompt exported successfully!')
+    toast.success(t('builder.components.promptPreview.messages.exported'))
   }
 
   const handleTest = async () => {
     if (!preview.system.trim()) {
-      toast.error('Please add some content to your prompt before testing')
+      toast.error(t('builder.components.promptPreview.messages.addContentBeforeTest'))
       return
     }
 
     // Auto-copy the system prompt to clipboard
     try {
       await navigator.clipboard.writeText(preview.system)
-      toast.success('System prompt copied to clipboard!')
+      toast.success(t('builder.components.promptPreview.messages.systemPromptCopied'))
     }
     catch {
       // If clipboard fails, still open the modal
@@ -144,7 +146,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
 
   const handleSave = () => {
     if (!preview.system.trim()) {
-      toast.error('Please add some content to your prompt before saving')
+      toast.error(t('builder.components.promptPreview.messages.addContentBeforeSave'))
       return
     }
     setShowSaveModal(true)
@@ -191,9 +193,9 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
   }
 
   const formatButtons = [
-    { id: 'custom-instructions' as FormatType, label: 'Custom Instructions', icon: <Sparkles className="h-3 w-3" /> },
-    { id: 'system-prompt' as FormatType, label: 'System Prompt', icon: <Code2 className="h-3 w-3" /> },
-    { id: 'raw-text' as FormatType, label: 'Raw Text', icon: <Eye className="h-3 w-3" /> },
+    { id: 'custom-instructions' as FormatType, label: t('builder.components.promptPreview.formats.customInstructions'), icon: <Sparkles className="h-3 w-3" /> },
+    { id: 'system-prompt' as FormatType, label: t('builder.components.promptPreview.formats.systemPrompt'), icon: <Code2 className="h-3 w-3" /> },
+    { id: 'raw-text' as FormatType, label: t('builder.components.promptPreview.formats.rawText'), icon: <Eye className="h-3 w-3" /> },
   ]
 
   const hasContent = preview.system || preview.human || preview.assistant
@@ -205,14 +207,9 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-medium text-foreground">Prompt Preview</h3>
+            <h3 className="text-sm font-medium text-foreground">{t('builder.components.promptPreview.title')}</h3>
             <p className="text-xs text-muted-foreground mt-1">
-              {nodeCount}
-              {' '}
-              block
-              {nodeCount !== 1 ? 's' : ''}
-              {' '}
-              configured
+              {t('builder.components.promptPreview.stats.blocks', { count: nodeCount, s: nodeCount !== 1 ? 's' : '' })}
             </p>
           </div>
         </div>
@@ -266,7 +263,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Copy className="h-3 w-3 mr-1" />
-              Copy
+              {t('builder.components.promptPreview.actions.copy')}
             </Button>
             <Button
               variant="outline"
@@ -276,7 +273,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="h-3 w-3 mr-1" />
-              Export
+              {t('builder.components.promptPreview.actions.export')}
             </Button>
           </div>
 
@@ -288,7 +285,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Play className="h-3 w-3 mr-1" />
-            Try it
+            {t('builder.components.promptPreview.actions.test')}
           </Button>
 
           <Button
@@ -299,7 +296,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-3 w-3 mr-1" />
-            Save
+            {t('builder.components.promptPreview.actions.save')}
           </Button>
         </div>
 
@@ -307,7 +304,9 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
         {!hasContent && (
           <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-border">
             <p className="text-xs text-muted-foreground text-center">
-              💡 Add instruction blocks to your canvas to see the generated prompt here
+              💡
+              {' '}
+              {t('builder.components.promptPreview.helpText')}
             </p>
           </div>
         )}

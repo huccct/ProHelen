@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { IoSearch } from 'react-icons/io5'
 
 interface SearchBarProps {
@@ -8,6 +9,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ onSearch }: SearchBarProps) {
+  const { t } = useTranslation()
   const [localQuery, setLocalQuery] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +28,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         value={localQuery}
         onChange={handleChange}
         className="w-full p-3 pl-10 text-sm bg-card border border-border rounded-lg focus:ring-ring focus:border-ring text-foreground placeholder-muted-foreground"
-        placeholder="Search templates..."
+        placeholder={t('templates.searchPlaceholder')}
       />
     </div>
   )

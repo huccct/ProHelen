@@ -14,6 +14,7 @@ import {
   ZoomOut,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ConfirmClearModal } from './confirm-clear-modal'
 
@@ -22,6 +23,7 @@ interface ToolbarProps {
 }
 
 export function Toolbar({ className }: ToolbarProps) {
+  const { t } = useTranslation()
   const { zoomIn, zoomOut, setViewport } = useReactFlow()
   const resetFlow = useBuilderStore(state => state.resetFlow)
   const undo = useBuilderStore(state => state.undo)
@@ -36,14 +38,14 @@ export function Toolbar({ className }: ToolbarProps) {
   const handleUndo = () => {
     if (canUndo) {
       undo()
-      toast.success('Undone')
+      toast.success(t('builder.components.toolbar.undone'))
     }
   }
 
   const handleRedo = () => {
     if (canRedo) {
       redo()
-      toast.success('Redone')
+      toast.success(t('builder.components.toolbar.redone'))
     }
   }
 
@@ -62,16 +64,16 @@ export function Toolbar({ className }: ToolbarProps) {
       if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen()
         setIsFullscreen(true)
-        toast.success('Entered fullscreen mode')
+        toast.success(t('builder.components.toolbar.enteredFullscreen'))
       }
       else {
         await document.exitFullscreen()
         setIsFullscreen(false)
-        toast.success('Exited fullscreen mode')
+        toast.success(t('builder.components.toolbar.exitedFullscreen'))
       }
     }
     catch {
-      toast.error('Fullscreen not supported')
+      toast.error(t('builder.components.toolbar.fullscreenNotSupported'))
     }
   }
 
@@ -91,7 +93,7 @@ export function Toolbar({ className }: ToolbarProps) {
 
   const handleConfirmClear = () => {
     resetFlow()
-    toast.success('Canvas cleared')
+    toast.success(t('builder.components.toolbar.canvasCleared'))
   }
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,7 +104,7 @@ export function Toolbar({ className }: ToolbarProps) {
     e.preventDefault()
     const newZoom = Number.parseInt(zoomInput)
     if (Number.isNaN(newZoom) || newZoom < 10 || newZoom > 500) {
-      toast.error('Please enter a zoom value between 10% and 500%')
+      toast.error(t('builder.components.toolbar.zoomError'))
       setZoomInput(currentZoom.toString())
       return
     }
@@ -139,8 +141,8 @@ export function Toolbar({ className }: ToolbarProps) {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Undo last action</p>
-            <p className="text-xs text-muted-foreground mt-1">Ctrl+Z</p>
+            <p>{t('builder.components.toolbar.undo')}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('builder.components.toolbar.shortcuts.ctrlZ')}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -161,8 +163,8 @@ export function Toolbar({ className }: ToolbarProps) {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Redo last action</p>
-            <p className="text-xs text-muted-foreground mt-1">Ctrl+Y</p>
+            <p>{t('builder.components.toolbar.redo')}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('builder.components.toolbar.shortcuts.ctrlY')}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -173,7 +175,7 @@ export function Toolbar({ className }: ToolbarProps) {
           size="sm"
           onClick={handleClear}
           className="text-muted-foreground hover:text-red-400 hover:bg-muted h-8 w-8 p-0 cursor-pointer"
-          title="Clear canvas"
+          title={t('builder.components.toolbar.clearCanvas')}
         >
           <Trash2 size={16} />
         </Button>
@@ -187,7 +189,7 @@ export function Toolbar({ className }: ToolbarProps) {
           size="sm"
           onClick={handleZoomOut}
           className="text-muted-foreground hover:text-foreground hover:bg-muted h-8 w-8 p-0 cursor-pointer"
-          title="Zoom out"
+          title={t('builder.components.toolbar.zoomOut')}
         >
           <ZoomOut size={16} />
         </Button>
@@ -198,38 +200,33 @@ export function Toolbar({ className }: ToolbarProps) {
             onChange={handleZoomInputChange}
             onBlur={handleZoomInputBlur}
             className="w-12 text-sm text-muted-foreground bg-transparent text-center border-none focus:outline-none focus:text-foreground"
-            placeholder="100"
+            style={{ width: '50px' }}
           />
-          <span className="text-sm text-muted-foreground">%</span>
         </form>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleZoomIn}
           className="text-muted-foreground hover:text-foreground hover:bg-muted h-8 w-8 p-0 cursor-pointer"
-          title="Zoom in"
+          title={t('builder.components.toolbar.zoomIn')}
         >
           <ZoomIn size={16} />
         </Button>
+      </div>
 
+      {/* Right section - View mode */}
+      <div className="flex items-center space-x-1">
         <Button
           variant="ghost"
           size="sm"
           onClick={handleFullscreen}
           className="text-muted-foreground hover:text-foreground hover:bg-muted h-8 w-8 p-0 cursor-pointer"
-          title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+          title={t('builder.components.toolbar.fullscreen')}
         >
           {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
         </Button>
-
       </div>
 
-      {/* Right section - placeholder for future tools */}
-      <div className="flex items-center space-x-2">
-        {/* Export and Test functions are available in the right panel */}
-      </div>
-
-      {/* Confirm Clear Modal */}
       <ConfirmClearModal
         open={showClearModal}
         onOpenChange={setShowClearModal}

@@ -10,6 +10,7 @@ import { ArrowLeft, HelpCircle, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { GuidedCanvas } from './_components/guided-canvas'
 import { GuidedHeader } from './_components/guided-header'
@@ -30,6 +31,7 @@ interface BuilderState {
 type InterfaceMode = 'simple' | 'guided' | 'advanced'
 
 function BuilderContent() {
+  const { t } = useTranslation()
   const searchParams = useSearchParams()
   const importFlowData = useBuilderStore(state => state.importFlowData)
   const setTitle = useBuilderStore(state => state.setTitle)
@@ -535,14 +537,14 @@ function BuilderContent() {
           <div className="flex-1 min-w-0" data-tour="title-input">
             <input
               type="text"
-              placeholder="Untitled Instruction"
+              placeholder={t('builder.untitledInstruction')}
               value={builderState.title}
               onChange={e => setBuilderState(prev => ({ ...prev, title: e.target.value }))}
               className="bg-transparent text-lg font-medium text-foreground border-none focus:outline-none w-full truncate"
             />
             <input
               type="text"
-              placeholder="Add a description..."
+              placeholder={t('builder.addDescription')}
               value={builderState.description}
               onChange={e => setBuilderState(prev => ({ ...prev, description: e.target.value }))}
               className="bg-transparent text-sm text-muted-foreground border-none focus:outline-none w-full mt-0.5 truncate"
@@ -559,12 +561,12 @@ function BuilderContent() {
                 className="h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 <Zap className="h-4 w-4 mr-1" />
-                Simple Mode
+                {t('builder.simpleMode')}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Switch to simple mode</p>
-              <p className="text-xs text-muted-foreground mt-1">Question-based instruction creation</p>
+              <p>{t('builder.switchToSimpleMode')}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('builder.simpleModeTip')}</p>
             </TooltipContent>
           </Tooltip>
 
@@ -581,8 +583,8 @@ function BuilderContent() {
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Get help and shortcuts</p>
-              <p className="text-xs text-muted-foreground mt-1">Press F1 or click for help</p>
+              <p>{t('builder.getHelp')}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('builder.helpTip')}</p>
             </TooltipContent>
           </Tooltip>
         </div>

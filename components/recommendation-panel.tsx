@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { Lightbulb, Plus, Sparkles, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface RecommendationResult {
   blockType: string
@@ -16,28 +17,6 @@ interface RecommendationPanelProps {
   currentBlocks: string[]
   onBlockSelect: (blockType: string) => void
   onClose: () => void
-}
-
-// 块类型的显示映射
-const blockTypeLabels: Record<string, string> = {
-  role_definition: 'Role Definition',
-  context_setting: 'Context Setting',
-  output_format: 'Output Format',
-  goal_setting: 'Goal Setting',
-  learning_style: 'Learning Style',
-  subject_focus: 'Subject Focus',
-  difficulty_level: 'Difficulty Level',
-  communication_style: 'Communication Style',
-  feedback_style: 'Feedback Style',
-  personality_traits: 'Personality',
-  step_by_step: 'Step-by-Step',
-  time_management: 'Time Management',
-  prioritization: 'Prioritization',
-  conditional_logic: 'Conditional Logic',
-  creative_thinking: 'Creative Thinking',
-  error_handling: 'Error Handling',
-  career_planning: 'Career Planning',
-  skill_assessment: 'Skill Assessment',
 }
 
 // 块类型的颜色映射
@@ -68,6 +47,7 @@ export function RecommendationPanel({
   onBlockSelect,
   onClose,
 }: RecommendationPanelProps) {
+  const { t } = useTranslation()
   const [recommendations, setRecommendations] = useState<RecommendationResult[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -186,7 +166,7 @@ export function RecommendationPanel({
           <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-500/20">
             <Sparkles className="h-4 w-4 text-purple-400" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground">Smart Suggestions</h3>
+          <h3 className="text-lg font-semibold text-foreground">{t('builder.components.recommendationPanel.title')}</h3>
         </div>
         <Button
           variant="ghost"
@@ -235,7 +215,7 @@ export function RecommendationPanel({
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
                             <h4 className="text-sm font-medium text-foreground group-hover:text-purple-300 transition-colors">
-                              {blockTypeLabels[rec.blockType] || rec.blockType}
+                              {t(`builder.components.blockPicker.blocks.${rec.blockType}.label`, rec.blockType)}
                             </h4>
                             <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                               {rec.reason}
@@ -269,9 +249,7 @@ export function RecommendationPanel({
               <div className="text-center py-8">
                 <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground text-sm">
-                  Add some blocks to get
-                  <br />
-                  personalized suggestions
+                  {t('builder.components.recommendationPanel.emptyState')}
                 </p>
               </div>
             )}
@@ -285,7 +263,7 @@ export function RecommendationPanel({
           className="mt-6 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg"
         >
           <p className="text-xs text-purple-300">
-            💡 Suggestions improve as you use the app more
+            {t('builder.components.recommendationPanel.tip')}
           </p>
         </motion.div>
       )}

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface SaveInstructionModalProps {
   open: boolean
@@ -25,20 +26,8 @@ export interface InstructionFormData {
   isFavorite: boolean
 }
 
-const categories = [
-  'General',
-  'Academic',
-  'Writing',
-  'Programming',
-  'Data Analysis',
-  'Creative',
-  'Productivity',
-  'Research',
-  'Education',
-  'Business',
-]
-
 export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, initialTitle = '', initialDescription = '' }: SaveInstructionModalProps) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState<InstructionFormData>({
     title: initialTitle,
     description: initialDescription,
@@ -90,20 +79,33 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
     }
   }
 
+  const categories = [
+    t('builder.modals.saveInstruction.categories.general'),
+    t('builder.modals.saveInstruction.categories.academic'),
+    t('builder.modals.saveInstruction.categories.writing'),
+    t('builder.modals.saveInstruction.categories.programming'),
+    t('builder.modals.saveInstruction.categories.dataAnalysis'),
+    t('builder.modals.saveInstruction.categories.creative'),
+    t('builder.modals.saveInstruction.categories.productivity'),
+    t('builder.modals.saveInstruction.categories.research'),
+    t('builder.modals.saveInstruction.categories.education'),
+    t('builder.modals.saveInstruction.categories.business'),
+  ]
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] bg-background border-border">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-foreground">Save Instruction</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-foreground">{t('builder.modals.saveInstruction.title')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title" className="text-foreground">
-              Title *
+              {t('builder.modals.saveInstruction.titleLabel')}
             </Label>
             <Input
               id="title"
-              placeholder="Enter instruction title..."
+              placeholder={t('builder.modals.saveInstruction.titlePlaceholder')}
               value={formData.title}
               onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
               className="bg-card border-border text-foreground"
@@ -113,11 +115,11 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
 
           <div className="space-y-2">
             <Label htmlFor="description" className="text-foreground">
-              Description
+              {t('builder.modals.saveInstruction.descriptionLabel')}
             </Label>
             <Textarea
               id="description"
-              placeholder="Describe what this instruction does..."
+              placeholder={t('builder.modals.saveInstruction.descriptionPlaceholder')}
               value={formData.description}
               onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
               className="bg-card border-border text-foreground resize-none"
@@ -127,7 +129,7 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
 
           <div className="space-y-2">
             <Label htmlFor="category" className="text-foreground">
-              Category
+              {t('builder.modals.saveInstruction.categoryLabel')}
             </Label>
             <Select
               value={formData.category}
@@ -137,8 +139,8 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-card border-border">
-                {categories.map(category => (
-                  <SelectItem key={category} value={category} className="text-foreground hover:bg-muted">
+                {categories.map((category, index) => (
+                  <SelectItem key={index} value={category} className="text-foreground hover:bg-muted">
                     {category}
                   </SelectItem>
                 ))}
@@ -148,12 +150,12 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
 
           <div className="space-y-2">
             <Label htmlFor="tags" className="text-foreground">
-              Tags
+              {t('builder.modals.saveInstruction.tagsLabel')}
             </Label>
             <div className="flex gap-2">
               <Input
                 id="tags"
-                placeholder="Add tags..."
+                placeholder={t('builder.modals.saveInstruction.tagsPlaceholder')}
                 value={tagInput}
                 onChange={e => setTagInput(e.target.value)}
                 onKeyPress={handleKeyPress}
@@ -165,7 +167,7 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
                 variant="outline"
                 className="cursor-pointer"
               >
-                Add
+                {t('builder.modals.saveInstruction.addTag')}
               </Button>
             </div>
             {formData.tags.length > 0 && (
@@ -198,7 +200,7 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
               className="rounded border-border bg-card"
             />
             <Label htmlFor="favorite" className="text-foreground text-sm">
-              Add to favorites
+              {t('builder.modals.saveInstruction.addToFavorites')}
             </Label>
           </div>
 
@@ -209,14 +211,14 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
               onClick={() => onOpenChange(false)}
               className="cursor-pointer"
             >
-              Cancel
+              {t('builder.modals.saveInstruction.cancel')}
             </Button>
             <Button
               type="submit"
               disabled={!formData.title.trim() || isLoading}
               className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
             >
-              {isLoading ? 'Saving...' : 'Save Instruction'}
+              {isLoading ? t('builder.modals.saveInstruction.saving') : t('builder.modals.saveInstruction.save')}
             </Button>
           </div>
         </form>

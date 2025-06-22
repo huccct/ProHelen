@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ArrowRight, BookOpen, MessageSquare, Settings, Target, User } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface WizardStep {
   id: string
@@ -21,118 +22,120 @@ interface WizardStep {
   }>
 }
 
-const wizardSteps: WizardStep[] = [
-  {
-    id: 'purpose',
-    title: 'What should your AI assistant help you with?',
-    description: 'Choose a primary purpose and we\'ll recommend the right configuration',
-    icon: Target,
-    type: 'select',
-    options: [
-      {
-        value: 'learning',
-        label: '🎓 Learning Assistant',
-        description: 'Help me learn new knowledge, answer questions, practice skills',
-        blocks: ['Role Definition', 'Learning Style', 'Subject Focus'],
-      },
-      {
-        value: 'writing',
-        label: '✍️ Writing Assistant',
-        description: 'Help me write articles, emails, creative content',
-        blocks: ['Role Definition', 'Communication Style', 'Output Format'],
-      },
-      {
-        value: 'work',
-        label: '💼 Work Assistant',
-        description: 'Improve productivity, analyze data, solve business problems',
-        blocks: ['Role Definition', 'Context Setting', 'Output Format'],
-      },
-      {
-        value: 'personal',
-        label: '🏠 Personal Assistant',
-        description: 'Daily decisions, health advice, personal planning',
-        blocks: ['Role Definition', 'Communication Style', 'Personality'],
-      },
-    ],
-  },
-  {
-    id: 'tone',
-    title: 'What communication style do you prefer?',
-    description: 'Choose how you want the AI to interact with you',
-    icon: MessageSquare,
-    type: 'select',
-    options: [
-      {
-        value: 'professional',
-        label: '🎯 Professional & Formal',
-        description: 'Authoritative and rigorous, like an expert',
-        blocks: [],
-      },
-      {
-        value: 'friendly',
-        label: '😊 Friendly & Casual',
-        description: 'Warm and approachable, like a friend',
-        blocks: [],
-      },
-      {
-        value: 'encouraging',
-        label: '💪 Encouraging & Supportive',
-        description: 'Motivating and positive, like a coach',
-        blocks: [],
-      },
-      {
-        value: 'direct',
-        label: '⚡ Direct & Concise',
-        description: 'Straight to the point, no fluff',
-        blocks: [],
-      },
-    ],
-  },
-  {
-    id: 'expertise',
-    title: 'What\'s your experience level?',
-    description: 'Let the AI know how to adjust its explanations for you',
-    icon: User,
-    type: 'select',
-    options: [
-      {
-        value: 'beginner',
-        label: '🌱 Complete Beginner',
-        description: 'I\'m new to this, need basic explanations',
-        blocks: [],
-      },
-      {
-        value: 'intermediate',
-        label: '🌿 Some Experience',
-        description: 'I know some basics, but need guidance',
-        blocks: [],
-      },
-      {
-        value: 'advanced',
-        label: '🌳 Quite Experienced',
-        description: 'I\'m skilled, just need advanced advice',
-        blocks: [],
-      },
-    ],
-  },
-  {
-    id: 'goal',
-    title: 'What specific goal do you want to achieve?',
-    description: 'Describe your objective in detail so the AI can better understand your needs',
-    icon: BookOpen,
-    type: 'textarea',
-  },
-]
-
 interface SimpleWizardProps {
   onComplete: (config: any) => void
   onSwitchToAdvanced: () => void
 }
 
 export function SimpleWizard({ onComplete, onSwitchToAdvanced }: SimpleWizardProps) {
+  const { t } = useTranslation()
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, any>>({})
   const [textInput, setTextInput] = useState('')
+
+  // 动态生成步骤配置
+  const wizardSteps: WizardStep[] = [
+    {
+      id: 'purpose',
+      title: t('builder.quickSetup.purpose.title'),
+      description: t('builder.quickSetup.purpose.description'),
+      icon: Target,
+      type: 'select',
+      options: [
+        {
+          value: 'learning',
+          label: t('builder.quickSetup.purpose.learning.label'),
+          description: t('builder.quickSetup.purpose.learning.description'),
+          blocks: ['Role Definition', 'Learning Style', 'Subject Focus'],
+        },
+        {
+          value: 'writing',
+          label: t('builder.quickSetup.purpose.writing.label'),
+          description: t('builder.quickSetup.purpose.writing.description'),
+          blocks: ['Role Definition', 'Communication Style', 'Output Format'],
+        },
+        {
+          value: 'work',
+          label: t('builder.quickSetup.purpose.work.label'),
+          description: t('builder.quickSetup.purpose.work.description'),
+          blocks: ['Role Definition', 'Context Setting', 'Output Format'],
+        },
+        {
+          value: 'personal',
+          label: t('builder.quickSetup.purpose.personal.label'),
+          description: t('builder.quickSetup.purpose.personal.description'),
+          blocks: ['Role Definition', 'Communication Style', 'Personality'],
+        },
+      ],
+    },
+    {
+      id: 'tone',
+      title: t('builder.quickSetup.tone.title'),
+      description: t('builder.quickSetup.tone.description'),
+      icon: MessageSquare,
+      type: 'select',
+      options: [
+        {
+          value: 'professional',
+          label: t('builder.quickSetup.tone.professional.label'),
+          description: t('builder.quickSetup.tone.professional.description'),
+          blocks: [],
+        },
+        {
+          value: 'friendly',
+          label: t('builder.quickSetup.tone.friendly.label'),
+          description: t('builder.quickSetup.tone.friendly.description'),
+          blocks: [],
+        },
+        {
+          value: 'encouraging',
+          label: t('builder.quickSetup.tone.encouraging.label'),
+          description: t('builder.quickSetup.tone.encouraging.description'),
+          blocks: [],
+        },
+        {
+          value: 'direct',
+          label: t('builder.quickSetup.tone.direct.label'),
+          description: t('builder.quickSetup.tone.direct.description'),
+          blocks: [],
+        },
+      ],
+    },
+    {
+      id: 'expertise',
+      title: t('builder.quickSetup.expertise.title'),
+      description: t('builder.quickSetup.expertise.description'),
+      icon: User,
+      type: 'select',
+      options: [
+        {
+          value: 'beginner',
+          label: t('builder.quickSetup.expertise.beginner.label'),
+          description: t('builder.quickSetup.expertise.beginner.description'),
+          blocks: [],
+        },
+        {
+          value: 'intermediate',
+          label: t('builder.quickSetup.expertise.intermediate.label'),
+          description: t('builder.quickSetup.expertise.intermediate.description'),
+          blocks: [],
+        },
+        {
+          value: 'advanced',
+          label: t('builder.quickSetup.expertise.advanced.label'),
+          description: t('builder.quickSetup.expertise.advanced.description'),
+          blocks: [],
+        },
+      ],
+    },
+    {
+      id: 'goal',
+      title: t('builder.quickSetup.goal.title'),
+      description: t('builder.quickSetup.goal.description'),
+      icon: BookOpen,
+      type: 'textarea',
+    },
+  ]
 
   const step = wizardSteps[currentStep]
   const isLastStep = currentStep === wizardSteps.length - 1
@@ -188,8 +191,8 @@ export function SimpleWizard({ onComplete, onSwitchToAdvanced }: SimpleWizardPro
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Quick Setup</h2>
-            <p className="text-muted-foreground mt-1">Answer a few simple questions to get started</p>
+            <h2 className="text-2xl font-bold text-foreground">{t('builder.quickSetup.title')}</h2>
+            <p className="text-muted-foreground mt-1">{t('builder.quickSetup.subtitle')}</p>
           </div>
           <Button
             variant="outline"
@@ -197,7 +200,7 @@ export function SimpleWizard({ onComplete, onSwitchToAdvanced }: SimpleWizardPro
             className="flex items-center gap-2 cursor-pointer"
           >
             <Settings className="h-4 w-4" />
-            Advanced Mode
+            {t('builder.quickSetup.advancedMode')}
           </Button>
         </div>
 
@@ -205,11 +208,7 @@ export function SimpleWizard({ onComplete, onSwitchToAdvanced }: SimpleWizardPro
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-muted-foreground">
             <span>
-              Step
-              {currentStep + 1}
-              {' '}
-              of
-              {wizardSteps.length}
+              {t('builder.quickSetup.steps.stepOf', { current: currentStep + 1, total: wizardSteps.length })}
             </span>
             <span>
               {Math.round(((currentStep + 1) / wizardSteps.length) * 100)}
@@ -267,17 +266,17 @@ export function SimpleWizard({ onComplete, onSwitchToAdvanced }: SimpleWizardPro
 
           {step.type === 'textarea' && (
             <div className="space-y-3">
-              <Label htmlFor="goal-input">Your specific goal</Label>
+              <Label htmlFor="goal-input">{step.title}</Label>
               <Textarea
                 id="goal-input"
-                placeholder="Example: I want to learn Python programming from scratch. I hope the AI can patiently teach me step by step, explaining complex concepts in simple terms..."
+                placeholder={t('builder.quickSetup.goal.placeholder')}
                 value={textInput}
                 onChange={e => setTextInput(e.target.value)}
                 rows={4}
                 className="resize-none"
               />
               <p className="text-xs text-muted-foreground">
-                The more detailed you are, the better the AI can help you
+                {step.description}
               </p>
             </div>
           )}
@@ -337,7 +336,7 @@ export function SimpleWizard({ onComplete, onSwitchToAdvanced }: SimpleWizardPro
           disabled={currentStep === 0}
           className="cursor-pointer"
         >
-          Previous
+          {t('builder.quickSetup.steps.previous')}
         </Button>
 
         <div className="flex items-center gap-2">
@@ -356,7 +355,7 @@ export function SimpleWizard({ onComplete, onSwitchToAdvanced }: SimpleWizardPro
           disabled={!canProceed()}
           className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
         >
-          {isLastStep ? 'Create Instruction' : 'Next'}
+          {isLastStep ? t('builder.quickSetup.steps.createInstructions') : t('builder.quickSetup.steps.next')}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

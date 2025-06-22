@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, CheckCircle, ChevronRight, Edit, Move, Zap } from 'lucide-react'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 
 interface GuidedHeaderProps {
   step: 'arrange' | 'connect' | 'customize' | 'test'
@@ -12,13 +13,15 @@ interface GuidedHeaderProps {
   canProceed: boolean
 }
 
-const steps = [
-  { id: 'arrange', label: 'Arrange Cards', icon: Move },
-  { id: 'customize', label: 'Edit Content', icon: Edit },
-  { id: 'test', label: 'Test & Save', icon: Zap },
-]
-
 export function GuidedHeader({ step, onNext, onPrevious, onAdvanced, canProceed }: GuidedHeaderProps) {
+  const { t } = useTranslation()
+
+  const steps = [
+    { id: 'arrange', label: t('builder.guided.steps.arrange'), icon: Move },
+    { id: 'customize', label: t('builder.guided.steps.customize'), icon: Edit },
+    { id: 'test', label: t('builder.guided.steps.test'), icon: Zap },
+  ]
+
   const currentIndex = steps.findIndex(s => s.id === step)
   const isFirstStep = currentIndex === 0
   const isLastStep = currentIndex === steps.length - 1
@@ -68,7 +71,7 @@ export function GuidedHeader({ step, onNext, onPrevious, onAdvanced, canProceed 
             onClick={onAdvanced}
             className="hover:bg-muted/50 cursor-pointer"
           >
-            Advanced Mode
+            {t('builder.guided.header.switchToAdvanced')}
           </Button>
 
           <div className="flex items-center gap-2">
@@ -79,7 +82,7 @@ export function GuidedHeader({ step, onNext, onPrevious, onAdvanced, canProceed 
               disabled={isFirstStep}
               className="hover:bg-muted/50 cursor-pointer"
             >
-              Previous
+              {t('builder.guided.header.previous')}
             </Button>
             <Button
               size="sm"
@@ -87,7 +90,7 @@ export function GuidedHeader({ step, onNext, onPrevious, onAdvanced, canProceed 
               disabled={!canProceed}
               className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
             >
-              {isLastStep ? 'Finish' : 'Next'}
+              {isLastStep ? t('common.done') : t('builder.guided.header.next')}
             </Button>
           </div>
         </div>
