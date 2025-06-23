@@ -3,6 +3,7 @@
 import { BlockPickerModal } from '@/app/(root)/builder/_components/block-picker-modal'
 import { CustomNode } from '@/app/(root)/builder/_components/custom-node'
 import { Toolbar } from '@/app/(root)/builder/_components/toolbar'
+import { ValueDemonstration } from '@/app/(root)/builder/_components/value-demonstration'
 import { useTheme } from '@/lib/theme-context'
 import { useBuilderStore } from '@/store/builder'
 import { Background, Panel, ReactFlow, ReactFlowProvider } from '@xyflow/react'
@@ -180,6 +181,12 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                 onClose={() => setShowRecommendations(false)}
               />
             )}
+
+            {/* Value Demonstration */}
+            <ValueDemonstration
+              currentBlocks={currentBlocks}
+              onMotivateUser={() => setOpen(true)}
+            />
           </div>
         </div>
       </div>
