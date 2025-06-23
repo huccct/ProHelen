@@ -26,6 +26,19 @@ interface BuilderState {
   historyIndex: number
 }
 
+interface ExtractedBlock {
+  type: string
+  content: string
+  confidence: number
+  reasoning: string
+}
+
+interface SuggestedEnhancement {
+  type: string
+  reason: string
+  impact: 'high' | 'medium' | 'low'
+}
+
 interface BuilderActions {
   setNodes: (nodes: Node<CustomNodeData>[]) => void
   setEdges: (edges: Edge[]) => void
@@ -50,6 +63,9 @@ interface BuilderActions {
   redo: () => void
   canUndo: () => boolean
   canRedo: () => boolean
+  // 新增：prompt分析相关方法
+  applyAnalysisResults: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[]) => void
+  createEnhancementBlocks: (enhancements: SuggestedEnhancement[]) => void
 }
 
 // 定义块的优先级和连接规则
@@ -697,5 +713,99 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   canRedo: () => {
     const { history, historyIndex } = get()
     return historyIndex < history.length - 1
+  },
+
+  // 新增：应用分析结果方法
+  applyAnalysisResults: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[]) => {
+    const { addNode, updateNodeData } = get()
+
+    // 保存到历史记录
+    get().saveToHistory()
+
+    // 创建提取的blocks
+    blocks.forEach((block, index) => {
+      const position = {
+        x: 250,
+        y: 100 + index * 120,
+      }
+
+      addNode(block.type, position)
+
+      // 延迟填充内容，确保节点已创建
+      setTimeout(() => {
+        const currentNodes = get().nodes
+        const newNode = currentNodes.find(n =>
+          n.data.type === block.type
+          && !n.data.content, // 找到没有内容的新节点
+        )
+        if (newNode) {
+          updateNodeData(newNode.id, { content: block.content })
+        }
+      }, index * 50) // 错开时间避免冲突
+    })
+
+    // 创建增强blocks
+    if (enhancements.length > 0) {
+      get().createEnhancementBlocks(enhancements)
+    }
+
+    // 更新预览
+    setTimeout(() => {
+      get().updatePreview()
+    }, blocks.length * 50 + 100)
+  },
+
+  createEnhancementBlocks: (enhancements: SuggestedEnhancement[]) => {
+    const { addNode } = get()
+
+    // 计算增强blocks的起始位置（在现有blocks右侧）
+    const startX = 450
+    const startY = 200
+
+    enhancements.forEach((enhancement, index) => {
+      const position = {
+        x: startX,
+        y: startY + index * 120,
+      }
+
+      addNode(enhancement.type, position)
+
+      // 为增强blocks添加默认内容
+      setTimeout(() => {
+        const currentNodes = get().nodes
+        const enhancementNode = currentNodes.find(n =>
+          n.data.type === enhancement.type
+          && !n.data.content, // 找到没有内容的新节点
+        )
+
+        if (enhancementNode) {
+          const { updateNodeData } = get()
+
+          // 根据enhancement type生成默认内容
+          let defaultContent = ''
+          switch (enhancement.type) {
+            case 'output_format':
+              defaultContent = 'Please structure your responses with clear headings and bullet points for better readability.'
+              break
+            case 'communication_style':
+              defaultContent = 'Use a professional yet friendly tone. Be clear, concise, and helpful in all interactions.'
+              break
+            case 'goal_setting':
+              defaultContent = 'Focus on achieving specific, measurable outcomes that align with the user\'s objectives.'
+              break
+            case 'feedback_style':
+              defaultContent = 'Provide constructive feedback with specific examples and actionable suggestions for improvement.'
+              break
+            case 'step_by_step':
+              defaultContent = 'Break down complex tasks into manageable steps with clear instructions for each stage.'
+              break
+            default:
+              defaultContent = `Optimized ${enhancement.type.replace('_', ' ')} configuration based on your requirements.`
+          }
+
+          updateNodeData(enhancementNode.id, { content: defaultContent })
+        }
+      }, (enhancements.length + index) * 50 + 200)
+    })
   },
 }))

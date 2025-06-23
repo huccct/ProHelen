@@ -3,7 +3,7 @@
 import type { InstructionFormData } from './save-instruction-modal'
 import { Button } from '@/components/ui/button'
 import { useBuilderStore } from '@/store/builder'
-import { Code2, Copy, Download, Eye, Play, Save, Sparkles } from 'lucide-react'
+import { Copy, Download, Play, Save } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -26,12 +26,11 @@ function selector(state: any) {
   }
 }
 
-type FormatType = 'custom-instructions' | 'system-prompt' | 'raw-text'
+// 简化为单一预览格式
 
 export function PromptPreview({ className, style }: PromptPreviewProps) {
   const { t } = useTranslation()
   const { preview, nodes, title, description, exportFlowData } = useBuilderStore(useShallow(selector))
-  const [currentFormat, setCurrentFormat] = useState<FormatType>('custom-instructions')
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [showTestModal, setShowTestModal] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -66,32 +65,8 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     return preview.system
   }
 
-  const generateRawText = () => {
-    const parts = []
-    if (preview.system)
-      parts.push(`System:\n${preview.system}`)
-    if (preview.human && preview.human.trim())
-      parts.push(`Human:\n${preview.human}`)
-    if (preview.assistant && preview.assistant.trim())
-      parts.push(`Assistant:\n${preview.assistant}`)
-
-    return parts.length > 0 ? parts.join('\n\n') : t('builder.components.promptPreview.rawTextPlaceholder')
-  }
-
-  const formatContent = (format: FormatType) => {
-    switch (format) {
-      case 'custom-instructions':
-        return generateCustomInstructions()
-      case 'system-prompt':
-        return generateSystemPrompt()
-      case 'raw-text':
-        return generateRawText()
-      default:
-        return generateCustomInstructions()
-    }
-  }
-
-  const currentContent = formatContent(currentFormat)
+  // 使用结构化的自定义指令格式作为唯一预览
+  const currentContent = generateCustomInstructions()
 
   const handleCopy = async () => {
     try {
@@ -192,11 +167,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     }
   }
 
-  const formatButtons = [
-    { id: 'custom-instructions' as FormatType, label: t('builder.components.promptPreview.formats.customInstructions'), icon: <Sparkles className="h-3 w-3" /> },
-    { id: 'system-prompt' as FormatType, label: t('builder.components.promptPreview.formats.systemPrompt'), icon: <Code2 className="h-3 w-3" /> },
-    { id: 'raw-text' as FormatType, label: t('builder.components.promptPreview.formats.rawText'), icon: <Eye className="h-3 w-3" /> },
-  ]
+  // 移除格式切换按钮
 
   const hasContent = preview.system || preview.human || preview.assistant
   const nodeCount = nodes.length
@@ -207,29 +178,11 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-medium text-foreground">{t('builder.components.promptPreview.title')}</h3>
+            <h3 className="text-sm font-medium text-foreground">{t('builder.promptPreview.title')}</h3>
             <p className="text-xs text-muted-foreground mt-1">
-              {t('builder.components.promptPreview.stats.blocks', { count: nodeCount, s: nodeCount !== 1 ? 's' : '' })}
+              {t('builder.promptPreview.blocksConfigured', { count: nodeCount })}
             </p>
           </div>
-        </div>
-
-        {/* Format Tabs */}
-        <div className="flex gap-1 mb-4 p-1 bg-muted rounded-lg">
-          {formatButtons.map(button => (
-            <button
-              key={button.id}
-              onClick={() => setCurrentFormat(button.id)}
-              className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded transition-all duration-200 cursor-pointer ${
-                currentFormat === button.id
-                  ? 'bg-primary text-primary-foreground font-medium'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-              }`}
-            >
-              {button.icon}
-              <span className="hidden sm:inline">{button.label}</span>
-            </button>
-          ))}
         </div>
 
         {/* Content */}
@@ -263,7 +216,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Copy className="h-3 w-3 mr-1" />
-              {t('builder.components.promptPreview.actions.copy')}
+              {t('builder.promptPreview.actions.copy')}
             </Button>
             <Button
               variant="outline"
@@ -273,7 +226,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="h-3 w-3 mr-1" />
-              {t('builder.components.promptPreview.actions.export')}
+              {t('builder.promptPreview.actions.export')}
             </Button>
           </div>
 
@@ -285,7 +238,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Play className="h-3 w-3 mr-1" />
-            {t('builder.components.promptPreview.actions.test')}
+            {t('builder.promptPreview.actions.test')}
           </Button>
 
           <Button
@@ -296,7 +249,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-3 w-3 mr-1" />
-            {t('builder.components.promptPreview.actions.save')}
+            {t('builder.promptPreview.actions.save')}
           </Button>
         </div>
 
@@ -306,7 +259,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             <p className="text-xs text-muted-foreground text-center">
               💡
               {' '}
-              {t('builder.components.promptPreview.helpText')}
+              {t('builder.promptPreview.helpText')}
             </p>
           </div>
         )}

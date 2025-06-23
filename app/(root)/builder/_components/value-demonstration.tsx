@@ -3,10 +3,12 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useBuilderStore } from '@/store/builder'
 import { motion } from 'framer-motion'
 import { AlertCircle, ArrowRight, CheckCircle, Sparkles, TrendingUp, Zap } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useShallow } from 'zustand/shallow'
 
 interface ValueDemonstrationProps {
   currentBlocks: string[]
@@ -22,63 +24,149 @@ interface ComparisonExample {
   improvements: string[]
 }
 
+function previewSelector(state: any) {
+  return {
+    nodes: state.nodes,
+  }
+}
+
 export function ValueDemonstration({ currentBlocks, onMotivateUser }: ValueDemonstrationProps) {
   const { t } = useTranslation()
+  const { nodes } = useBuilderStore(useShallow(previewSelector))
   const [showDemo, setShowDemo] = useState(false)
 
-  // 根据当前块生成对比示例
+  // 分析用户实际构建的指令内容，生成真实的对比示例
   const generateComparisonExample = (): ComparisonExample => {
     const hasRole = currentBlocks.includes('role_definition')
     const hasLearning = currentBlocks.includes('learning_style')
     const hasCommunication = currentBlocks.includes('communication_style')
+    const hasFormat = currentBlocks.includes('output_format')
+    const hasGoals = currentBlocks.includes('goal_setting')
 
-    if (hasRole && hasLearning) {
-      return {
-        scenario: t('builder.components.valueDemonstration.scenarios.tutoring'),
-        basicPrompt: 'Help me learn mathematics',
-        basicResponse: 'Mathematics is a broad subject. What specific area would you like to learn about? I can help explain concepts and solve problems.',
-        optimizedPrompt: 'Role: Expert Math Tutor | Learning Style: Step-by-step with examples',
-        optimizedResponse: 'As your dedicated math tutor, I\'ll guide you through mathematics step-by-step! Let\'s start by identifying your current level and goals. I\'ll use visual examples, break down complex problems into manageable steps, and provide practice exercises. What specific math topic interests you? (Algebra, Geometry, Calculus, etc.)',
-        improvements: [
-          t('builder.components.valueDemonstration.improvements.personalizedApproach'),
-          t('builder.components.valueDemonstration.improvements.structuredLearning'),
-          t('builder.components.valueDemonstration.improvements.clearRoadmap'),
-        ],
-      }
+    // 从节点中提取实际内容
+    const getNodeContent = (type: string): string => {
+      const node = nodes.find((n: any) => n.data.type === type)
+      return node?.data.content || ''
     }
 
-    if (hasRole && hasCommunication) {
-      return {
-        scenario: t('builder.components.valueDemonstration.scenarios.business'),
-        basicPrompt: 'Write a business proposal',
-        basicResponse: 'Here\'s a basic business proposal template: Executive Summary, Problem Statement, Solution, Timeline, Budget. Let me know what specific business you\'re proposing for.',
-        optimizedPrompt: 'Role: Business Consultant | Tone: Professional & Persuasive | Format: Structured',
-        optimizedResponse: 'As your business strategy consultant, I\'ll craft a compelling proposal that drives results. Here\'s my systematic approach:\n\n📊 EXECUTIVE SUMMARY (2-3 key points)\n🎯 PROBLEM ANALYSIS (data-driven insights)\n💡 STRATEGIC SOLUTION (clear value proposition)\n📈 IMPLEMENTATION ROADMAP (realistic timeline)\n💰 ROI PROJECTION (quantified benefits)\n\nWhat\'s your business context and target audience?',
-        improvements: [
-          t('builder.components.valueDemonstration.improvements.professionalTone'),
-          t('builder.components.valueDemonstration.improvements.structuredFormat'),
-          t('builder.components.valueDemonstration.improvements.actionableContent'),
-        ],
-      }
+    const roleContent = getNodeContent('role_definition')
+    const learningContent = getNodeContent('learning_style')
+    const commContent = getNodeContent('communication_style')
+    const formatContent = getNodeContent('output_format')
+    const goalContent = getNodeContent('goal_setting')
+
+    // 根据实际角色生成相应的场景和提示词
+    let scenario = t('builder.components.valueDemonstration.scenarios.general')
+    let userQuestion = 'Could you help me understand this topic better?'
+
+    // 智能识别角色类型并生成对应场景
+    if (roleContent.toLowerCase().includes('tutor') || roleContent.toLowerCase().includes('teacher')
+      || roleContent.toLowerCase().includes('教师') || roleContent.toLowerCase().includes('导师')) {
+      scenario = t('builder.components.valueDemonstration.scenarios.tutoring')
+      userQuestion = 'Can you teach me about this subject?'
+    }
+    else if (roleContent.toLowerCase().includes('consultant') || roleContent.toLowerCase().includes('advisor')
+      || roleContent.toLowerCase().includes('顾问') || roleContent.toLowerCase().includes('专家')) {
+      scenario = t('builder.components.valueDemonstration.scenarios.business')
+      userQuestion = 'What would you recommend for my situation?'
+    }
+    else if (roleContent.toLowerCase().includes('assistant') || roleContent.toLowerCase().includes('helper')
+      || roleContent.toLowerCase().includes('助手') || roleContent.toLowerCase().includes('助理')) {
+      scenario = 'Smart Personal Assistant'
+      userQuestion = 'Can you help me organize my work?'
+    }
+    else if (roleContent.toLowerCase().includes('writer') || roleContent.toLowerCase().includes('editor')
+      || roleContent.toLowerCase().includes('写作') || roleContent.toLowerCase().includes('编辑')) {
+      scenario = 'Writing Assistant'
+      userQuestion = 'Can you help me improve my writing?'
     }
 
-    // 默认通用示例
-    return {
-      scenario: t('builder.components.valueDemonstration.scenarios.general'),
-      basicPrompt: 'Help me with my project',
-      basicResponse: 'I\'d be happy to help with your project. Could you provide more details about what you\'re working on and what specific assistance you need?',
-      optimizedPrompt: `Enhanced with ${currentBlocks.length} ProHelen blocks`,
-      optimizedResponse: 'I\'m your dedicated project assistant! Let me provide comprehensive support tailored to your needs. First, I\'ll understand your project scope, then create a structured action plan with clear milestones. I\'ll adapt my communication style to match your preferences and ensure every response moves you closer to success. What\'s your project about?',
-      improvements: [
+    // 生成基础回复（普通AI回复）
+    const basicResponse = 'I\'d be happy to help you. Could you provide more specific details about what you need assistance with? I\'ll do my best to give you useful information.'
+
+    // 生成优化后的回复（基于用户实际构建的指令）
+    let optimizedResponse = ''
+    let optimizedPrompt = ''
+
+    // 构建优化提示词描述
+    const promptParts = []
+    if (roleContent)
+      promptParts.push(`Role: ${roleContent.substring(0, 30)}${roleContent.length > 30 ? '...' : ''}`)
+    if (commContent)
+      promptParts.push(`Style: ${commContent.substring(0, 25)}${commContent.length > 25 ? '...' : ''}`)
+    if (formatContent)
+      promptParts.push(`Format: Structured`)
+
+    optimizedPrompt = promptParts.length > 0 ? promptParts.join(' | ') : `Enhanced with ${currentBlocks.length} ProHelen blocks`
+
+    // 基于实际角色内容生成优化回复
+    if (roleContent) {
+      // 使用实际的角色定义开头
+      const roleIntro = roleContent.includes('I am') || roleContent.includes('我是')
+        ? `${roleContent.split('.')[0]}.`
+        : `As your ${roleContent.toLowerCase()},`
+
+      optimizedResponse = `${roleIntro} I'm here to provide you with comprehensive support tailored to your specific needs.\n\n`
+    }
+    else {
+      optimizedResponse = `I'm your dedicated AI assistant, ready to provide personalized support.\n\n`
+    }
+
+    // 根据学习风格添加方法说明
+    if (learningContent) {
+      optimizedResponse += `📚 **My Approach**: ${learningContent}\n`
+    }
+
+    // 根据沟通风格调整语调
+    if (commContent) {
+      optimizedResponse += `💬 **Communication**: ${commContent}\n`
+    }
+
+    // 根据输出格式添加结构
+    if (formatContent) {
+      optimizedResponse += `📋 **Format**: I'll structure my responses according to: ${formatContent}\n`
+    }
+
+    // 根据目标设置添加方向
+    if (goalContent) {
+      optimizedResponse += `🎯 **Goals**: ${goalContent}\n`
+    }
+
+    optimizedResponse += `\nWhat specific area would you like to focus on? I'll create a customized plan to help you achieve the best results.`
+
+    // 生成改进点（基于实际使用的blocks）
+    const improvements = []
+    if (hasRole)
+      improvements.push(t('builder.components.valueDemonstration.improvements.personalizedApproach'))
+    if (hasCommunication)
+      improvements.push(t('builder.components.valueDemonstration.improvements.professionalTone'))
+    if (hasFormat)
+      improvements.push(t('builder.components.valueDemonstration.improvements.structuredFormat'))
+    if (hasLearning)
+      improvements.push(t('builder.components.valueDemonstration.improvements.structuredLearning'))
+    if (hasGoals)
+      improvements.push(t('builder.components.valueDemonstration.improvements.goalOriented'))
+
+    // 确保至少有3个改进点
+    if (improvements.length < 3) {
+      improvements.push(
         t('builder.components.valueDemonstration.improvements.tailoredResponse'),
         t('builder.components.valueDemonstration.improvements.proactiveSupport'),
-        t('builder.components.valueDemonstration.improvements.goalOriented'),
-      ],
+        t('builder.components.valueDemonstration.improvements.actionableContent'),
+      )
+    }
+
+    return {
+      scenario,
+      basicPrompt: userQuestion,
+      basicResponse,
+      optimizedPrompt,
+      optimizedResponse,
+      improvements: improvements.slice(0, 3), // 最多显示3个
     }
   }
 
   const example = generateComparisonExample()
-
   const shouldShowButton = currentBlocks.length >= 2
 
   if (!shouldShowButton)

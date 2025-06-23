@@ -59,7 +59,7 @@ export function GuidedWelcome({ onNext, onBackToSimple, onSkipToAdvanced }: Guid
             onClick={onBackToSimple}
             className="hover:bg-muted/50 cursor-pointer"
           >
-            {t('builder.guided.welcome.backToSimple')}
+            {t('builder.guided.welcome.backToAnalyzer')}
           </Button>
           <Button
             onClick={onNext}

@@ -395,6 +395,80 @@ const resources = {
             stepOf: 'Step {{current}} of {{total}}',
           },
         },
+        // Prompt分析器
+        analyzer: {
+          title: 'AI Assistant Smart Analysis',
+          subtitle: 'Tell me your needs, I\'ll help you automatically create AI instructions',
+          switchToAdvanced: 'Advanced Mode',
+          // 步骤指示器
+          steps: {
+            describe: 'Describe Needs',
+            confirm: 'Confirm Plan',
+          },
+          // 输入阶段
+          input: {
+            title: 'Tell me what kind of AI assistant you want',
+            description: 'Describe your needs in natural language, such as purpose, style, professional domain, etc.',
+            placeholder: 'For example: I want an AI assistant to help me prepare for technical interviews, focusing on JavaScript and React, should be friendly and patient...',
+            analyzing: 'Analyzing...',
+            analyze: 'Start Analysis',
+            characterLimit: '{{count}}/500',
+          },
+          // 示例
+          examples: {
+            title: 'Don\'t know how to describe? Try these examples',
+            learning: {
+              title: '🎓 Learning Assistant',
+              text: 'I want an AI assistant to help me prepare for technical interviews, focusing on JavaScript and React, being friendly and patient',
+            },
+            work: {
+              title: '💼 Work Assistant',
+              text: 'Create a code review assistant that can analyze code quality and provide improvement suggestions',
+            },
+            writing: {
+              title: '✍️ Writing Assistant',
+              text: 'I need a writing partner to improve my articles and make them more persuasive',
+            },
+            personal: {
+              title: '🏠 Personal Assistant',
+              text: 'Help me create an English learning tutor who can correct grammar errors and explain usage',
+            },
+          },
+          // 分析结果
+          results: {
+            intent: 'I understand your needs',
+            extracted: 'Extracted the following functional modules for you',
+            extractedDescription: 'I automatically identified these modules based on your description, you can adjust the selection',
+            suggested: 'Suggested additional functional modules',
+            suggestedDescription: 'These modules can make your AI assistant work better',
+            confidence: '{{percent}}% match',
+            reasoning: 'Identification reason: {{reason}}',
+            impact: {
+              high: 'High Impact',
+              medium: 'Medium Impact',
+              low: 'Low Impact',
+            },
+            reanalyze: 'Re-analyze',
+            confirm: 'Confirm and Create',
+          },
+          // 错误处理
+          errors: {
+            emptyPrompt: 'Please enter your needs description',
+            analysisFailed: 'Analysis failed, please try again later',
+          },
+        },
+        // 简化的预览面板
+        promptPreview: {
+          title: 'AI Instructions Preview',
+          blocksConfigured: '{{count}} blocks configured',
+          helpText: 'Add instruction blocks to see AI instructions preview',
+          actions: {
+            copy: 'Copy',
+            export: 'Export',
+            test: 'Try it',
+            save: 'Save',
+          },
+        },
         // 引导模式
         guided: {
           welcome: {
@@ -402,7 +476,7 @@ const resources = {
             subtitle: 'Create powerful AI instructions step-by-step',
             description: 'We\'ll guide you through building your first instruction with helpful tips and recommendations.',
             getStarted: 'Get Started',
-            backToSimple: 'Back to Simple',
+            backToAnalyzer: 'Back to Smart Analysis',
             skipToAdvanced: 'Skip to Advanced',
           },
           steps: {
@@ -1380,6 +1454,80 @@ const resources = {
             stepOf: '第 {{current}} 步，共 {{total}} 步',
           },
         },
+        // Prompt分析器
+        analyzer: {
+          title: 'AI助手智能分析',
+          subtitle: '告诉我您的需求，我来帮您自动创建AI指令',
+          switchToAdvanced: '高级模式',
+          // 步骤指示器
+          steps: {
+            describe: '描述需求',
+            confirm: '确认方案',
+          },
+          // 输入阶段
+          input: {
+            title: '告诉我您想要什么样的AI助手',
+            description: '用自然语言描述您的需求，比如用途、风格、专业领域等',
+            placeholder: '例如：我想要一个帮我准备技术面试的AI助手，重点是JavaScript和React，要友好耐心...',
+            analyzing: '正在分析...',
+            analyze: '开始分析',
+            characterLimit: '{{count}}/500',
+          },
+          // 示例
+          examples: {
+            title: '不知道怎么描述？试试这些示例',
+            learning: {
+              title: '🎓 学习助手',
+              text: '我想要一个帮我准备技术面试的AI助手，重点是JavaScript和React，要友好耐心',
+            },
+            work: {
+              title: '💼 工作助手',
+              text: '创建一个代码审查助手，能够分析代码质量并给出改进建议',
+            },
+            writing: {
+              title: '✍️ 写作助手',
+              text: '我需要一个写作伙伴来改进我的文章，让文章更有说服力',
+            },
+            personal: {
+              title: '🏠 个人助手',
+              text: '帮我创建一个英语学习导师，能够纠正语法错误并解释用法',
+            },
+          },
+          // 分析结果
+          results: {
+            intent: '我理解了您的需求',
+            extracted: '为您提取出以下功能模块',
+            extractedDescription: '我根据您的描述自动识别出这些模块，您可以调整选择',
+            suggested: '建议添加的功能模块',
+            suggestedDescription: '这些模块可以让您的AI助手效果更好',
+            confidence: '{{percent}}% 匹配',
+            reasoning: '识别原因：{{reason}}',
+            impact: {
+              high: '高影响',
+              medium: '中影响',
+              low: '低影响',
+            },
+            reanalyze: '重新分析',
+            confirm: '确认并创建',
+          },
+          // 错误处理
+          errors: {
+            emptyPrompt: '请输入您的需求描述',
+            analysisFailed: '分析失败，请稍后重试',
+          },
+        },
+        // 简化的预览面板
+        promptPreview: {
+          title: 'AI指令预览',
+          blocksConfigured: '{{count}} 个模块已配置',
+          helpText: '添加指令模块来查看AI指令预览',
+          actions: {
+            copy: '复制',
+            export: '导出',
+            test: '试用',
+            save: '保存',
+          },
+        },
         // 引导模式
         guided: {
           welcome: {
@@ -1387,7 +1535,7 @@ const resources = {
             subtitle: '逐步创建强大的AI指令',
             description: '我们将引导您构建第一个指令，提供有用的提示和建议。',
             getStarted: '开始',
-            backToSimple: '返回简单模式',
+            backToAnalyzer: '返回智能分析',
             skipToAdvanced: '跳转到高级模式',
           },
           steps: {

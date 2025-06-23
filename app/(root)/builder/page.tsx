@@ -15,8 +15,8 @@ import { useTranslation } from 'react-i18next'
 import { GuidedCanvas } from './_components/guided-canvas'
 import { GuidedHeader } from './_components/guided-header'
 import { GuidedWelcome } from './_components/guided-welcome'
+import { PromptAnalyzer } from './_components/prompt-analyzer'
 import { PromptPreview } from './_components/prompt-preview'
-import { SimpleWizard } from './_components/simple-wizard'
 
 interface BuilderState {
   title: string
@@ -28,7 +28,7 @@ interface BuilderState {
 }
 
 // 添加界面模式类型
-type InterfaceMode = 'simple' | 'guided' | 'advanced'
+type InterfaceMode = 'guided' | 'advanced' | 'analyze'
 
 function BuilderContent() {
   const { t } = useTranslation()
@@ -55,7 +55,7 @@ function BuilderContent() {
   const [showOnboardingTour, setShowOnboardingTour] = useState(false)
 
   // 添加界面模式状态
-  const [interfaceMode, setInterfaceMode] = useState<InterfaceMode>('simple')
+  const [interfaceMode, setInterfaceMode] = useState<InterfaceMode>('analyze')
 
   // 添加引导状态
   const [guidedState, setGuidedState] = useState({
@@ -75,7 +75,7 @@ function BuilderContent() {
     }
   }, [searchParams])
 
-  const handleWizardComplete = useCallback((config: any) => {
+  const _handleWizardComplete = useCallback((config: any) => {
     // 根据用户配置自动创建blocks
     const { addNode, setTitle, setDescription, updateNodeData } = useBuilderStore.getState()
 
@@ -279,6 +279,28 @@ function BuilderContent() {
     setInterfaceMode('advanced')
   }, [])
 
+  // 新增：处理分析完成的回调
+  const handleAnalysisComplete = useCallback((blocks: any[], enhancements: any[]) => {
+    const { applyAnalysisResults } = useBuilderStore.getState()
+
+    // 应用分析结果到store
+    applyAnalysisResults(blocks, enhancements)
+
+    // 生成标题和描述
+    const firstBlock = blocks.find(b => b.type === 'role_definition')
+    if (firstBlock) {
+      const title = firstBlock.content.length > 50
+        ? `${firstBlock.content.substring(0, 50)}...`
+        : firstBlock.content
+      setTitle(title || 'AI助手')
+    }
+
+    setDescription('通过AI分析创建的指令')
+
+    // 切换到高级模式查看结果
+    setInterfaceMode('advanced')
+  }, [])
+
   const handleMouseDown = useCallback(() => {
     setIsDragging(true)
   }, [])
@@ -429,8 +451,8 @@ function BuilderContent() {
     }
   }, [searchParams, importFlowData, setTitle, setDescription, resetFlow])
 
-  // 简化模式显示向导
-  if (interfaceMode === 'simple') {
+  // 分析模式显示prompt分析器
+  if (interfaceMode === 'analyze') {
     return (
       <div className="min-h-screen bg-background">
         <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
@@ -446,13 +468,12 @@ function BuilderContent() {
               <span className="font-semibold">ProHelen</span>
             </div>
             <div />
-            {' '}
             {/* spacer */}
           </div>
         </div>
         <div className="pt-20">
-          <SimpleWizard
-            onComplete={handleWizardComplete}
+          <PromptAnalyzer
+            onAnalysisComplete={handleAnalysisComplete}
             onSwitchToAdvanced={handleSwitchToAdvanced}
           />
         </div>
@@ -466,7 +487,7 @@ function BuilderContent() {
       return (
         <GuidedWelcome
           onNext={() => setGuidedState(prev => ({ ...prev, step: 'arrange' }))}
-          onBackToSimple={() => setInterfaceMode('simple')}
+          onBackToSimple={() => setInterfaceMode('analyze')}
           onSkipToAdvanced={handleSwitchToAdvanced}
         />
       )
@@ -557,16 +578,15 @@ function BuilderContent() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setInterfaceMode('simple')}
+                onClick={() => setInterfaceMode('analyze')}
                 className="h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 <Zap className="h-4 w-4 mr-1" />
-                {t('builder.simpleMode')}
+                {t('builder.analyzer.title')}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{t('builder.switchToSimpleMode')}</p>
-              <p className="text-xs text-muted-foreground mt-1">{t('builder.simpleModeTip')}</p>
+              <p>{t('builder.analyzer.subtitle')}</p>
             </TooltipContent>
           </Tooltip>
 
