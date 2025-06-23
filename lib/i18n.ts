@@ -460,6 +460,7 @@ const resources = {
             searchPlaceholder: 'Search blocks...',
             helpText: 'Click to add instantly or drag to position on canvas',
             categories: {
+              quickStart: 'Quick Start',
               all: 'All',
               core: 'Core',
               education: 'Education',
@@ -467,6 +468,27 @@ const resources = {
               workflow: 'Workflow',
               advanced: 'Advanced',
               planning: 'Planning',
+            },
+            quickStart: {
+              title: 'Get Started Quickly',
+              subtitle: 'Choose a pre-built template with 2-3 essential blocks to jump-start your AI assistant',
+              addAll: 'Add All Blocks',
+              tutor: {
+                label: 'AI Tutor',
+                description: 'Perfect for educational assistance with personalized learning approach',
+              },
+              businessConsultant: {
+                label: 'Business Consultant',
+                description: 'Professional advice with structured, persuasive communication',
+              },
+              creativeAssistant: {
+                label: 'Creative Assistant',
+                description: 'Innovative thinking with engaging personality for creative projects',
+              },
+              stepByStepGuide: {
+                label: 'Step-by-Step Guide',
+                description: 'Clear, structured instructions broken down into manageable steps',
+              },
             },
             blocks: {
               // Core blocks
@@ -827,6 +849,39 @@ const resources = {
             title: 'Smart Suggestions',
             emptyState: 'Add some blocks to get\npersonalized suggestions',
             tip: '💡 Suggestions improve as you use the app more',
+          },
+          progressIndicator: {
+            completeness: 'Completeness',
+            blocks: 'blocks',
+            tooltip: 'Click to see detailed progress analysis',
+            detailTitle: 'Build Progress Analysis',
+            overallScore: 'Overall Score',
+            status: {
+              excellent: 'Excellent! Your AI assistant is highly optimized',
+              good: 'Good progress! Your assistant is well-configured',
+              fair: 'Making progress! Add more components for better results',
+              starting: 'Just getting started! Keep building to improve',
+            },
+            starting: 'Getting Started',
+            complete: 'Complete',
+            improvementChecklist: 'Improvement Checklist',
+            points: 'pts',
+            totalBlocks: 'Total Blocks',
+            categories: 'Categories',
+            customized: 'Customized',
+            nextSteps: 'Next Steps',
+            checklist: {
+              roleDefinition: 'Define AI assistant role and expertise',
+              outputFormat: 'Specify response format and structure',
+              communicationStyle: 'Set tone and communication approach',
+              customContent: 'Add custom content to most blocks',
+              diversity: 'Use blocks from different categories',
+            },
+            suggestions: {
+              addCore: 'Start by adding core blocks like Role Definition and Output Format to establish your AI\'s foundation.',
+              addContent: 'Great foundation! Now customize your blocks with specific content to make your AI more effective.',
+              refine: 'Almost perfect! Fine-tune your content and consider adding advanced blocks for specialized behaviors.',
+            },
           },
           valueDemonstration: {
             title: 'See Your Impact',
@@ -1390,6 +1445,7 @@ const resources = {
             searchPlaceholder: '搜索模块...',
             helpText: '点击立即添加或拖拽到画布上定位',
             categories: {
+              quickStart: '快速开始',
               all: '全部',
               core: '核心',
               education: '教育',
@@ -1397,6 +1453,27 @@ const resources = {
               workflow: '工作流',
               advanced: '高级',
               planning: '规划',
+            },
+            quickStart: {
+              title: '快速开始',
+              subtitle: '选择预设模板，包含2-3个核心模块，快速启动您的AI助手',
+              addAll: '添加所有模块',
+              tutor: {
+                label: 'AI导师',
+                description: '专为教育辅助设计，提供个性化学习方法',
+              },
+              businessConsultant: {
+                label: '商业顾问',
+                description: '专业建议，结构化且有说服力的沟通风格',
+              },
+              creativeAssistant: {
+                label: '创意助手',
+                description: '创新思维，富有魅力的个性，适合创意项目',
+              },
+              stepByStepGuide: {
+                label: '分步指导',
+                description: '清晰的结构化指令，分解为易管理的步骤',
+              },
             },
             blocks: {
               // Core blocks
@@ -1757,6 +1834,39 @@ const resources = {
             title: '智能建议',
             emptyState: '添加一些块以获得\n个性化建议',
             tip: '💡 随着您更多使用应用，建议会不断改进',
+          },
+          progressIndicator: {
+            completeness: '完整度',
+            blocks: '个模块',
+            tooltip: '点击查看详细进度分析',
+            detailTitle: '构建进度分析',
+            overallScore: '总体评分',
+            status: {
+              excellent: '优秀！您的AI助手经过高度优化',
+              good: '进度很好！您的助手配置良好',
+              fair: '正在进步！添加更多组件以获得更好效果',
+              starting: '刚开始！继续构建以改进',
+            },
+            starting: '开始阶段',
+            complete: '完成',
+            improvementChecklist: '改进清单',
+            points: '分',
+            totalBlocks: '总模块数',
+            categories: '类别数',
+            customized: '已定制',
+            nextSteps: '下一步',
+            checklist: {
+              roleDefinition: '定义AI助手角色和专业知识',
+              outputFormat: '指定响应格式和结构',
+              communicationStyle: '设置语调和沟通方式',
+              customContent: '为大部分模块添加自定义内容',
+              diversity: '使用不同类别的模块',
+            },
+            suggestions: {
+              addCore: '首先添加角色定义和输出格式等核心模块来建立AI的基础。',
+              addContent: '基础很好！现在为您的模块自定义具体内容，让您的AI更有效。',
+              refine: '几乎完美！调整您的内容并考虑添加高级模块来实现专门行为。',
+            },
           },
           valueDemonstration: {
             title: '看看效果提升',

@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ConfirmClearModal } from './confirm-clear-modal'
+import { ProgressIndicator } from './progress-indicator'
 
 interface ToolbarProps {
   className?: string
@@ -193,15 +194,16 @@ export function Toolbar({ className }: ToolbarProps) {
         >
           <ZoomOut size={16} />
         </Button>
-        <form onSubmit={handleZoomInputSubmit} className="min-w-[50px]">
+        <form onSubmit={handleZoomInputSubmit} className="flex items-center">
           <input
             type="text"
             value={zoomInput}
             onChange={handleZoomInputChange}
             onBlur={handleZoomInputBlur}
             className="w-12 text-sm text-muted-foreground bg-transparent text-center border-none focus:outline-none focus:text-foreground"
-            style={{ width: '50px' }}
+            style={{ width: '45px' }}
           />
+          <span className="text-sm text-muted-foreground">%</span>
         </form>
         <Button
           variant="ghost"
@@ -214,8 +216,12 @@ export function Toolbar({ className }: ToolbarProps) {
         </Button>
       </div>
 
-      {/* Right section - View mode */}
-      <div className="flex items-center space-x-1">
+      {/* Right section - Progress & View mode */}
+      <div className="flex items-center space-x-3">
+        <ProgressIndicator />
+
+        <div className="h-4 w-px bg-border" />
+
         <Button
           variant="ghost"
           size="sm"

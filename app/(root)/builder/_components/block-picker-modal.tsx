@@ -196,6 +196,7 @@ const blockTypes: BlockType[] = [
 ]
 
 const categories = [
+  { id: 'quick-start', labelKey: 'builder.components.blockPicker.categories.quickStart' },
   { id: 'all', labelKey: 'builder.components.blockPicker.categories.all' },
   { id: 'core', labelKey: 'builder.components.blockPicker.categories.core' },
   { id: 'education', labelKey: 'builder.components.blockPicker.categories.education' },
@@ -203,6 +204,42 @@ const categories = [
   { id: 'workflow', labelKey: 'builder.components.blockPicker.categories.workflow' },
   { id: 'advanced', labelKey: 'builder.components.blockPicker.categories.advanced' },
   { id: 'planning', labelKey: 'builder.components.blockPicker.categories.planning' },
+]
+
+// 预设组合模板
+const quickStartTemplates = [
+  {
+    id: 'tutor',
+    labelKey: 'builder.components.blockPicker.quickStart.tutor.label',
+    descriptionKey: 'builder.components.blockPicker.quickStart.tutor.description',
+    icon: <Brain className="h-5 w-5" />,
+    blocks: ['role_definition', 'learning_style', 'communication_style'],
+    color: 'from-blue-500 to-purple-500',
+  },
+  {
+    id: 'business_consultant',
+    labelKey: 'builder.components.blockPicker.quickStart.businessConsultant.label',
+    descriptionKey: 'builder.components.blockPicker.quickStart.businessConsultant.description',
+    icon: <Target className="h-5 w-5" />,
+    blocks: ['role_definition', 'communication_style', 'output_format'],
+    color: 'from-green-500 to-teal-500',
+  },
+  {
+    id: 'creative_assistant',
+    labelKey: 'builder.components.blockPicker.quickStart.creativeAssistant.label',
+    descriptionKey: 'builder.components.blockPicker.quickStart.creativeAssistant.description',
+    icon: <Lightbulb className="h-5 w-5" />,
+    blocks: ['role_definition', 'creative_thinking', 'personality_traits'],
+    color: 'from-orange-500 to-pink-500',
+  },
+  {
+    id: 'step_by_step_guide',
+    labelKey: 'builder.components.blockPicker.quickStart.stepByStepGuide.label',
+    descriptionKey: 'builder.components.blockPicker.quickStart.stepByStepGuide.description',
+    icon: <Workflow className="h-5 w-5" />,
+    blocks: ['role_definition', 'step_by_step', 'output_format'],
+    color: 'from-purple-500 to-indigo-500',
+  },
 ]
 
 interface BlockPickerModalProps {
@@ -213,7 +250,7 @@ interface BlockPickerModalProps {
 
 export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerModalProps) {
   const { t } = useTranslation()
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [selectedCategory, setSelectedCategory] = useState('quick-start')
   const [showScrollButtons, setShowScrollButtons] = useState(false)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
@@ -222,6 +259,16 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
   const filteredBlocks = selectedCategory === 'all'
     ? blockTypes
     : blockTypes.filter(block => block.category === selectedCategory)
+
+  const handleQuickStartTemplate = (template: typeof quickStartTemplates[0]) => {
+    // 按顺序添加模板中的所有块
+    template.blocks.forEach((blockType, index) => {
+      setTimeout(() => {
+        onAddNode(blockType)
+      }, index * 200) // 每200ms添加一个块，让用户看到构建过程
+    })
+    onOpenChange(false)
+  }
 
   const checkScrollButtons = () => {
     const container = scrollContainerRef.current
@@ -313,7 +360,9 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
             {categories.map(category => (
               <Button
                 key={category.id}
-                variant={selectedCategory === category.id ? 'default' : 'ghost'}
+                variant={selectedCategory === category.id
+                  ? 'default'
+                  : 'ghost'}
                 size="sm"
                 onClick={() => setSelectedCategory(category.id)}
                 className={`flex items-center gap-2 whitespace-nowrap flex-shrink-0 cursor-pointer ${
@@ -333,7 +382,9 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
               <button
                 onClick={() => scroll('left')}
                 className={`cursor-pointer absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-background via-background/80 to-transparent flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 ease-out z-10 rounded-l transform hover:scale-110 active:scale-95 active:bg-muted/70 ${
-                  !canScrollLeft ? 'opacity-30 cursor-not-allowed' : 'opacity-80 hover:opacity-100 hover:shadow-lg hover:shadow-foreground/10'
+                  !canScrollLeft
+                    ? 'opacity-30 cursor-not-allowed'
+                    : 'opacity-80 hover:opacity-100 hover:shadow-lg hover:shadow-foreground/10'
                 }`}
                 disabled={!canScrollLeft}
               >
@@ -342,7 +393,9 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
               <button
                 onClick={() => scroll('right')}
                 className={`cursor-pointer absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-background via-background/80 to-transparent flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 ease-out z-10 rounded-r transform hover:scale-110 active:scale-95 active:bg-muted/70 ${
-                  !canScrollRight ? 'opacity-30 cursor-not-allowed' : 'opacity-80 hover:opacity-100 hover:shadow-lg hover:shadow-foreground/10'
+                  !canScrollRight
+                    ? 'opacity-30 cursor-not-allowed'
+                    : 'opacity-80 hover:opacity-100 hover:shadow-lg hover:shadow-foreground/10'
                 }`}
                 disabled={!canScrollRight}
               >
@@ -376,46 +429,122 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
         `}
         </style>
 
-        {/* Blocks Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 overflow-y-auto scrollbar">
-          {filteredBlocks.map(block => (
-            <div
-              key={block.type}
-              className="group relative overflow-hidden flex flex-col items-center gap-3 p-4 border border-border rounded-xl hover:bg-muted/50 hover:border-border/80 cursor-pointer transition-all duration-300 transform hover:scale-105"
-              draggable
-              onDragStart={e => handleDragStart(e, block.type)}
-              onClick={() => handleClick(block.type)}
-            >
-              {/* Gradient Background */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${block.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+        {/* Content Area */}
+        <div className="overflow-y-auto scrollbar">
+          {selectedCategory === 'quick-start'
+            ? (
+          /* Quick Start Templates */
+                <div className="p-4 space-y-4">
+                  <div className="text-center mb-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      {t('builder.components.blockPicker.quickStart.title')}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {t('builder.components.blockPicker.quickStart.subtitle')}
+                    </p>
+                  </div>
 
-              {/* Icon */}
-              <div className={`flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br ${block.color} bg-opacity-10 border border-border group-hover:border-border/80 transition-all duration-300`}>
-                <div className="text-muted-foreground group-hover:text-foreground transition-colors duration-300">
-                  {block.icon}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {quickStartTemplates.map(template => (
+                      <div
+                        key={template.id}
+                        className="group relative overflow-hidden flex flex-col gap-4 p-6 border border-border rounded-xl hover:bg-muted/50 hover:border-primary/50 cursor-pointer transition-all duration-300 transform hover:scale-105"
+                        onClick={() => handleQuickStartTemplate(template)}
+                      >
+                        {/* Gradient Background */}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${template.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+
+                        {/* Header */}
+                        <div className="flex items-center gap-3">
+                          <div className={`flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br ${template.color} bg-opacity-10 border border-border group-hover:border-primary/20 transition-all duration-300`}>
+                            <div className="text-muted-foreground group-hover:text-foreground transition-colors duration-300">
+                              {template.icon}
+                            </div>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-300">
+                              {t(template.labelKey)}
+                            </h4>
+                            <p className="text-xs text-muted-foreground leading-tight">
+                              {t(template.descriptionKey)}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Block Preview */}
+                        <div className="flex flex-wrap gap-2">
+                          {template.blocks.map((blockType, _index) => {
+                            const block = blockTypes.find(b => b.type === blockType)
+                            if (!block)
+                              return null
+                            return (
+                              <div
+                                key={blockType}
+                                className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded-md text-xs text-muted-foreground"
+                              >
+                                <div className="w-3 h-3 flex items-center justify-center">
+                                  {block.icon}
+                                </div>
+                                <span>{t(block.labelKey)}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+
+                        {/* Quick Start Badge */}
+                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs font-medium">
+                            {t('builder.components.blockPicker.quickStart.addAll')}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )
+            : (
+          /* Regular Blocks Grid */
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4">
+                  {filteredBlocks.map(block => (
+                    <div
+                      key={block.type}
+                      className="group relative overflow-hidden flex flex-col items-center gap-3 p-4 border border-border rounded-xl hover:bg-muted/50 hover:border-border/80 cursor-pointer transition-all duration-300 transform hover:scale-105"
+                      draggable
+                      onDragStart={e => handleDragStart(e, block.type)}
+                      onClick={() => handleClick(block.type)}
+                    >
+                      {/* Gradient Background */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${block.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
 
-              {/* Content */}
-              <div className="text-center space-y-1">
-                <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors duration-300">
-                  {t(block.labelKey)}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-tight">
-                  {t(block.descriptionKey)}
-                </p>
-              </div>
+                      {/* Icon */}
+                      <div className={`flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br ${block.color} bg-opacity-10 border border-border group-hover:border-border/80 transition-all duration-300`}>
+                        <div className="text-muted-foreground group-hover:text-foreground transition-colors duration-300">
+                          {block.icon}
+                        </div>
+                      </div>
 
-              {/* Drag Indicator */}
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-50 transition-opacity duration-300">
-                <div className="grid grid-cols-2 gap-0.5">
-                  {[...Array.from({ length: 4 })].map((_, i) => (
-                    <div key={i} className="w-1 h-1 bg-muted-foreground rounded-full" />
+                      {/* Content */}
+                      <div className="text-center space-y-1">
+                        <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors duration-300">
+                          {t(block.labelKey)}
+                        </h3>
+                        <p className="text-xs text-muted-foreground leading-tight">
+                          {t(block.descriptionKey)}
+                        </p>
+                      </div>
+
+                      {/* Drag Indicator */}
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-50 transition-opacity duration-300">
+                        <div className="grid grid-cols-2 gap-0.5">
+                          {[...Array.from({ length: 4 })].map((_, i) => (
+                            <div key={i} className="w-1 h-1 bg-muted-foreground rounded-full" />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </div>
-            </div>
-          ))}
+              )}
         </div>
 
         {/* Help Text */}
