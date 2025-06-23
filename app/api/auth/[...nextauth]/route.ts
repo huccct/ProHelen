@@ -57,6 +57,48 @@ const handler = NextAuth({
     signIn: '/sign-in',
   },
   callbacks: {
+    async signIn({ user, account }) {
+      // 对于第三方登录（Google, GitHub, Azure），确保数据库中有用户记录
+      if (account?.provider !== 'credentials' && user.email) {
+        try {
+          // 检查用户是否已存在
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email },
+          })
+
+          if (!existingUser) {
+            // 创建新用户
+            const newUser = await prisma.user.create({
+              data: {
+                email: user.email,
+                name: user.name || user.email.split('@')[0],
+                image: user.image || null,
+                // 第三方登录用户不设置密码
+                password: null,
+              },
+            })
+            // 更新user对象中的id，确保后续session回调能正确获取
+            user.id = newUser.id
+          }
+          else {
+            // 更新现有用户的信息（如头像、名称）
+            await prisma.user.update({
+              where: { email: user.email },
+              data: {
+                name: user.name || existingUser.name,
+                image: user.image || existingUser.image,
+              },
+            })
+            user.id = existingUser.id
+          }
+        }
+        catch (error) {
+          console.error('Error handling user in signIn callback:', error)
+          return false
+        }
+      }
+      return true
+    },
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub
