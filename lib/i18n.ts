@@ -456,6 +456,11 @@ const resources = {
             emptyPrompt: 'Please enter your needs description',
             analysisFailed: 'Analysis failed, please try again later',
           },
+          // 生成的默认文本
+          defaults: {
+            generatedByAnalysis: 'Created through AI analysis',
+            defaultAssistantTitle: 'AI Assistant',
+          },
         },
         // 简化的预览面板
         promptPreview: {
@@ -1514,6 +1519,11 @@ const resources = {
           errors: {
             emptyPrompt: '请输入您的需求描述',
             analysisFailed: '分析失败，请稍后重试',
+          },
+          // 生成的默认文本
+          defaults: {
+            generatedByAnalysis: '通过AI分析创建的指令',
+            defaultAssistantTitle: 'AI助手',
           },
         },
         // 简化的预览面板

@@ -18,15 +18,6 @@ import { GuidedWelcome } from './_components/guided-welcome'
 import { PromptAnalyzer } from './_components/prompt-analyzer'
 import { PromptPreview } from './_components/prompt-preview'
 
-interface BuilderState {
-  title: string
-  description: string
-  content: string
-  tags: string[]
-  isTemplate: boolean
-  sourceId: string | null
-}
-
 // 添加界面模式类型
 type InterfaceMode = 'guided' | 'advanced' | 'analyze'
 
@@ -34,6 +25,8 @@ function BuilderContent() {
   const { t } = useTranslation()
   const searchParams = useSearchParams()
   const importFlowData = useBuilderStore(state => state.importFlowData)
+  const title = useBuilderStore(state => state.title)
+  const description = useBuilderStore(state => state.description)
   const setTitle = useBuilderStore(state => state.setTitle)
   const setDescription = useBuilderStore(state => state.setDescription)
   const resetFlow = useBuilderStore(state => state.resetFlow)
@@ -41,14 +34,6 @@ function BuilderContent() {
   const redo = useBuilderStore(state => state.redo)
   const canUndo = useBuilderStore(state => state.canUndo)
   const canRedo = useBuilderStore(state => state.canRedo)
-  const [builderState, setBuilderState] = useState<BuilderState>({
-    title: '',
-    description: '',
-    content: '',
-    tags: [],
-    isTemplate: false,
-    sourceId: null,
-  })
   const [previewWidth, setPreviewWidth] = useState(320)
   const [isDragging, setIsDragging] = useState(false)
   const [showHelpPanel, setShowHelpPanel] = useState(false)
@@ -261,16 +246,6 @@ function BuilderContent() {
       // 自动连接系统会处理所有连接，不需要手动创建
     }, 100)
 
-    // 更新builder state
-    setBuilderState({
-      title: generatedTitle,
-      description: generatedDescription,
-      content: '',
-      tags: [],
-      isTemplate: false,
-      sourceId: null,
-    })
-
     // 切换到引导模式而不是高级模式
     setInterfaceMode('guided')
   }, [setInterfaceMode])
@@ -289,13 +264,14 @@ function BuilderContent() {
     // 生成标题和描述
     const firstBlock = blocks.find(b => b.type === 'role_definition')
     if (firstBlock) {
-      const title = firstBlock.content.length > 50
-        ? `${firstBlock.content.substring(0, 50)}...`
-        : firstBlock.content
-      setTitle(title || 'AI助手')
+      // 使用完整内容作为标题，让用户可以完整查看和编辑
+      setTitle(firstBlock.content || t('builder.analyzer.defaults.defaultAssistantTitle'))
+    }
+    else {
+      setTitle(t('builder.analyzer.defaults.defaultAssistantTitle'))
     }
 
-    setDescription('通过AI分析创建的指令')
+    setDescription(t('builder.analyzer.defaults.generatedByAnalysis'))
 
     // 切换到高级模式查看结果
     setInterfaceMode('advanced')
@@ -386,16 +362,6 @@ function BuilderContent() {
         .then((template) => {
           if (template) {
             // Update builder state
-            setBuilderState({
-              title: template.title,
-              description: template.description,
-              content: template.content || '',
-              tags: [],
-              isTemplate: false,
-              sourceId: templateId,
-            })
-
-            // Update store with title and description
             setTitle(template.title)
             setDescription(template.description)
 
@@ -414,16 +380,6 @@ function BuilderContent() {
         .then((data) => {
           if (data.instruction) {
             const instruction = data.instruction
-            setBuilderState({
-              title: `Copy of ${instruction.title}`,
-              description: instruction.description || '',
-              content: instruction.content || '',
-              tags: instruction.tags || [],
-              isTemplate: false,
-              sourceId: instructionId,
-            })
-
-            // Update store
             setTitle(`Copy of ${instruction.title}`)
             setDescription(instruction.description || '')
 
@@ -437,16 +393,6 @@ function BuilderContent() {
     }
     else {
       // No query parameters, reset to fresh state
-      setBuilderState({
-        title: '',
-        description: '',
-        content: '',
-        tags: [],
-        isTemplate: false,
-        sourceId: null,
-      })
-
-      // Reset store and flow data
       resetFlow()
     }
   }, [searchParams, importFlowData, setTitle, setDescription, resetFlow])
@@ -559,15 +505,15 @@ function BuilderContent() {
             <input
               type="text"
               placeholder={t('builder.untitledInstruction')}
-              value={builderState.title}
-              onChange={e => setBuilderState(prev => ({ ...prev, title: e.target.value }))}
+              value={title}
+              onChange={e => setTitle(e.target.value)}
               className="bg-transparent text-lg font-medium text-foreground border-none focus:outline-none w-full truncate"
             />
             <input
               type="text"
               placeholder={t('builder.addDescription')}
-              value={builderState.description}
-              onChange={e => setBuilderState(prev => ({ ...prev, description: e.target.value }))}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
               className="bg-transparent text-sm text-muted-foreground border-none focus:outline-none w-full mt-0.5 truncate"
             />
           </div>

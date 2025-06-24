@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
+import { authOptions } from '../../auth/[...nextauth]/route'
 
 const prisma = new PrismaClient()
 
@@ -11,17 +13,17 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    // Temporarily disable auth for testing
-    const user = await prisma.user.findFirst()
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    // Get current user session
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const instruction = await prisma.instruction.findFirst({
       where: {
         id,
-        userId: user.id,
+        userId: session.user.id,
       },
       include: {
         publishedTemplate: true,
@@ -49,17 +51,16 @@ export async function PUT(
     const { id } = await params
     const { title, description, content, tags, flowData, category, isFavorite } = await request.json()
 
-    // Temporarily disable auth for testing
-    const user = await prisma.user.findFirst()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    // Get current user session
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const instruction = await prisma.instruction.findFirst({
       where: {
         id,
-        userId: user.id,
+        userId: session.user.id,
       },
     })
 
@@ -99,17 +100,17 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    // Temporarily disable auth for testing
-    const user = await prisma.user.findFirst()
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    // Get current user session
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const instruction = await prisma.instruction.findFirst({
       where: {
         id,
-        userId: user.id,
+        userId: session.user.id,
       },
     })
 

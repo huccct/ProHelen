@@ -1,17 +1,19 @@
 import type { NextRequest } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
+import { authOptions } from '../auth/[...nextauth]/route'
 
 const prisma = new PrismaClient()
 
 // GET /api/instructions - Get user's instructions list
 export async function GET(request: NextRequest) {
   try {
-    // Temporarily disable auth for testing
-    // const session = await getServerSession(authOptions)
-    // if (!session?.user?.email) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
+    // Get current user session
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search')
@@ -21,16 +23,9 @@ export async function GET(request: NextRequest) {
     const limit = Number.parseInt(searchParams.get('limit') || '20')
     const offset = Number.parseInt(searchParams.get('offset') || '0')
 
-    // For testing, get the first user
-    const user = await prisma.user.findFirst()
-
-    if (!user) {
-      return NextResponse.json({ error: 'No users found' }, { status: 404 })
-    }
-
     // Build query conditions
     const where: any = {
-      userId: user.id,
+      userId: session.user.id,
     }
 
     // Search filter
@@ -106,23 +101,16 @@ export async function GET(request: NextRequest) {
 // POST /api/instructions - Create new instruction
 export async function POST(request: NextRequest) {
   try {
-    // Temporarily disable auth for testing
-    // const session = await getServerSession(authOptions)
-    // if (!session?.user?.email) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
+    // Get current user session
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const { title, description, content, tags, flowData, category } = await request.json()
 
     if (!title || !content) {
       return NextResponse.json({ error: 'Title and content are required' }, { status: 400 })
-    }
-
-    // For testing, get the first user
-    const user = await prisma.user.findFirst()
-
-    if (!user) {
-      return NextResponse.json({ error: 'No users found' }, { status: 404 })
     }
 
     const instruction = await prisma.instruction.create({
@@ -133,7 +121,7 @@ export async function POST(request: NextRequest) {
         tags: tags || [],
         flowData,
         category,
-        userId: user.id,
+        userId: session.user.id,
       },
       include: {
         publishedTemplate: true,

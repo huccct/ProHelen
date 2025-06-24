@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
+import { authOptions } from '../../../auth/[...nextauth]/route'
 
 const prisma = new PrismaClient()
 
@@ -11,20 +13,37 @@ export async function POST(
 ) {
   try {
     const { id } = await params
-    const { templateTitle, templateDescription, templateCategory, isPublic } = await request.json()
 
-    // Temporarily disable auth for testing
-    const user = await prisma.user.findFirst()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    // Get current user session
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    // Parse request body with error handling
+    let requestData
+    try {
+      const text = await request.text()
+      if (!text.trim()) {
+        // If no body provided, use defaults
+        requestData = {}
+      }
+      else {
+        requestData = JSON.parse(text)
+      }
+    }
+    catch (parseError) {
+      console.error('Error parsing request body:', parseError)
+      return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 })
+    }
+
+    const { templateTitle, templateDescription, templateCategory, isPublic } = requestData
 
     // Check if instruction exists and belongs to current user
     const instruction = await prisma.instruction.findFirst({
       where: {
         id,
-        userId: user.id,
+        userId: session.user.id,
       },
     })
 
@@ -42,12 +61,12 @@ export async function POST(
       data: {
         title: templateTitle || instruction.title,
         description: templateDescription || instruction.description || '',
-        category: templateCategory,
+        category: templateCategory || 'Other',
         content: instruction.content,
         tags: instruction.tags,
         flowData: instruction.flowData as any,
-        isPublic,
-        createdBy: user.id,
+        isPublic: isPublic ?? true,
+        createdBy: session.user.id,
         sourceInstructionId: instruction.id,
         useCases: [],
         features: [],
@@ -84,17 +103,17 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    // Temporarily disable auth for testing
-    const user = await prisma.user.findFirst()
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    // Get current user session
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const instruction = await prisma.instruction.findFirst({
       where: {
         id,
-        userId: user.id,
+        userId: session.user.id,
       },
       include: {
         publishedTemplate: true,

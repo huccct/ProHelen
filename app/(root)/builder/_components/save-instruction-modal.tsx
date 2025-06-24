@@ -6,16 +6,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useBuilderStore } from '@/store/builder'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useShallow } from 'zustand/shallow'
 
 interface SaveInstructionModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSave: (instructionData: InstructionFormData) => void
   isLoading?: boolean
-  initialTitle?: string
-  initialDescription?: string
 }
 
 export interface InstructionFormData {
@@ -26,33 +26,66 @@ export interface InstructionFormData {
   isFavorite: boolean
 }
 
-export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, initialTitle = '', initialDescription = '' }: SaveInstructionModalProps) {
+export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: SaveInstructionModalProps) {
   const { t } = useTranslation()
+  const { title, description, setTitle, setDescription } = useBuilderStore(useShallow(state => ({
+    title: state.title,
+    description: state.description,
+    setTitle: state.setTitle,
+    setDescription: state.setDescription,
+  })))
+
+  // 保存弹框打开时的原始值，用于取消时恢复
+  const [originalValues, setOriginalValues] = useState({ title: '', description: '' })
+
   const [formData, setFormData] = useState<InstructionFormData>({
-    title: initialTitle,
-    description: initialDescription,
-    category: 'General',
+    title: '',
+    description: '',
+    category: t('builder.modals.saveInstruction.categories.general'),
     tags: [],
     isFavorite: false,
   })
   const [tagInput, setTagInput] = useState('')
 
-  // Update form data when modal opens or initial values change
+  // 当弹框打开时，同步 store 中的最新值到表单，并保存原始值
   useEffect(() => {
     if (open) {
+      setOriginalValues({ title, description })
       setFormData(prev => ({
         ...prev,
-        title: initialTitle,
-        description: initialDescription,
+        title,
+        description,
       }))
     }
-  }, [open, initialTitle, initialDescription])
+  }, [open, title, description])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.title.trim())
       return
+
+    // 只有在保存时才同步到 store
+    setTitle(formData.title)
+    setDescription(formData.description)
+
     onSave(formData)
+  }
+
+  const handleCancel = () => {
+    // 恢复到弹框打开时的原始值
+    setTitle(originalValues.title)
+    setDescription(originalValues.description)
+    onOpenChange(false)
+  }
+
+  const handleTitleChange = (value: string) => {
+    setFormData(prev => ({ ...prev, title: value }))
+    // 移除实时同步到 store
+  }
+
+  const handleDescriptionChange = (value: string) => {
+    setFormData(prev => ({ ...prev, description: value }))
+    // 移除实时同步到 store
   }
 
   const handleAddTag = () => {
@@ -107,7 +140,7 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
               id="title"
               placeholder={t('builder.modals.saveInstruction.titlePlaceholder')}
               value={formData.title}
-              onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              onChange={e => handleTitleChange(e.target.value)}
               className="bg-card border-border text-foreground"
               required
             />
@@ -121,7 +154,7 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
               id="description"
               placeholder={t('builder.modals.saveInstruction.descriptionPlaceholder')}
               value={formData.description}
-              onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={e => handleDescriptionChange(e.target.value)}
               className="bg-card border-border text-foreground resize-none max-h-24 overflow-y-auto scrollbar"
               rows={3}
             />
@@ -208,7 +241,7 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={handleCancel}
               className="cursor-pointer"
             >
               {t('builder.modals.saveInstruction.cancel')}

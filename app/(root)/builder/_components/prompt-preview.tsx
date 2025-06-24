@@ -20,8 +20,6 @@ function selector(state: any) {
   return {
     preview: state.preview,
     nodes: state.nodes,
-    title: state.title,
-    description: state.description,
     exportFlowData: state.exportFlowData,
   }
 }
@@ -30,7 +28,7 @@ function selector(state: any) {
 
 export function PromptPreview({ className, style }: PromptPreviewProps) {
   const { t } = useTranslation()
-  const { preview, nodes, title, description, exportFlowData } = useBuilderStore(useShallow(selector))
+  const { preview, nodes, exportFlowData } = useBuilderStore(useShallow(selector))
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [showTestModal, setShowTestModal] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -280,8 +278,6 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
         onOpenChange={setShowSaveModal}
         onSave={handleSaveInstructionSubmit}
         isLoading={isSaving}
-        initialTitle={title}
-        initialDescription={description}
       />
 
       <TestPromptModal open={showTestModal} onOpenChange={setShowTestModal} />

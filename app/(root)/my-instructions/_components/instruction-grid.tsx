@@ -281,6 +281,7 @@ export function InstructionGrid({
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({}), // Send empty object to avoid JSON parsing error
       })
 
       if (!response.ok) {
