@@ -28,6 +28,7 @@ function selector(state: any) {
     onNodesChange: state.onNodesChange,
     onEdgesChange: state.onEdgesChange,
     addNode: state.addNode,
+    addQuickStartTemplate: state.addQuickStartTemplate,
   }
 }
 
@@ -49,6 +50,7 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
     onNodesChange,
     onEdgesChange,
     addNode,
+    addQuickStartTemplate,
   } = useBuilderStore(useShallow(selector))
 
   // 缓存currentBlocks计算，只在节点类型真正变化时重新计算
@@ -89,7 +91,12 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
           <Toolbar />
           <div className="flex-1 relative flex">
             <div className="flex-1 relative">
-              <BlockPickerModal open={open} onOpenChange={setOpen} onAddNode={addNode} />
+              <BlockPickerModal
+                open={open}
+                onOpenChange={setOpen}
+                onAddNode={addNode}
+                onAddQuickStartTemplate={addQuickStartTemplate}
+              />
               <ReactFlow
                 nodes={nodes}
                 edges={edges}

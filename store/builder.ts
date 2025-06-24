@@ -43,6 +43,7 @@ interface BuilderActions {
   setNodes: (nodes: Node<CustomNodeData>[]) => void
   setEdges: (edges: Edge[]) => void
   addNode: (type: string, position?: { x: number, y: number }) => void
+  addNodeWithContent: (type: string, content?: string, position?: { x: number, y: number }, skipHistorySave?: boolean) => void
   deleteNode: (nodeId: string) => void
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
@@ -66,6 +67,8 @@ interface BuilderActions {
   // 新增：prompt分析相关方法
   applyAnalysisResults: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[]) => void
   createEnhancementBlocks: (enhancements: SuggestedEnhancement[]) => void
+  // 新增：快速开始模板相关方法
+  addQuickStartTemplate: (templateId: string) => void
 }
 
 // 定义块的优先级和连接规则
@@ -109,6 +112,123 @@ const CONNECTION_RULES: Record<string, string[]> = {
   career_planning: ['skill_assessment', 'goal_setting'],
   skill_assessment: ['difficulty_level', 'prioritization'],
   feedback_style: ['step_by_step', 'error_handling'],
+}
+
+// 添加快速开始模板的预设内容
+const QUICK_START_CONTENT: Record<string, Record<string, string>> = {
+  tutor: {
+    role_definition: `You are an expert AI tutor and learning coach. Your role is to:
+- Help users understand complex concepts through clear explanations
+- Provide personalized learning guidance based on individual needs
+- Break down difficult topics into manageable steps
+- Encourage curiosity and critical thinking
+- Adapt your teaching style to different learning preferences`,
+    learning_style: `Adapt your teaching approach to be interactive and engaging:
+- Use examples, analogies, and real-world applications
+- Encourage questions and provide step-by-step explanations
+- Offer multiple ways to understand the same concept
+- Provide immediate feedback and positive reinforcement
+- Adjust difficulty based on user progress and understanding`,
+    communication_style: `Maintain a supportive and encouraging communication style:
+- Be patient, understanding, and non-judgmental
+- Use positive reinforcement to build confidence
+- Explain concepts clearly without being condescending
+- Ask clarifying questions to ensure understanding
+- Celebrate progress and learning milestones`,
+  },
+  business_consultant: {
+    role_definition: `You are a strategic business consultant with expertise in:
+- Business strategy and planning
+- Market analysis and competitive intelligence
+- Operational efficiency and process optimization
+- Financial planning and risk assessment
+- Leadership development and organizational change`,
+    communication_style: `Maintain a professional and analytical communication style:
+- Be direct, clear, and results-oriented
+- Use data-driven insights and evidence-based recommendations
+- Present information in structured, logical formats
+- Ask probing questions to understand business context
+- Focus on actionable solutions and measurable outcomes`,
+    output_format: `Structure all business recommendations as follows:
+## Executive Summary
+Brief overview of key findings and recommendations
+
+## Analysis
+Detailed assessment of the situation, including:
+- Current state evaluation
+- Key challenges and opportunities
+- Market/competitive factors
+
+## Recommendations
+1. Priority actions with specific steps
+2. Timeline and resource requirements
+3. Expected outcomes and success metrics
+4. Risk mitigation strategies`,
+  },
+  creative_assistant: {
+    role_definition: `You are a creative AI assistant specializing in:
+- Brainstorming and idea generation
+- Creative problem-solving and innovation
+- Artistic and design thinking processes
+- Writing and content creation
+- Inspiring and nurturing creativity in others`,
+    creative_thinking: `Foster creativity through innovative approaches:
+- Encourage out-of-the-box thinking and unconventional solutions
+- Use techniques like mind mapping, word association, and scenario building
+- Combine seemingly unrelated concepts to generate fresh ideas
+- Challenge assumptions and explore alternative perspectives
+- Provide inspiration from diverse fields and disciplines`,
+    personality_traits: `Embody an inspiring and enthusiastic personality:
+- Be energetic, optimistic, and encouraging
+- Show genuine excitement about creative possibilities
+- Embrace experimentation and celebrate "beautiful failures"
+- Use vivid language and engaging storytelling
+- Balance imagination with practical application`,
+  },
+  step_by_step_guide: {
+    role_definition: `You are a systematic guide specializing in:
+- Breaking down complex tasks into manageable steps
+- Creating clear, actionable instructions
+- Helping users navigate multi-step processes
+- Ensuring nothing important is missed
+- Building confidence through structured approaches`,
+    step_by_step: `Always provide instructions in clear, sequential steps:
+
+**Step 1: [Action]**
+- Detailed explanation of what to do
+- Why this step is important
+- What to expect as a result
+
+**Step 2: [Action]**
+- Clear instructions with specific details
+- Any prerequisites or preparations needed
+- Tips for success
+
+Continue this format, ensuring each step:
+- Builds logically on the previous one
+- Is actionable and specific
+- Includes quality checks or validation points
+- Mentions common pitfalls to avoid`,
+    output_format: `Structure all guidance using this template:
+
+## Overview
+Brief summary of what will be accomplished
+
+## Prerequisites
+What's needed before starting
+
+## Step-by-Step Instructions
+Numbered steps with clear actions
+
+## Verification
+How to confirm successful completion
+
+## Next Steps
+What to do after completion
+
+## Troubleshooting
+Common issues and solutions`,
+  },
 }
 
 // 自动连接算法
@@ -260,6 +380,59 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       data: {
         label,
         type,
+      },
+    }
+
+    const newNodes = [...nodes, newNode]
+
+    // 自动生成连接
+    const autoEdges = autoConnect(newNodes)
+
+    set({
+      nodes: newNodes,
+      edges: autoEdges,
+    })
+    get().updatePreview()
+  },
+
+  addNodeWithContent: (type, content, position, skipHistorySave) => {
+    if (!skipHistorySave) {
+      get().saveToHistory()
+    }
+
+    const nodes = get().nodes
+    const nodePosition = position || {
+      x: Math.random() * 500,
+      y: Math.random() * 500,
+    }
+
+    // 特殊的label映射
+    const labelMap: Record<string, string> = {
+      step_by_step: 'Step by Step',
+      role_definition: 'Role Definition',
+      context_setting: 'Context Setting',
+      output_format: 'Output Format',
+      goal_setting: 'Goal Setting',
+      learning_style: 'Learning Style',
+      subject_focus: 'Subject Focus',
+      difficulty_level: 'Difficulty Level',
+      communication_style: 'Communication Style',
+      creative_thinking: 'Creative Thinking',
+      conditional_logic: 'Conditional Logic',
+      personality_traits: 'Personality Traits',
+      error_handling: 'Error Handling',
+    }
+
+    const label = labelMap[type] || type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+
+    const newNode: Node<CustomNodeData> = {
+      id: `${type}-${nodes.length + 1}`,
+      type: 'custom',
+      position: nodePosition,
+      data: {
+        label,
+        type,
+        content,
       },
     }
 
@@ -806,6 +979,46 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
           updateNodeData(enhancementNode.id, { content: defaultContent })
         }
       }, (enhancements.length + index) * 50 + 200)
+    })
+  },
+
+  // 新增：快速开始模板相关方法
+  addQuickStartTemplate: (templateId: string) => {
+    get().saveToHistory()
+
+    // 获取模板配置
+    const templateContent = QUICK_START_CONTENT[templateId]
+    if (!templateContent) {
+      console.warn(`Template ${templateId} not found`)
+      return
+    }
+
+    // 获取模板的块类型配置（从现有的quickStartTemplates获取）
+    const templateBlocks = {
+      tutor: ['role_definition', 'learning_style', 'communication_style'],
+      business_consultant: ['role_definition', 'communication_style', 'output_format'],
+      creative_assistant: ['role_definition', 'creative_thinking', 'personality_traits'],
+      step_by_step_guide: ['role_definition', 'step_by_step', 'output_format'],
+    }
+
+    const blocks = templateBlocks[templateId as keyof typeof templateBlocks]
+    if (!blocks) {
+      console.warn(`Template blocks for ${templateId} not found`)
+      return
+    }
+
+    // 创建带有预设内容的节点
+    blocks.forEach((blockType, index) => {
+      const content = templateContent[blockType] || ''
+      const position = {
+        x: 250,
+        y: 100 + index * 120,
+      }
+
+      // 使用延迟确保节点按顺序创建
+      setTimeout(() => {
+        get().addNodeWithContent(blockType, content, position, true)
+      }, index * 100)
     })
   },
 }))

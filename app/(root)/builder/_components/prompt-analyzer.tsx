@@ -193,7 +193,7 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
                     value={userPrompt}
                     onChange={e => setUserPrompt(e.target.value)}
                     placeholder={t('builder.analyzer.input.placeholder')}
-                    className="min-h-[120px] resize-none"
+                    className="min-h-[120px] max-h-[300px] resize-none overflow-y-auto scrollbar"
                     disabled={isAnalyzing}
                   />
                   <div className="flex justify-between items-center">

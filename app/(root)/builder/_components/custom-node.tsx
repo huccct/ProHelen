@@ -143,7 +143,7 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
                     value={editContent}
                     onChange={e => setEditContent(e.target.value)}
                     placeholder={t('builder.components.customNode.enterInstructions', { label: data.label.toLowerCase() })}
-                    className="w-full min-h-[80px] p-2 text-sm bg-background border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 scrollbar"
+                    className="w-full min-h-[80px] max-h-[200px] p-2 text-sm bg-background border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 scrollbar overflow-y-auto"
                     autoFocus
                   />
                   <div className="flex justify-end gap-2">

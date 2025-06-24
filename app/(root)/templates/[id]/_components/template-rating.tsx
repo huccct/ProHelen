@@ -102,8 +102,16 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
       })
 
       if (response.ok) {
+        const isFirstTimeReview = !hasUserReviewed
         toast.success(hasUserReviewed ? t('templateDetail.reviewUpdated') : t('templateDetail.reviewSubmitted'))
         setHasUserReviewed(true)
+
+        // 首次提交评论后清除表单，给用户更好的反馈体验
+        if (isFirstTimeReview) {
+          setUserRating(0)
+          setComment('')
+        }
+
         fetchReviews()
       }
       else {
@@ -219,7 +227,7 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
                       value={comment}
                       onChange={e => setComment(e.target.value)}
                       placeholder={t('templateDetail.commentPlaceholder')}
-                      className="min-h-[80px]"
+                      className="min-h-[80px] max-h-[150px] resize-none overflow-y-auto scrollbar"
                     />
                   </div>
 

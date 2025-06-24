@@ -122,7 +122,7 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading, in
               placeholder={t('builder.modals.saveInstruction.descriptionPlaceholder')}
               value={formData.description}
               onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="bg-card border-border text-foreground resize-none"
+              className="bg-card border-border text-foreground resize-none max-h-24 overflow-y-auto scrollbar"
               rows={3}
             />
           </div>

@@ -246,9 +246,10 @@ interface BlockPickerModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onAddNode: (type: string) => void
+  onAddQuickStartTemplate?: (templateId: string) => void
 }
 
-export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerModalProps) {
+export function BlockPickerModal({ open, onOpenChange, onAddNode, onAddQuickStartTemplate }: BlockPickerModalProps) {
   const { t } = useTranslation()
   const [selectedCategory, setSelectedCategory] = useState('quick-start')
   const [showScrollButtons, setShowScrollButtons] = useState(false)
@@ -261,12 +262,18 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode }: BlockPickerM
     : blockTypes.filter(block => block.category === selectedCategory)
 
   const handleQuickStartTemplate = (template: typeof quickStartTemplates[0]) => {
-    // 按顺序添加模板中的所有块
-    template.blocks.forEach((blockType, index) => {
-      setTimeout(() => {
-        onAddNode(blockType)
-      }, index * 200) // 每200ms添加一个块，让用户看到构建过程
-    })
+    if (onAddQuickStartTemplate) {
+      // 使用新的预填充内容方法
+      onAddQuickStartTemplate(template.id)
+    }
+    else {
+      // 回退到原有逻辑：按顺序添加模板中的所有块
+      template.blocks.forEach((blockType, index) => {
+        setTimeout(() => {
+          onAddNode(blockType)
+        }, index * 200) // 每200ms添加一个块，让用户看到构建过程
+      })
+    }
     onOpenChange(false)
   }
 

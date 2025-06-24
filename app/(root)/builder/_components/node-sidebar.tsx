@@ -16,6 +16,7 @@ export function NodeSidebar({ className }: NodeSidebarProps) {
   const [open, setOpen] = useState(false)
 
   const addNode = useBuilderStore(state => state.addNode)
+  const addQuickStartTemplate = useBuilderStore(state => state.addQuickStartTemplate)
 
   return (
     <aside className={className}>
@@ -33,7 +34,12 @@ export function NodeSidebar({ className }: NodeSidebarProps) {
             </Button>
             <span className="text-sm text-muted-foreground">{t('builder.components.nodeSidebar.addBlock')}</span>
           </div>
-          <BlockPickerModal open={open} onOpenChange={setOpen} onAddNode={addNode} />
+          <BlockPickerModal
+            open={open}
+            onOpenChange={setOpen}
+            onAddNode={addNode}
+            onAddQuickStartTemplate={addQuickStartTemplate}
+          />
         </div>
       </div>
     </aside>

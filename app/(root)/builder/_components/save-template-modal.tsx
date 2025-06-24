@@ -108,7 +108,7 @@ export function SaveTemplateModal({ open, onOpenChange, onSave, isLoading }: Sav
             <textarea
               value={formData.description}
               onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-border/80 h-20 resize-none"
+              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-border/80 h-20 max-h-32 resize-none overflow-y-auto scrollbar"
               placeholder={t('builder.modals.saveTemplate.descriptionPlaceholder')}
               disabled={isLoading}
             />
