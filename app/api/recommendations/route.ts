@@ -1,11 +1,7 @@
 import type { NextRequest } from 'next/server'
+import { authOptions } from '@/lib/auth-config'
 import { RecommendationEngine } from '@/lib/recommendation-engine'
 import { getServerSession } from 'next-auth'
-
-// 简化的 auth 配置
-const authOptions = {
-  session: { strategy: 'jwt' as const },
-}
 
 const engine = new RecommendationEngine()
 

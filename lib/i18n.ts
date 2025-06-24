@@ -287,6 +287,7 @@ const resources = {
         addToFavorites: 'Add to favorites',
         removeFromFavorites: 'Remove from favorites',
         publishToLibrary: 'Publish to template library',
+        unpublishFromLibrary: 'Unpublish from library',
         delete: 'Delete',
         // Toast 消息
         instructionDeleted: 'Instruction deleted successfully',
@@ -298,6 +299,8 @@ const resources = {
         duplicateFailed: 'Failed to duplicate, please try again',
         instructionPublished: 'Instruction published to template library',
         publishFailed: 'Failed to publish, please try again',
+        instructionUnpublished: 'Instruction unpublished from template library',
+        unpublishFailed: 'Failed to unpublish, please try again',
         // 确认对话框
         deleteInstruction: {
           title: 'Delete Instruction',
@@ -309,6 +312,12 @@ const resources = {
           title: 'Publish to Template Library',
           description: 'Are you sure you want to publish this instruction to the template library? Other users will be able to see and use it.',
           confirm: 'Publish',
+          cancel: 'Cancel',
+        },
+        unpublishInstruction: {
+          title: 'Unpublish from Template Library',
+          description: 'Are you sure you want to unpublish this instruction from the template library? It will no longer be available to other users.',
+          confirm: 'Unpublish',
           cancel: 'Cancel',
         },
       },
@@ -1351,6 +1360,7 @@ const resources = {
         addToFavorites: '添加到收藏',
         removeFromFavorites: '取消收藏',
         publishToLibrary: '发布到模板库',
+        unpublishFromLibrary: '取消发布',
         delete: '删除',
         // Toast 消息
         instructionDeleted: '指令删除成功',
@@ -1362,6 +1372,8 @@ const resources = {
         duplicateFailed: '复制失败，请重试',
         instructionPublished: '指令已发布到模板库',
         publishFailed: '发布失败，请重试',
+        instructionUnpublished: '指令已从模板库取消发布',
+        unpublishFailed: '取消发布失败，请重试',
         // 确认对话框
         deleteInstruction: {
           title: '删除指令',
@@ -1373,6 +1385,12 @@ const resources = {
           title: '发布到模板库',
           description: '您确定要将此指令发布到模板库吗？其他用户将能够查看和使用它。',
           confirm: '发布',
+          cancel: '取消',
+        },
+        unpublishInstruction: {
+          title: '取消发布',
+          description: '您确定要从模板库取消发布此指令吗？其他用户将无法再查看和使用它。',
+          confirm: '取消发布',
           cancel: '取消',
         },
       },

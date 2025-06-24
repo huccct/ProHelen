@@ -98,7 +98,10 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                 onAddQuickStartTemplate={addQuickStartTemplate}
               />
               <ReactFlow
-                nodes={nodes}
+                nodes={nodes.map((node: any) => ({
+                  ...node,
+                  draggable: !node.data?.isEditing,
+                }))}
                 edges={edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}

@@ -161,6 +161,7 @@ export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCa
           nodes={nodes.map((node: any) => ({
             ...node,
             className: highlightedNode === node.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : '',
+            draggable: !node.data?.isEditing,
           }))}
           edges={edges}
           onNodesChange={onNodesChange}

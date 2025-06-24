@@ -14,7 +14,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-import { Clock, Edit, Globe, Heart, HeartOff, MoreVertical, Share, Sparkles } from 'lucide-react'
+import { Clock, Edit, Globe, Heart, HeartOff, MoreVertical, Share, Sparkles, Unlink } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -131,6 +131,10 @@ export function InstructionGrid({
     instruction: null,
   })
   const [publishModal, setPublishModal] = useState<{ isOpen: boolean, instruction: Instruction | null }>({
+    isOpen: false,
+    instruction: null,
+  })
+  const [unpublishModal, setUnpublishModal] = useState<{ isOpen: boolean, instruction: Instruction | null }>({
     isOpen: false,
     instruction: null,
   })
@@ -297,6 +301,26 @@ export function InstructionGrid({
     }
   }
 
+  // Unpublish from template library
+  const handleUnpublish = async (instruction: Instruction) => {
+    try {
+      const response = await fetch(`/api/instructions/${instruction.id}/publish`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to unpublish instruction')
+      }
+
+      toast.success(t('myInstructions.instructionUnpublished'))
+      fetchInstructions(currentPage) // Refresh current page
+    }
+    catch (error) {
+      console.error('Error unpublishing instruction:', error)
+      toast.error(t('myInstructions.unpublishFailed'))
+    }
+  }
+
   if (loading) {
     return (
       <div className="space-y-8">
@@ -374,7 +398,7 @@ export function InstructionGrid({
                         </Badge>
                       )}
                       {instruction.isFavorite && (
-                        <Heart className="w-4 h-4 text-red-400 fill-current" />
+                        <Heart className="w-5 h-5 text-red-400 fill-current flex-shrink-0" />
                       )}
                     </div>
                     {instruction.category && (
@@ -421,15 +445,25 @@ export function InstructionGrid({
                               </>
                             )}
                       </DropdownMenuItem>
-                      {!instruction.isPublished && (
-                        <DropdownMenuItem
-                          className="cursor-pointer hover:bg-muted focus:bg-muted"
-                          onClick={() => setPublishModal({ isOpen: true, instruction })}
-                        >
-                          <Share className="mr-2 h-4 w-4" />
-                          {t('myInstructions.publishToLibrary')}
-                        </DropdownMenuItem>
-                      )}
+                      {!instruction.isPublished
+                        ? (
+                            <DropdownMenuItem
+                              className="cursor-pointer hover:bg-muted focus:bg-muted"
+                              onClick={() => setPublishModal({ isOpen: true, instruction })}
+                            >
+                              <Share className="mr-2 h-4 w-4" />
+                              {t('myInstructions.publishToLibrary')}
+                            </DropdownMenuItem>
+                          )
+                        : (
+                            <DropdownMenuItem
+                              className="cursor-pointer hover:bg-muted focus:bg-muted"
+                              onClick={() => setUnpublishModal({ isOpen: true, instruction })}
+                            >
+                              <Unlink className="mr-2 h-4 w-4" />
+                              {t('myInstructions.unpublishFromLibrary')}
+                            </DropdownMenuItem>
+                          )}
                       <DropdownMenuItem
                         className="cursor-pointer hover:bg-muted focus:bg-muted text-destructive hover:text-destructive/80"
                         onClick={() => setDeleteModal({ isOpen: true, instruction })}
@@ -584,6 +618,18 @@ export function InstructionGrid({
         description={t('myInstructions.publishInstruction.description')}
         confirmText={t('myInstructions.publishInstruction.confirm')}
         cancelText={t('myInstructions.publishInstruction.cancel')}
+      />
+
+      {/* Unpublish Confirmation Modal */}
+      <ConfirmModal
+        isOpen={unpublishModal.isOpen}
+        onClose={() => setUnpublishModal({ isOpen: false, instruction: null })}
+        onConfirm={() => unpublishModal.instruction && handleUnpublish(unpublishModal.instruction)}
+        title={t('myInstructions.unpublishInstruction.title')}
+        description={t('myInstructions.unpublishInstruction.description')}
+        confirmText={t('myInstructions.unpublishInstruction.confirm')}
+        cancelText={t('myInstructions.unpublishInstruction.cancel')}
+        variant="default"
       />
     </div>
   )

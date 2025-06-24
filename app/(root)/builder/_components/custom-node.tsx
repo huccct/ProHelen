@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useBuilderStore } from '@/store/builder'
 
-import { Handle, Position } from '@xyflow/react'
+import { Handle, NodeResizer, Position } from '@xyflow/react'
 import { AlertTriangle, BarChart3, Book, Brain, CheckCircle, Clock, Compass, Edit3, FileText, Filter, Globe, Heart, Lightbulb, MessageCircle, MessageSquare, Save, Star, Target, Trash2, Users, Workflow, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export interface CustomNodeData extends Record<string, unknown> {
@@ -17,18 +17,23 @@ export interface CustomNodeData extends Record<string, unknown> {
   isEditing?: boolean
 }
 
-type CustomNodeType = Node<CustomNodeData>
+export type CustomNodeType = Node<CustomNodeData>
 
 export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
   const { t } = useTranslation()
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(data.isEditing || false)
   const [editContent, setEditContent] = useState(data.content || '')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const updateNodeData = useBuilderStore(state => state.updateNodeData)
   const deleteNode = useBuilderStore(state => state.deleteNode)
 
+  // 同步外部数据的编辑状态
+  useEffect(() => {
+    setIsEditing(data.isEditing || false)
+  }, [data.isEditing])
+
   const handleSave = () => {
-    updateNodeData(id, { content: editContent })
+    updateNodeData(id, { content: editContent, isEditing: false })
     setIsEditing(false)
     // Save时允许弹出Smart Suggestions，所以不阻止事件冒泡
   }
@@ -36,12 +41,14 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
   const handleCancel = (e: React.MouseEvent) => {
     e.stopPropagation() // 阻止事件冒泡，避免弹出Smart Suggestions
     setEditContent(data.content || '')
+    updateNodeData(id, { isEditing: false })
     setIsEditing(false)
   }
 
   const handleEdit = (e?: React.MouseEvent) => {
     e?.stopPropagation() // 阻止事件冒泡
     setEditContent(data.content || '')
+    updateNodeData(id, { isEditing: true })
     setIsEditing(true)
   }
 
@@ -73,7 +80,32 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
   const colors = getNodeColors(data.type)
 
   return (
-    <div className="group relative min-w-[240px] max-w-[320px]">
+    <div className={`group relative ${isEditing ? '' : 'min-w-[240px] max-w-[320px]'}`}>
+      {/* NodeResizer - Only show when editing */}
+      {isEditing && (
+        <NodeResizer
+          minWidth={200}
+          minHeight={100}
+          maxWidth={800}
+          maxHeight={600}
+          isVisible={isEditing}
+          color="hsl(var(--foreground))"
+          handleStyle={{
+            backgroundColor: 'hsl(var(--foreground))',
+            border: '2px solid hsl(var(--background))',
+            borderRadius: '4px',
+            width: '8px',
+            height: '8px',
+            boxShadow: '0 2px 4px hsl(var(--foreground) / 0.2)',
+          }}
+          lineStyle={{
+            borderColor: 'hsl(var(--foreground) / 0.3)',
+            borderWidth: '1px',
+            borderStyle: 'dashed',
+          }}
+        />
+      )}
+
       {/* Target Handle - 用于接收连接，但不可交互 */}
       <Handle
         type="target"
@@ -143,7 +175,7 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
                     value={editContent}
                     onChange={e => setEditContent(e.target.value)}
                     placeholder={t('builder.components.customNode.enterInstructions', { label: data.label.toLowerCase() })}
-                    className="w-full min-h-[80px] max-h-[200px] p-2 text-sm bg-background border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 scrollbar overflow-y-auto"
+                    className="w-full min-h-[80px] max-h-[200px] p-2 text-sm bg-background border border-border rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-primary/50 scrollbar overflow-y-auto"
                     autoFocus
                   />
                   <div className="flex justify-end gap-2">
