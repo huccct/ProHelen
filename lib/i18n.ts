@@ -166,6 +166,12 @@ const resources = {
             description: 'Lightning fast',
           },
         },
+        // CTA Section
+        cta: {
+          title: 'Ready to start your <span class="text-primary font-medium">AI prompt design</span> journey?',
+          startButton: 'Start Creating Now',
+          subtitle: 'No registration required, free to get started',
+        },
         // Footer
         footer: {
           privacy: 'Privacy',
@@ -1238,6 +1244,12 @@ const resources = {
             label: '响应时间',
             description: '闪电般快速',
           },
+        },
+        // CTA Section
+        cta: {
+          title: '准备好开始你的<span class="text-primary font-medium"> AI 提示设计</span>之旅了吗？',
+          startButton: '立即开始创建',
+          subtitle: '无需注册，免费开始使用',
         },
         // Footer
         footer: {

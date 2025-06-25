@@ -49,6 +49,61 @@ declare module 'react-i18next' {
           subtitle: string
           getStarted: string
           learnMore: string
+          hero: {
+            badge: string
+            mainTitle: string
+            typewriter: {
+              visualPromptDesign: string
+              aiBehaviorControl: string
+              smartInstructions: string
+              llmCustomization: string
+            }
+            description: string
+            startCreating: string
+            exploreTemplates: string
+            features: {
+              noCoding: string
+              realTime: string
+              freeStart: string
+            }
+          }
+          features: {
+            title: string
+            subtitle: string
+          }
+          useCases: {
+            title: string
+            subtitle: string
+          }
+          stats: {
+            blockTypes: {
+              value: string
+              label: string
+              description: string
+            }
+            templates: {
+              value: string
+              label: string
+              description: string
+            }
+            responseTime: {
+              value: string
+              label: string
+              description: string
+            }
+          }
+          cta: {
+            title: string
+            startButton: string
+            subtitle: string
+          }
+          footer: {
+            privacy: string
+            terms: string
+            documentation: string
+            support: string
+            copyright: string
+          }
         }
         builder: {
           title: string
