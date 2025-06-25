@@ -29,7 +29,7 @@ interface AnalysisResponse {
 }
 
 interface PromptAnalyzerProps {
-  onAnalysisComplete: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[]) => void
+  onAnalysisComplete: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[], userQuery?: string) => void
   onSwitchToAdvanced: () => void
 }
 
@@ -131,7 +131,8 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
       selectedEnhancements.has(enhancement.type),
     )
 
-    onAnalysisComplete(selectedBlocksData, selectedEnhancementsData)
+    // 传递用户的原始问题
+    onAnalysisComplete(selectedBlocksData, selectedEnhancementsData, userPrompt)
   }
 
   const canProceed = analysis && (selectedBlocks.size > 0 || selectedEnhancements.size > 0)

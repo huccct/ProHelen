@@ -17,6 +17,7 @@ interface BuilderState {
   tags: string[]
   isTemplate: boolean
   sourceId: string | null
+  originalUserQuery: string // 用户的原始问题，用于testing
   preview: {
     system: string
     human: string
@@ -55,6 +56,7 @@ interface BuilderActions {
   setTags: (tags: string[]) => void
   setIsTemplate: (isTemplate: boolean) => void
   setSourceId: (sourceId: string | null) => void
+  setOriginalUserQuery: (query: string) => void
   updatePreview: () => void
   exportFlowData: () => { nodes: Node<CustomNodeData>[], edges: Edge[] }
   importFlowData: (flowData: { nodes: Node<CustomNodeData>[], edges: Edge[] }) => void
@@ -65,7 +67,7 @@ interface BuilderActions {
   canUndo: () => boolean
   canRedo: () => boolean
   // 新增：prompt分析相关方法
-  applyAnalysisResults: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[]) => void
+  applyAnalysisResults: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[], userQuery?: string) => void
   createEnhancementBlocks: (enhancements: SuggestedEnhancement[]) => void
   // 新增：快速开始模板相关方法
   addQuickStartTemplate: (templateId: string) => void
@@ -333,6 +335,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   tags: [],
   isTemplate: false,
   sourceId: null,
+  originalUserQuery: '',
   preview: {
     system: '',
     human: '',
@@ -584,6 +587,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   setTags: tags => set({ tags }),
   setIsTemplate: isTemplate => set({ isTemplate }),
   setSourceId: sourceId => set({ sourceId }),
+  setOriginalUserQuery: query => set({ originalUserQuery: query }),
 
   updatePreview: () => {
     const state = get()
@@ -927,8 +931,13 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   },
 
   // 新增：应用分析结果方法
-  applyAnalysisResults: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[]) => {
+  applyAnalysisResults: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[], userQuery?: string) => {
     const { addNode, updateNodeData } = get()
+
+    // 保存用户的原始问题
+    if (userQuery) {
+      set({ originalUserQuery: userQuery })
+    }
 
     // 保存到历史记录
     get().saveToHistory()

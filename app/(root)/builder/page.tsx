@@ -277,11 +277,11 @@ function BuilderContent() {
   }, [])
 
   // 新增：处理分析完成的回调
-  const handleAnalysisComplete = useCallback((blocks: any[], enhancements: any[]) => {
+  const handleAnalysisComplete = useCallback((blocks: any[], enhancements: any[], userQuery?: string) => {
     const { applyAnalysisResults } = useBuilderStore.getState()
 
-    // 应用分析结果到store
-    applyAnalysisResults(blocks, enhancements)
+    // 应用分析结果到store，包括用户的原始问题
+    applyAnalysisResults(blocks, enhancements, userQuery)
 
     // 生成标题和描述
     const firstBlock = blocks.find(b => b.type === 'role_definition')

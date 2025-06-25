@@ -27,6 +27,7 @@ interface Message {
 export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
   const { t } = useTranslation()
   const preview = useBuilderStore(state => state.preview)
+  const originalUserQuery = useBuilderStore(state => state.originalUserQuery)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -131,7 +132,8 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
   // Auto-send a test message when modal opens
   useEffect(() => {
     if (open && !hasAutoSent && preview.system.trim()) {
-      const autoTestMessage = t('builder.modals.testPrompt.autoMessage')
+      // 使用用户的原始问题或默认测试消息
+      const autoTestMessage = originalUserQuery.trim() || t('builder.modals.testPrompt.autoMessage')
 
       const userMessage: Message = {
         id: `user-${Date.now()}`,
@@ -146,7 +148,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
       // Send auto message
       sendMessage(autoTestMessage, [])
     }
-  }, [open, hasAutoSent, preview.system, t, sendMessage])
+  }, [open, hasAutoSent, preview.system, originalUserQuery, t, sendMessage])
 
   // Reset when modal closes
   useEffect(() => {
@@ -249,7 +251,9 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
                     <div className="space-y-2">
                       <h3 className="text-lg font-medium">Ready to chat!</h3>
                       <p className="text-muted-foreground max-w-md">
-                        {t('builder.modals.testPrompt.emptyState')}
+                        {originalUserQuery.trim()
+                          ? `Will automatically test with: "${originalUserQuery}"`
+                          : t('builder.modals.testPrompt.emptyState')}
                       </p>
                     </div>
                   </div>
