@@ -115,7 +115,8 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                 // 禁用手动连接功能
                 nodesConnectable={false}
                 colorMode={theme === 'light' ? 'light' : 'dark'}
-                fitView
+                defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+                fitView={false}
                 proOptions={{
                   hideAttribution: true,
                 }}

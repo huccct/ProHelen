@@ -349,10 +349,21 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
     get().saveToHistory()
 
     const nodes = get().nodes
-    const nodePosition = position || {
-      x: Math.random() * 500,
-      y: Math.random() * 500,
-    }
+
+    // 改进：智能计算横向布局位置
+    const nodePosition = position || (() => {
+      const nodeSpacing = 350 // 节点间距
+      const startX = 200 // 起始X位置
+      const baseY = 200 // 基础Y位置
+
+      // 计算新节点在横向布局中的位置
+      const newX = startX + (nodes.length * nodeSpacing)
+
+      return {
+        x: newX,
+        y: baseY,
+      }
+    })()
 
     // 特殊的label映射
     const labelMap: Record<string, string> = {
@@ -401,10 +412,21 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
     }
 
     const nodes = get().nodes
-    const nodePosition = position || {
-      x: Math.random() * 500,
-      y: Math.random() * 500,
-    }
+
+    // 改进：智能计算横向布局位置
+    const nodePosition = position || (() => {
+      const nodeSpacing = 350 // 节点间距
+      const startX = 200 // 起始X位置
+      const baseY = 200 // 基础Y位置
+
+      // 计算新节点在横向布局中的位置
+      const newX = startX + (nodes.length * nodeSpacing)
+
+      return {
+        x: newX,
+        y: baseY,
+      }
+    })()
 
     // 特殊的label映射
     const labelMap: Record<string, string> = {
@@ -811,7 +833,23 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
 
   importFlowData: (flowData) => {
     const { nodes, edges } = flowData
-    set({ nodes, edges })
+
+    // 重新计算节点位置，使其居中显示
+    const adjustedNodes = nodes.map((node: Node<CustomNodeData>, index: number) => {
+      const nodeSpacing = 350 // 节点间距
+      const startX = 200 // 起始X位置（更居中）
+      const baseY = 300 // 基础Y位置（更居中）
+
+      return {
+        ...node,
+        position: {
+          x: startX + index * nodeSpacing,
+          y: baseY,
+        },
+      }
+    })
+
+    set({ nodes: adjustedNodes, edges })
     get().updatePreview()
   },
 
@@ -895,11 +933,15 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
     // 保存到历史记录
     get().saveToHistory()
 
-    // 创建提取的blocks
+    // 创建提取的blocks - 横向布局
     blocks.forEach((block, index) => {
+      const nodeSpacing = 350 // 节点间距
+      const startX = 200 // 起始X位置
+      const baseY = 200 // 基础Y位置
+
       const position = {
-        x: 250,
-        y: 100 + index * 120,
+        x: startX + index * nodeSpacing,
+        y: baseY,
       }
 
       addNode(block.type, position)
@@ -931,14 +973,16 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   createEnhancementBlocks: (enhancements: SuggestedEnhancement[]) => {
     const { addNode } = get()
 
-    // 计算增强blocks的起始位置（在现有blocks右侧）
-    const startX = 450
-    const startY = 200
+    // 计算增强blocks的起始位置（在现有blocks右侧，横向布局）
+    const existingNodes = get().nodes
+    const nodeSpacing = 350 // 节点间距
+    const startX = 200 + (existingNodes.length * nodeSpacing) // 在现有nodes之后
+    const baseY = 200 // 基础Y位置
 
     enhancements.forEach((enhancement, index) => {
       const position = {
-        x: startX,
-        y: startY + index * 120,
+        x: startX + index * nodeSpacing,
+        y: baseY,
       }
 
       addNode(enhancement.type, position)
@@ -1007,12 +1051,16 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       return
     }
 
-    // 创建带有预设内容的节点
+    // 创建带有预设内容的节点 - 横向布局
     blocks.forEach((blockType, index) => {
       const content = templateContent[blockType] || ''
+      const nodeSpacing = 350 // 节点间距
+      const startX = 200 // 起始X位置
+      const baseY = 200 // 基础Y位置
+
       const position = {
-        x: 250,
-        y: 100 + index * 120,
+        x: startX + index * nodeSpacing,
+        y: baseY,
       }
 
       // 使用延迟确保节点按顺序创建

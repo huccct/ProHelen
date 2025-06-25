@@ -98,46 +98,68 @@ function BuilderContent() {
       }
     }
 
+    // 智能横向布局配置
+    const nodeSpacing = 350 // 节点间距
+    const startX = 200 // 起始X位置
+    const baseY = 200 // 基础Y位置
+    let nodeIndex = 0 // 节点索引计数器
+
     // 添加核心块 - Role Definition (所有类型都需要)
-    addNode('role_definition', { x: 250, y: 100 })
+    addNode('role_definition', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+    nodeIndex++
 
     // 根据用途添加相应的块
     if (config.purpose) {
       switch (config.purpose.value) {
         case 'learning':
-          addNode('learning_style', { x: 250, y: 200 })
-          addNode('subject_focus', { x: 250, y: 300 })
-          addNode('difficulty_level', { x: 250, y: 400 })
+          addNode('learning_style', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
+          addNode('subject_focus', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
+          addNode('difficulty_level', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
           break
         case 'writing':
-          addNode('communication_style', { x: 250, y: 200 })
-          addNode('output_format', { x: 250, y: 300 })
-          addNode('creative_thinking', { x: 250, y: 400 })
+          addNode('communication_style', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
+          addNode('output_format', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
+          addNode('creative_thinking', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
           break
         case 'work':
-          addNode('context_setting', { x: 250, y: 200 })
-          addNode('output_format', { x: 250, y: 300 })
-          addNode('prioritization', { x: 250, y: 400 })
+          addNode('context_setting', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
+          addNode('output_format', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
+          addNode('prioritization', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
           break
         case 'personal':
-          addNode('communication_style', { x: 250, y: 200 })
-          addNode('personality_traits', { x: 250, y: 300 })
-          addNode('goal_setting', { x: 250, y: 400 })
+          addNode('communication_style', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
+          addNode('personality_traits', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
+          addNode('goal_setting', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+          nodeIndex++
           break
       }
     }
 
     // 根据经验水平添加相应的块
     if (config.expertise?.value === 'beginner') {
-      addNode('step_by_step', { x: 450, y: 200 })
+      addNode('step_by_step', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+      nodeIndex++
     }
     else if (config.expertise?.value === 'advanced') {
-      addNode('conditional_logic', { x: 450, y: 200 })
+      addNode('conditional_logic', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+      nodeIndex++
     }
 
     // 如果有具体目标且不是personal类型（personal类型已经添加过goal_setting），添加目标设置块
     if (config.goal?.value && config.purpose?.value !== 'personal') {
-      addNode('goal_setting', { x: 450, y: 300 })
+      addNode('goal_setting', { x: startX + nodeIndex * nodeSpacing, y: baseY })
+      nodeIndex++
     }
 
     // 等待节点创建完成后填充内容

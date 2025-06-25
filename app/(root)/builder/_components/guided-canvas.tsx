@@ -167,8 +167,8 @@ export function GuidedCanvas({ step, onStepComplete: _onStepComplete }: GuidedCa
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           nodeTypes={nodeTypes}
-          fitView
-          fitViewOptions={{ padding: 0.2 }}
+          defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+          fitView={false}
           proOptions={{ hideAttribution: true }}
           {...interactionConfig}
         >
