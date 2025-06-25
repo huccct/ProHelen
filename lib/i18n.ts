@@ -33,6 +33,7 @@ const resources = {
         title: 'Title',
         description: 'Description',
         tags: 'Tags',
+        reset: 'Reset',
       },
       // 认证
       auth: {
@@ -64,7 +65,7 @@ const resources = {
             smartInstructions: 'Smart Instructions',
             llmCustomization: 'LLM Customization',
           },
-          description: 'Transform how you interact with AI through <strong>intuitive visual building blocks</strong>. Create sophisticated LLM instructions without coding, deploy instantly, and achieve precise AI behavior control with our revolutionary drag-and-drop interface.',
+          description: 'Transform how you interact with AI through <strong>intuitive visual building blocks</strong>. Create sophisticated LLM instructions without coding.',
           startCreating: 'Start Creating',
           exploreTemplates: 'Explore Templates',
           features: {
@@ -170,7 +171,44 @@ const resources = {
         cta: {
           title: 'Ready to start your <span class="text-primary font-medium">AI prompt design</span> journey?',
           startButton: 'Start Creating Now',
-          subtitle: 'No registration required, free to get started',
+          subtitle: 'Create your account and start building intelligent AI prompts',
+        },
+        // Playground Section
+        playground: {
+          title: 'Try it Live',
+          subtitle: 'Experience the power of visual prompt building with our interactive playground',
+          canvas: {
+            title: 'Interactive Canvas',
+            subtitle: 'Drag blocks around, click to select, and see how easy prompt building can be',
+          },
+          selectAll: 'Select All',
+          generatePrompt: 'Generate Prompt',
+          preview: {
+            selectedBlocks: 'Selected Blocks',
+            noBlocks: 'Click blocks on the canvas to select them',
+            generatedPrompt: 'Generated Prompt',
+            clickGenerate: 'Select blocks and click "Generate Prompt" to see the result',
+            instructions: 'Try This',
+            dragInstruction: 'Drag blocks to rearrange',
+            doubleClickInstruction: 'Double-click to edit content',
+            generateInstruction: 'Click "Generate" to see prompt',
+          },
+          tryFullBuilder: 'Try Full Builder',
+          fullBuilderDescription: 'Access 15+ block types, templates, and advanced features',
+          demoBlocks: {
+            roleDefinition: {
+              title: 'Role Definition',
+              content: 'You are a helpful AI writing assistant with expertise in content creation and storytelling.',
+            },
+            contextSetting: {
+              title: 'Context Setting',
+              content: 'Focus on creating engaging, informative blog content for a general audience interested in technology and innovation.',
+            },
+            communicationStyle: {
+              title: 'Communication Style',
+              content: 'Write in a friendly, conversational tone that is approachable yet professional, using clear examples and avoiding jargon.',
+            },
+          },
         },
         // Footer
         footer: {
@@ -1113,6 +1151,7 @@ const resources = {
         title: '标题',
         description: '描述',
         tags: '标签',
+        reset: '重置',
       },
       // 认证
       auth: {
@@ -1144,7 +1183,7 @@ const resources = {
             smartInstructions: '智能指令',
             llmCustomization: 'LLM 定制',
           },
-          description: '通过<strong>直观的可视化构建模块</strong>改变您与 AI 的交互方式。无需编码即可创建复杂的 LLM 指令，即时部署，通过我们革命性的拖放界面实现精确的 AI 行为控制。',
+          description: '通过<strong>直观的可视化构建模块</strong>改变您与 AI 的交互方式。无需编码即可创建复杂的 LLM 指令。',
           startCreating: '开始创建',
           exploreTemplates: '探索模板',
           features: {
@@ -1250,7 +1289,44 @@ const resources = {
         cta: {
           title: '准备好开始你的<span class="text-primary font-medium"> AI 提示设计</span>之旅了吗？',
           startButton: '立即开始创建',
-          subtitle: '无需注册，免费开始使用',
+          subtitle: '创建账户，开始构建智能 AI 提示词',
+        },
+        // Playground Section
+        playground: {
+          title: '立即体验',
+          subtitle: '通过交互式演示体验可视化提示词构建的强大功能',
+          canvas: {
+            title: '交互式画布',
+            subtitle: '拖拽移动块，点击选择，体验提示词构建的简易性',
+          },
+          selectAll: '全选',
+          generatePrompt: '生成提示词',
+          preview: {
+            selectedBlocks: '已选择的块',
+            noBlocks: '点击画布上的块来选择它们',
+            generatedPrompt: '生成的提示词',
+            clickGenerate: '选择块并点击"生成提示词"查看结果',
+            instructions: '试试这些',
+            dragInstruction: '拖拽块来重新排列',
+            doubleClickInstruction: '双击编辑内容',
+            generateInstruction: '点击"生成"查看提示词',
+          },
+          tryFullBuilder: '试用完整构建器',
+          fullBuilderDescription: '体验15+种块类型、模板和高级功能',
+          demoBlocks: {
+            roleDefinition: {
+              title: '角色定义',
+              content: '你是一个在内容创作和叙事方面有专业知识的有用AI写作助手。',
+            },
+            contextSetting: {
+              title: '上下文设置',
+              content: '专注于为对技术和创新感兴趣的普通受众创建引人入胜、信息丰富的博客内容。',
+            },
+            communicationStyle: {
+              title: '沟通风格',
+              content: '以友好、对话式的语调写作，既平易近人又专业，使用清晰的例子并避免专业术语。',
+            },
+          },
         },
         // Footer
         footer: {

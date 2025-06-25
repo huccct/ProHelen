@@ -1,12 +1,13 @@
 'use client'
 
+import { InteractivePlayground } from '@/components/interactive-playground'
 import { NavBar } from '@/components/nav-bar'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { IoArrowForward, IoCheckmarkCircle, IoCodeSlash, IoCube, IoDocumentText, IoFlash, IoGrid, IoInfinite, IoRocket, IoSparkles, IoTime, IoTrendingUp } from 'react-icons/io5'
+import { IoArrowForward, IoSparkles } from 'react-icons/io5'
 
 // 丝滑的缓动函数
 const easeInOutQuint = [0.86, 0, 0.07, 1]
@@ -137,7 +138,6 @@ function ConnectedLinesBackground() {
           animate={{ pathLength: 1 }}
           transition={{ duration: 5, delay: 1, ease: easeInOutQuint }}
         />
-
       </svg>
     </div>
   )
@@ -156,249 +156,301 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-16">
-        {/* Hero Section - 极简但有冲击力 */}
+        {/* Hero Section - 极简版 */}
         <motion.section
-          className="min-h-screen flex flex-col justify-center py-20"
+          className="min-h-screen flex flex-col justify-center py-20 relative"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, ease: easeInOutQuint }}
         >
-          <div className="max-w-6xl mx-auto text-center space-y-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: easeInOutQuint }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border/50 bg-background/50 backdrop-blur-sm"
-            >
-              <IoSparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm text-muted-foreground">{t('home.hero.badge')}</span>
-            </motion.div>
+          {/* 交叉网格线条背景 */}
+          <motion.div
+            className="absolute inset-0 overflow-hidden pointer-events-none opacity-30"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.3 }}
+            transition={{ duration: 2, delay: 0.5 }}
+          >
+            {/* 水平虚线 */}
+            <div
+              className="absolute top-[20%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"
+              style={{ backgroundImage: 'repeating-linear-gradient(to right, transparent, transparent 8px, currentColor 8px, currentColor 16px)' }}
+            />
 
+            <div
+              className="absolute top-[80%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"
+              style={{ backgroundImage: 'repeating-linear-gradient(to right, transparent, transparent 8px, currentColor 8px, currentColor 16px)' }}
+            />
+            {/* 垂直虚线 */}
+            <div
+              className="absolute left-[15%] top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-primary/30 to-transparent"
+              style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 8px, currentColor 8px, currentColor 16px)' }}
+            />
+
+            <div
+              className="absolute right-[15%] top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-primary/30 to-transparent"
+              style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 8px, currentColor 8px, currentColor 16px)' }}
+            />
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10">
             <motion.h1
               className="text-5xl sm:text-6xl md:text-7xl font-light leading-tight"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2, ease: easeInOutQuint }}
             >
-              <div className="text-foreground mb-4">
+              <div className="text-foreground mb-6">
                 {t('home.hero.mainTitle')}
               </div>
-              <div className="text-2xl sm:text-3xl md:text-4xl text-muted-foreground font-light tracking-wide">
+              <div className="text-2xl sm:text-3xl md:text-4xl text-muted-foreground font-light tracking-wide relative">
+                {/* 装饰方括号 - 参考 VoidZero */}
+                <span className="text-border/60 mr-2">[</span>
                 <TypewriterEffect />
+                <span className="text-border/60 ml-2">]</span>
+
+                {/* 装饰线条 - 参考 Kree8 */}
+                <div className="absolute -inset-4 border border-primary/20 rounded-lg pointer-events-none" />
               </div>
             </motion.h1>
 
             <motion.p
-              className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+              className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: easeInOutQuint }}
               dangerouslySetInnerHTML={{ __html: t('home.hero.description') }}
             />
 
-            {/* 核心价值主张 - 三个关键点 */}
+            {/* 单一明确的CTA */}
             <motion.div
-              className="flex flex-col sm:flex-row justify-center gap-8 pt-8"
-              initial={{ opacity: 0, y: 40 }}
+              className="pt-8 relative"
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6, ease: easeInOutQuint }}
             >
-              <div className="flex items-center gap-3 text-foreground">
-                <IoCheckmarkCircle className="w-5 h-5 text-green-500" />
-                <span>{t('home.hero.features.noCoding')}</span>
-              </div>
-              <div className="flex items-center gap-3 text-foreground">
-                <IoTime className="w-5 h-5 text-blue-500" />
-                <span>{t('home.hero.features.realTime')}</span>
-              </div>
-              <div className="flex items-center gap-3 text-foreground">
-                <IoInfinite className="w-5 h-5 text-purple-500" />
-                <span>{t('home.hero.features.freeStart')}</span>
-              </div>
+              {/* 装饰线条 - 参考网站设计 */}
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-24 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+              <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+
+              {/* 侧边装饰 */}
+              <div className="absolute top-1/2 -left-8 transform -translate-y-1/2 w-4 h-[1px] bg-primary/40" />
+              <div className="absolute top-1/2 -right-8 transform -translate-y-1/2 w-4 h-[1px] bg-primary/40" />
+
+              <Button
+                size="lg"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-12 py-6 text-xl rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden group hover:scale-105 hover:shadow-2xl hover:shadow-primary/25 active:scale-95"
+                onClick={() => router.push('/builder')}
+              >
+                {/* 动态光泽扫过效果 */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+
+                {/* 按钮内部装饰线条 */}
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+                {/* 脉动边框效果 */}
+                <div className="absolute inset-0 rounded-xl border border-white/20 opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
+
+                <IoSparkles className="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform duration-300" />
+                <span className="relative z-10">{t('home.hero.startCreating')}</span>
+                <IoArrowForward className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform duration-300" />
+              </Button>
+            </motion.div>
+          </div>
+        </motion.section>
+
+        {/* Interactive Playground - 核心体验 */}
+        <motion.section
+          className="py-24"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: easeInOutQuint }}
+          viewport={{ once: true }}
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <motion.h2
+                className="text-4xl sm:text-5xl font-light mb-6"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.1, ease: easeInOutQuint }}
+                viewport={{ once: true }}
+              >
+                {t('home.playground.title')}
+              </motion.h2>
+
+              <motion.p
+                className="text-xl text-muted-foreground max-w-3xl mx-auto"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: easeInOutQuint }}
+                viewport={{ once: true }}
+              >
+                {t('home.playground.subtitle')}
+              </motion.p>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.3, ease: easeInOutQuint }}
+              viewport={{ once: true }}
+            >
+              <InteractivePlayground />
+            </motion.div>
+          </div>
+        </motion.section>
+
+        {/* Features Section - 核心价值 */}
+        <motion.section
+          className="py-24 border-t border-border/30"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: easeInOutQuint }}
+          viewport={{ once: true }}
+        >
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: easeInOutQuint }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl sm:text-4xl font-light mb-4">
+                {t('home.features.title')}
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                {t('home.features.subtitle')}
+              </p>
             </motion.div>
 
-            {/* CTA按钮 */}
+            <div className="grid md:grid-cols-3 gap-8">
+              <motion.div
+                className="text-center space-y-4"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.1, ease: easeInOutQuint }}
+                viewport={{ once: true }}
+              >
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
+                  <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="6" height="6" rx="1" />
+                    <rect x="15" y="3" width="6" height="6" rx="1" />
+                    <rect x="9" y="15" width="6" height="6" rx="1" />
+                    <path d="M6 9v6M18 9v6M12 3v6M12 15v6" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-medium">{t('home.features.visualBlockSystem.title')}</h3>
+                <p className="text-muted-foreground">{t('home.features.visualBlockSystem.description')}</p>
+              </motion.div>
+
+              <motion.div
+                className="text-center space-y-4"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: easeInOutQuint }}
+                viewport={{ once: true }}
+              >
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
+                  <IoArrowForward className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-medium">{t('home.features.realTimePreview.title')}</h3>
+                <p className="text-muted-foreground">{t('home.features.realTimePreview.description')}</p>
+              </motion.div>
+
+              <motion.div
+                className="text-center space-y-4"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3, ease: easeInOutQuint }}
+                viewport={{ once: true }}
+              >
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
+                  <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="16" rx="2" />
+                    <path d="M8 8h8M8 12h6M8 16h4" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-medium">{t('home.features.smartTemplates.title')}</h3>
+                <p className="text-muted-foreground">{t('home.features.smartTemplates.description')}</p>
+              </motion.div>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* CTA Section - 最终转化 */}
+        <motion.section
+          className="py-24"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: easeInOutQuint }}
+          viewport={{ once: true }}
+        >
+          <div className="max-w-4xl mx-auto text-center space-y-8">
             <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center pt-8"
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8, ease: easeInOutQuint }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: easeInOutQuint }}
+              viewport={{ once: true }}
+            >
+              <h2
+                className="text-3xl sm:text-4xl font-light mb-4"
+                dangerouslySetInnerHTML={{ __html: t('home.cta.title') }}
+              />
+              <p className="text-lg text-muted-foreground mb-8">
+                {t('home.cta.subtitle')}
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: easeInOutQuint }}
+              viewport={{ once: true }}
             >
               <Button
                 size="lg"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl transition-colors cursor-pointer"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-12 py-6 text-xl rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden group hover:scale-105 hover:shadow-2xl hover:shadow-primary/25 active:scale-95"
                 onClick={() => router.push('/builder')}
               >
-                <IoSparkles className="w-5 h-5 mr-2" />
-                {t('home.hero.startCreating')}
-                <IoArrowForward className="w-5 h-5 ml-2" />
+                {/* 动态光泽扫过效果 */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+
+                {/* 按钮内部装饰线条 */}
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+                {/* 脉动边框效果 */}
+                <div className="absolute inset-0 rounded-xl border border-white/20 opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
+
+                <IoSparkles className="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform duration-300" />
+                <span className="relative z-10">{t('home.cta.startButton')}</span>
+                <IoArrowForward className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
 
               <Button
                 size="lg"
                 variant="outline"
-                className="px-8 py-6 text-lg rounded-xl transition-colors cursor-pointer"
+                className="px-12 py-6 text-xl rounded-xl transition-colors cursor-pointer"
                 onClick={() => router.push('/templates')}
               >
-                <IoDocumentText className="w-5 h-5 mr-2" />
-                {t('home.hero.exploreTemplates')}
+                {t('nav.templates')}
               </Button>
             </motion.div>
-
-            {/* 快速统计 - 突出效果 */}
-            <motion.div
-              className="grid grid-cols-3 gap-8 pt-16 max-w-2xl mx-auto"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1, ease: easeInOutQuint }}
-            >
-              <div className="text-center">
-                <div className="text-3xl font-light text-primary mb-1">15+</div>
-                <div className="text-sm text-muted-foreground">{t('home.stats.blockTypes.label')}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-light text-primary mb-1">50+</div>
-                <div className="text-sm text-muted-foreground">{t('home.stats.templates.label')}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-light text-primary mb-1">{'< 2s'}</div>
-                <div className="text-sm text-muted-foreground">{t('home.stats.responseTime.label')}</div>
-              </div>
-            </motion.div>
           </div>
         </motion.section>
 
-        {/* 功能展示 - 极简卡片 */}
-        <motion.section
-          className="py-24"
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: easeInOutQuint }}
-          viewport={{ once: true }}
-        >
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-light mb-4">{t('home.features.title')}</h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                {t('home.features.subtitle')}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: IoGrid,
-                  title: t('home.features.visualBlockSystem.title'),
-                  description: t('home.features.visualBlockSystem.description'),
-                },
-                {
-                  icon: IoFlash,
-                  title: t('home.features.realTimePreview.title'),
-                  description: t('home.features.realTimePreview.description'),
-                },
-                {
-                  icon: IoRocket,
-                  title: t('home.features.exportIntegration.title'),
-                  description: t('home.features.exportIntegration.description'),
-                },
-              ].map((feature, index) => (
-                <motion.div
-                  key={index}
-                  className="p-6 rounded-2xl border border-border/50 bg-background/50 backdrop-blur-sm hover:border-border transition-all duration-300 group"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1, ease: easeInOutQuint }}
-                  viewport={{ once: true }}
-                >
-                  <feature.icon className="w-8 h-8 text-primary mb-4" />
-                  <h3 className="text-xl font-medium mb-3 text-foreground">{feature.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.section>
-
-        {/* 使用场景 - 简洁展示 */}
-        <motion.section
-          className="py-24"
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: easeInOutQuint }}
-          viewport={{ once: true }}
-        >
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-light mb-4">{t('home.useCases.title')}</h2>
-            <p className="text-xl text-muted-foreground mb-16">
-              {t('home.useCases.subtitle')}
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { icon: IoCodeSlash, title: t('home.useCases.developers.title') },
-                { icon: IoDocumentText, title: t('home.useCases.contentCreators.title') },
-                { icon: IoSparkles, title: t('home.useCases.educators.title') },
-                { icon: IoRocket, title: t('home.useCases.startups.title') },
-                { icon: IoTrendingUp, title: t('home.useCases.analysts.title') },
-                { icon: IoCube, title: t('home.useCases.researchers.title') },
-              ].map((useCase, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-center gap-3 p-4 rounded-xl border border-border/30 bg-background/30 hover:bg-background/60 transition-colors duration-300"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.05, ease: easeInOutQuint }}
-                  viewport={{ once: true }}
-                >
-                  <useCase.icon className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-sm font-medium text-foreground">{useCase.title}</span>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.section>
-
-        {/* 最终CTA - 强有力的结尾 */}
-        <motion.section
-          className="py-24 text-center"
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: easeInOutQuint }}
-          viewport={{ once: true }}
-        >
-          <div className="max-w-3xl mx-auto space-y-8">
-            <h2 className="text-4xl font-light" dangerouslySetInnerHTML={{ __html: t('home.cta.title') }} />
-
-            <Button
-              size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 px-12 py-6 text-xl rounded-xl transition-colors cursor-pointer"
-              onClick={() => router.push('/builder')}
-            >
-              {t('home.cta.startButton')}
-              <IoArrowForward className="w-6 h-6 ml-3" />
-            </Button>
-
-            <p className="text-muted-foreground">
-              {t('home.cta.subtitle')}
-            </p>
-          </div>
-        </motion.section>
-
-        {/* 简洁的页脚 */}
+        {/* 简洁页脚 */}
         <motion.footer
-          className="py-12 border-t border-border/30"
+          className="py-16 text-center border-t border-border/30"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8, ease: easeInOutQuint }}
           viewport={{ once: true }}
         >
-          <div className="flex justify-center gap-8 text-sm text-muted-foreground">
-            <span className="hover:text-foreground transition-colors cursor-pointer">{t('home.footer.privacy')}</span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">{t('home.footer.terms')}</span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">{t('home.footer.documentation')}</span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">{t('home.footer.support')}</span>
-          </div>
-          <div className="text-center mt-4 text-muted-foreground text-sm">
+          <div className="text-muted-foreground text-sm">
             {t('home.footer.copyright')}
           </div>
         </motion.footer>
