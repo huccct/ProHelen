@@ -27,7 +27,6 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
   const updateNodeData = useBuilderStore(state => state.updateNodeData)
   const deleteNode = useBuilderStore(state => state.deleteNode)
 
-  // 同步外部数据的编辑状态
   useEffect(() => {
     setIsEditing(data.isEditing || false)
   }, [data.isEditing])
@@ -35,43 +34,42 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
   const handleSave = () => {
     updateNodeData(id, { content: editContent, isEditing: false })
     setIsEditing(false)
-    // Save时允许弹出Smart Suggestions，所以不阻止事件冒泡
   }
 
   const handleCancel = (e: React.MouseEvent) => {
-    e.stopPropagation() // 阻止事件冒泡，避免弹出Smart Suggestions
+    e.stopPropagation()
     setEditContent(data.content || '')
     updateNodeData(id, { isEditing: false })
     setIsEditing(false)
   }
 
   const handleEdit = (e?: React.MouseEvent) => {
-    e?.stopPropagation() // 阻止事件冒泡
+    e?.stopPropagation()
     setEditContent(data.content || '')
     updateNodeData(id, { isEditing: true })
     setIsEditing(true)
   }
 
   const handleDoubleClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // 阻止事件冒泡
+    e.stopPropagation()
     if (!isEditing) {
       handleEdit()
     }
   }
 
   const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation() // 阻止事件冒泡
+    e.stopPropagation()
     setShowDeleteConfirm(true)
   }
 
   const confirmDelete = (e: React.MouseEvent) => {
-    e.stopPropagation() // 阻止事件冒泡
+    e.stopPropagation()
     deleteNode(id)
     setShowDeleteConfirm(false)
   }
 
   const handleCancelDelete = (e: React.MouseEvent) => {
-    e.stopPropagation() // 阻止事件冒泡
+    e.stopPropagation()
     setShowDeleteConfirm(false)
   }
 
@@ -106,7 +104,7 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
         />
       )}
 
-      {/* Target Handle - 用于接收连接，但不可交互 */}
+      {/* Target Handle - for receiving connections, but not interactive */}
       <Handle
         type="target"
         position={Position.Top}
@@ -218,7 +216,7 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
         )}
       </div>
 
-      {/* Source Handle - 用于发出连接，但不可交互 */}
+      {/* Source Handle - for emitting connections, but not interactive */}
       <Handle
         type="source"
         position={Position.Bottom}
@@ -259,33 +257,31 @@ export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
 
 function getNodeIcon(type: string) {
   const iconMap: Record<string, React.ReactElement> = {
-    // Core blocks
+    // 1. Role & Context - Define AI's identity, background, and working environment
     role_definition: <Users className="h-4 w-4" />,
     context_setting: <Globe className="h-4 w-4" />,
-    output_format: <FileText className="h-4 w-4" />,
-
-    // Educational blocks
-    goal_setting: <Target className="h-4 w-4" />,
-    learning_style: <Brain className="h-4 w-4" />,
+    personality_traits: <Heart className="h-4 w-4" />,
     subject_focus: <Book className="h-4 w-4" />,
-    difficulty_level: <BarChart3 className="h-4 w-4" />,
 
-    // Behavior blocks
+    // 2. Interaction Style - Communication patterns and feedback approaches
     communication_style: <MessageCircle className="h-4 w-4" />,
     feedback_style: <MessageSquare className="h-4 w-4" />,
-    personality_traits: <Heart className="h-4 w-4" />,
+    learning_style: <Brain className="h-4 w-4" />,
 
-    // Workflow blocks
-    step_by_step: <Workflow className="h-4 w-4" />,
+    // 3. Task Control - Goal setting, output formatting, and task management
+    goal_setting: <Target className="h-4 w-4" />,
+    output_format: <FileText className="h-4 w-4" />,
+    difficulty_level: <BarChart3 className="h-4 w-4" />,
     time_management: <Clock className="h-4 w-4" />,
     prioritization: <Star className="h-4 w-4" />,
 
-    // Advanced blocks
-    conditional_logic: <Filter className="h-4 w-4" />,
+    // 4. Thinking & Logic - Cognitive processes and reasoning patterns
     creative_thinking: <Lightbulb className="h-4 w-4" />,
+    step_by_step: <Workflow className="h-4 w-4" />,
+    conditional_logic: <Filter className="h-4 w-4" />,
     error_handling: <AlertTriangle className="h-4 w-4" />,
 
-    // Planning blocks
+    // 5. Skills & Development - Professional growth and skill assessment
     career_planning: <Compass className="h-4 w-4" />,
     skill_assessment: <CheckCircle className="h-4 w-4" />,
   }
@@ -295,35 +291,33 @@ function getNodeIcon(type: string) {
 
 function getNodeDescription(type: string) {
   const descriptions: Record<string, string> = {
-    // Core blocks
-    role_definition: 'Define assistant role',
-    context_setting: 'Set conversation context',
-    output_format: 'Specify response format',
+    // 1. Role & Context - Define AI's identity, background, and working environment
+    role_definition: 'Define assistant role and expertise',
+    context_setting: 'Set background and work environment',
+    personality_traits: 'Define AI personality traits',
+    subject_focus: 'Specify main topic or domain',
 
-    // Educational blocks
-    goal_setting: 'Learning objectives',
-    learning_style: 'Learning preferences',
-    subject_focus: 'Subject guidance',
-    difficulty_level: 'Complexity setting',
+    // 2. Interaction Style - Communication patterns and feedback approaches
+    communication_style: 'Define tone and communication style',
+    feedback_style: 'How to provide feedback',
+    learning_style: 'Teaching approach and methodology',
 
-    // Behavior blocks
-    communication_style: 'Tone and approach',
-    feedback_style: 'Feedback preferences',
-    personality_traits: 'Assistant personality',
+    // 3. Task Control - Goal setting, output formatting, and task management
+    goal_setting: 'Set goals and expected outcomes',
+    output_format: 'Define response format',
+    difficulty_level: 'Specify complexity level',
+    time_management: 'Consider time constraints',
+    prioritization: 'Define task priorities',
 
-    // Workflow blocks
-    step_by_step: 'Sequential process',
-    time_management: 'Time planning',
-    prioritization: 'Priority setting',
+    // 4. Thinking & Logic - Cognitive processes and reasoning patterns
+    creative_thinking: 'Activate creative thinking',
+    step_by_step: 'Provide step-by-step reasoning',
+    conditional_logic: 'Define conditional responses',
+    error_handling: 'Error response strategy',
 
-    // Advanced blocks
-    conditional_logic: 'If-then logic',
-    creative_thinking: 'Creative solutions',
-    error_handling: 'Error management',
-
-    // Planning blocks
-    career_planning: 'Career development',
-    skill_assessment: 'Skills evaluation',
+    // 5. Skills & Development - Professional growth and skill assessment
+    career_planning: 'Career development guidance',
+    skill_assessment: 'Skills evaluation and positioning',
   }
 
   return descriptions[type] || 'Custom instruction'
@@ -331,33 +325,31 @@ function getNodeDescription(type: string) {
 
 function getNodeColors(type: string) {
   const colorMap: Record<string, { gradient: string, border: string }> = {
-    // Core blocks - Blue theme
+    // 1. Role & Context - Blue theme for foundational identity blocks
     role_definition: { gradient: 'from-blue-500 to-blue-600', border: 'border-blue-500/30' },
     context_setting: { gradient: 'from-purple-500 to-purple-600', border: 'border-purple-500/30' },
-    output_format: { gradient: 'from-green-500 to-green-600', border: 'border-green-500/30' },
-
-    // Educational blocks - Warm theme
-    goal_setting: { gradient: 'from-orange-500 to-orange-600', border: 'border-orange-500/30' },
-    learning_style: { gradient: 'from-pink-500 to-pink-600', border: 'border-pink-500/30' },
+    personality_traits: { gradient: 'from-rose-500 to-rose-600', border: 'border-rose-500/30' },
     subject_focus: { gradient: 'from-indigo-500 to-indigo-600', border: 'border-indigo-500/30' },
-    difficulty_level: { gradient: 'from-yellow-500 to-yellow-600', border: 'border-yellow-500/30' },
 
-    // Behavior blocks - Cool theme
+    // 2. Interaction Style - Cool theme for communication patterns
     communication_style: { gradient: 'from-teal-500 to-teal-600', border: 'border-teal-500/30' },
     feedback_style: { gradient: 'from-cyan-500 to-cyan-600', border: 'border-cyan-500/30' },
-    personality_traits: { gradient: 'from-rose-500 to-rose-600', border: 'border-rose-500/30' },
+    learning_style: { gradient: 'from-pink-500 to-pink-600', border: 'border-pink-500/30' },
 
-    // Workflow blocks - Purple theme
-    step_by_step: { gradient: 'from-violet-500 to-violet-600', border: 'border-violet-500/30' },
+    // 3. Task Control - Warm theme for task management and output control
+    goal_setting: { gradient: 'from-orange-500 to-orange-600', border: 'border-orange-500/30' },
+    output_format: { gradient: 'from-green-500 to-green-600', border: 'border-green-500/30' },
+    difficulty_level: { gradient: 'from-yellow-500 to-yellow-600', border: 'border-yellow-500/30' },
     time_management: { gradient: 'from-amber-500 to-amber-600', border: 'border-amber-500/30' },
     prioritization: { gradient: 'from-emerald-500 to-emerald-600', border: 'border-emerald-500/30' },
 
-    // Advanced blocks - Gray theme
-    conditional_logic: { gradient: 'from-gray-500 to-gray-600', border: 'border-gray-500/30' },
+    // 4. Thinking & Logic - Purple theme for cognitive processes
     creative_thinking: { gradient: 'from-lime-500 to-lime-600', border: 'border-lime-500/30' },
+    step_by_step: { gradient: 'from-violet-500 to-violet-600', border: 'border-violet-500/30' },
+    conditional_logic: { gradient: 'from-gray-500 to-gray-600', border: 'border-gray-500/30' },
     error_handling: { gradient: 'from-red-500 to-red-600', border: 'border-red-500/30' },
 
-    // Planning blocks - Blue-indigo theme
+    // 5. Skills & Development - Blue-indigo theme for professional growth
     career_planning: { gradient: 'from-blue-600 to-indigo-600', border: 'border-blue-600/30' },
     skill_assessment: { gradient: 'from-green-600 to-teal-600', border: 'border-green-600/30' },
   }

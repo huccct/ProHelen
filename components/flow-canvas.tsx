@@ -53,7 +53,7 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
     addQuickStartTemplate,
   } = useBuilderStore(useShallow(selector))
 
-  // 缓存currentBlocks计算，只在节点类型真正变化时重新计算
+  // cache the current blocks calculation, only recalculate when the node types actually change
   const currentBlocks = useMemo(() => {
     return nodes
       .map((node: any) => (node.data as any)?.type)
@@ -112,7 +112,6 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                   setShowRecommendations(true)
                 }}
                 nodeTypes={nodeTypes}
-                // 禁用手动连接功能
                 nodesConnectable={false}
                 colorMode={theme === 'light' ? 'light' : 'dark'}
                 defaultViewport={{ x: 0, y: 0, zoom: 1 }}
@@ -134,13 +133,14 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                 )}
 
                 <Panel position="top-left" className="left-4 top-4">
-                  <div className="flex gap-2" data-tour="add-block">
+                  <div className="flex gap-2">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           variant="outline"
                           onClick={() => setOpen(true)}
                           className="transition-colors cursor-pointer"
+                          data-tour="add-block"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           {t('builder.components.flowCanvas.addBlock')}

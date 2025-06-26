@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { useBuilderStore } from '@/store/builder'
-import { Copy, RefreshCw, Send, Sparkles, Square, User } from 'lucide-react'
+import { Copy, RefreshCw, RotateCcw, Send, Sparkles, Square, User } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
@@ -88,7 +88,6 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
 
       const data = await response.json()
 
-      // Remove typing indicator and add real response
       setMessages((prev) => {
         const filtered = prev.filter(msg => !msg.isTyping)
         const assistantMessage: Message = {
@@ -102,7 +101,6 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
     }
     catch (error: any) {
       if (error.name === 'AbortError') {
-        // Request was aborted, remove typing indicator
         setMessages(prev => prev.filter(msg => !msg.isTyping))
         return
       }
@@ -115,7 +113,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
         const errorMessage: Message = {
           id: `error-${Date.now()}`,
           role: 'assistant',
-          content: '抱歉，发生了错误。请稍后重试。',
+          content: 'Sorry, there was an error. Please try again.',
           timestamp: new Date(),
         }
         return [...filtered, errorMessage]
@@ -129,10 +127,9 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
     }
   }, [preview.system])
 
-  // Auto-send a test message when modal opens
+  // Auto-send a test message when modal opens (only if no message history exists)
   useEffect(() => {
-    if (open && !hasAutoSent && preview.system.trim()) {
-      // 使用用户的原始问题或默认测试消息
+    if (open && !hasAutoSent && preview.system.trim() && messages.length === 0) {
       const autoTestMessage = originalUserQuery.trim() || t('builder.modals.testPrompt.autoMessage')
 
       const userMessage: Message = {
@@ -148,17 +145,17 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
       // Send auto message
       sendMessage(autoTestMessage, [])
     }
-  }, [open, hasAutoSent, preview.system, originalUserQuery, t, sendMessage])
+  }, [open, hasAutoSent, preview.system, originalUserQuery, t, sendMessage, messages.length])
 
-  // Reset when modal closes
+  // Reset when modal closes (preserve message history)
   useEffect(() => {
     if (!open) {
       setHasAutoSent(false)
-      setMessages([])
       setInput('')
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
       }
+      // Note: We preserve messages history for better UX
     }
   }, [open])
 
@@ -214,7 +211,6 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
     await sendMessage(userMessage.content, historyUpToUser.slice(0, -1))
   }
 
-  // 输入框自适应高度
   const adjustTextareaHeight = () => {
     if (inputRef.current) {
       inputRef.current.style.height = 'auto'
@@ -230,13 +226,32 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-background border-border text-foreground max-w-4xl h-[85vh] flex flex-col p-0">
         {/* Header */}
-        <DialogHeader className="p-6 pb-4 border-b border-border/50">
-          <DialogTitle className="text-xl font-semibold flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg">
-              <Sparkles className="h-5 w-5 text-primary" />
-            </div>
-            {t('builder.modals.testPrompt.title')}
-          </DialogTitle>
+        <DialogHeader className="p-8 pb-4 border-b border-border/50">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-xl font-semibold flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg">
+                <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+              {t('builder.modals.testPrompt.title')}
+            </DialogTitle>
+
+            {messages.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setMessages([])
+                  setHasAutoSent(false)
+                  setInput('')
+                  // Let the useEffect handle auto-sending to avoid duplication
+                }}
+                className="cursor-pointer flex items-center gap-2 hover:bg-muted/50 transition-colors"
+              >
+                <RotateCcw className="h-4 w-4" />
+                {t('builder.modals.testPrompt.newConversation')}
+              </Button>
+            )}
+          </div>
         </DialogHeader>
 
         {/* Messages Area */}

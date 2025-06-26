@@ -23,7 +23,6 @@ export interface InstructionFormData {
   description: string
   category: string
   tags: string[]
-  isFavorite: boolean
 }
 
 export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: SaveInstructionModalProps) {
@@ -35,7 +34,6 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: 
     setDescription: state.setDescription,
   })))
 
-  // 保存弹框打开时的原始值，用于取消时恢复
   const [originalValues, setOriginalValues] = useState({ title: '', description: '' })
 
   const [formData, setFormData] = useState<InstructionFormData>({
@@ -43,11 +41,9 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: 
     description: '',
     category: t('builder.modals.saveInstruction.categories.general'),
     tags: [],
-    isFavorite: false,
   })
   const [tagInput, setTagInput] = useState('')
 
-  // 当弹框打开时，同步 store 中的最新值到表单，并保存原始值
   useEffect(() => {
     if (open) {
       setOriginalValues({ title, description })
@@ -64,7 +60,6 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: 
     if (!formData.title.trim())
       return
 
-    // 只有在保存时才同步到 store
     setTitle(formData.title)
     setDescription(formData.description)
 
@@ -72,7 +67,6 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: 
   }
 
   const handleCancel = () => {
-    // 恢复到弹框打开时的原始值
     setTitle(originalValues.title)
     setDescription(originalValues.description)
     onOpenChange(false)
@@ -80,12 +74,10 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: 
 
   const handleTitleChange = (value: string) => {
     setFormData(prev => ({ ...prev, title: value }))
-    // 移除实时同步到 store
   }
 
   const handleDescriptionChange = (value: string) => {
     setFormData(prev => ({ ...prev, description: value }))
-    // 移除实时同步到 store
   }
 
   const handleAddTag = () => {
@@ -106,7 +98,7 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: 
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault()
       handleAddTag()
     }
@@ -168,12 +160,12 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: 
               value={formData.category}
               onValueChange={value => setFormData(prev => ({ ...prev, category: value }))}
             >
-              <SelectTrigger className="bg-card border-border text-foreground">
+              <SelectTrigger className="bg-card border-border text-foreground cursor-pointer">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-card border-border">
                 {categories.map((category, index) => (
-                  <SelectItem key={index} value={category} className="text-foreground hover:bg-muted">
+                  <SelectItem key={index} value={category} className="text-foreground hover:bg-muted cursor-pointer">
                     {category}
                   </SelectItem>
                 ))}
@@ -185,36 +177,44 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: 
             <Label htmlFor="tags" className="text-foreground">
               {t('builder.modals.saveInstruction.tagsLabel')}
             </Label>
-            <div className="flex gap-2">
-              <Input
-                id="tags"
-                placeholder={t('builder.modals.saveInstruction.tagsPlaceholder')}
-                value={tagInput}
-                onChange={e => setTagInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="bg-card border-border text-foreground flex-1"
-              />
-              <Button
-                type="button"
-                onClick={handleAddTag}
-                variant="outline"
-                className="cursor-pointer"
-              >
-                {t('builder.modals.saveInstruction.addTag')}
-              </Button>
+            <div className="space-y-2">
+              <div className="relative">
+                <Input
+                  id="tags"
+                  placeholder={t('builder.modals.saveInstruction.tagsPlaceholderImproved')}
+                  value={tagInput}
+                  onChange={e => setTagInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="bg-card border-border text-foreground pr-16"
+                />
+                {tagInput.trim() && (
+                  <Button
+                    type="button"
+                    onClick={handleAddTag}
+                    size="sm"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-3 bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer"
+                  >
+                    {t('builder.modals.saveInstruction.addTag')}
+                  </Button>
+                )}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {t('builder.modals.saveInstruction.tagsHint')}
+              </div>
             </div>
             {formData.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {formData.tags.map(tag => (
                   <span
                     key={tag}
-                    className="bg-card text-foreground px-2 py-1 rounded-full text-sm flex items-center gap-1 border border-border"
+                    className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm flex items-center gap-2 border border-primary/20 hover:bg-primary/20 transition-colors"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="text-muted-foreground hover:text-foreground ml-1"
+                      className="text-primary/60 hover:text-primary hover:bg-primary/20 w-4 h-4 rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                      title={t('builder.modals.saveInstruction.removeTag')}
                     >
                       ×
                     </button>
@@ -222,19 +222,6 @@ export function SaveInstructionModal({ open, onOpenChange, onSave, isLoading }: 
                 ))}
               </div>
             )}
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="favorite"
-              checked={formData.isFavorite}
-              onChange={e => setFormData(prev => ({ ...prev, isFavorite: e.target.checked }))}
-              className="rounded border-border bg-card"
-            />
-            <Label htmlFor="favorite" className="text-foreground text-sm">
-              {t('builder.modals.saveInstruction.addToFavorites')}
-            </Label>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

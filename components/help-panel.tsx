@@ -61,30 +61,51 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
 
   const blockGuide = [
     {
-      category: t('builder.components.helpPanel.blockGuide.core.title'),
-      description: t('builder.components.helpPanel.blockGuide.core.description'),
+      category: t('builder.components.helpPanel.blockGuide.roleContext.title'),
+      description: t('builder.components.helpPanel.blockGuide.roleContext.description'),
       blocks: [
-        { name: t('builder.components.helpPanel.blockGuide.core.blocks.roleDefinition.name'), use: t('builder.components.helpPanel.blockGuide.core.blocks.roleDefinition.use') },
-        { name: t('builder.components.helpPanel.blockGuide.core.blocks.contextSetting.name'), use: t('builder.components.helpPanel.blockGuide.core.blocks.contextSetting.use') },
-        { name: t('builder.components.helpPanel.blockGuide.core.blocks.outputFormat.name'), use: t('builder.components.helpPanel.blockGuide.core.blocks.outputFormat.use') },
+        { name: t('builder.components.helpPanel.blockGuide.roleContext.blocks.roleDefinition.name'), use: t('builder.components.helpPanel.blockGuide.roleContext.blocks.roleDefinition.use') },
+        { name: t('builder.components.helpPanel.blockGuide.roleContext.blocks.contextSetting.name'), use: t('builder.components.helpPanel.blockGuide.roleContext.blocks.contextSetting.use') },
+        { name: t('builder.components.helpPanel.blockGuide.roleContext.blocks.personalityTraits.name'), use: t('builder.components.helpPanel.blockGuide.roleContext.blocks.personalityTraits.use') },
+        { name: t('builder.components.helpPanel.blockGuide.roleContext.blocks.subjectFocus.name'), use: t('builder.components.helpPanel.blockGuide.roleContext.blocks.subjectFocus.use') },
       ],
     },
     {
-      category: t('builder.components.helpPanel.blockGuide.educational.title'),
-      description: t('builder.components.helpPanel.blockGuide.educational.description'),
+      category: t('builder.components.helpPanel.blockGuide.interactionStyle.title'),
+      description: t('builder.components.helpPanel.blockGuide.interactionStyle.description'),
       blocks: [
-        { name: t('builder.components.helpPanel.blockGuide.educational.blocks.goalSetting.name'), use: t('builder.components.helpPanel.blockGuide.educational.blocks.goalSetting.use') },
-        { name: t('builder.components.helpPanel.blockGuide.educational.blocks.learningStyle.name'), use: t('builder.components.helpPanel.blockGuide.educational.blocks.learningStyle.use') },
-        { name: t('builder.components.helpPanel.blockGuide.educational.blocks.subjectFocus.name'), use: t('builder.components.helpPanel.blockGuide.educational.blocks.subjectFocus.use') },
+        { name: t('builder.components.helpPanel.blockGuide.interactionStyle.blocks.communicationStyle.name'), use: t('builder.components.helpPanel.blockGuide.interactionStyle.blocks.communicationStyle.use') },
+        { name: t('builder.components.helpPanel.blockGuide.interactionStyle.blocks.feedbackStyle.name'), use: t('builder.components.helpPanel.blockGuide.interactionStyle.blocks.feedbackStyle.use') },
+        { name: t('builder.components.helpPanel.blockGuide.interactionStyle.blocks.learningStyle.name'), use: t('builder.components.helpPanel.blockGuide.interactionStyle.blocks.learningStyle.use') },
       ],
     },
     {
-      category: t('builder.components.helpPanel.blockGuide.behavior.title'),
-      description: t('builder.components.helpPanel.blockGuide.behavior.description'),
+      category: t('builder.components.helpPanel.blockGuide.taskControl.title'),
+      description: t('builder.components.helpPanel.blockGuide.taskControl.description'),
       blocks: [
-        { name: t('builder.components.helpPanel.blockGuide.behavior.blocks.communicationStyle.name'), use: t('builder.components.helpPanel.blockGuide.behavior.blocks.communicationStyle.use') },
-        { name: t('builder.components.helpPanel.blockGuide.behavior.blocks.feedbackStyle.name'), use: t('builder.components.helpPanel.blockGuide.behavior.blocks.feedbackStyle.use') },
-        { name: t('builder.components.helpPanel.blockGuide.behavior.blocks.personality.name'), use: t('builder.components.helpPanel.blockGuide.behavior.blocks.personality.use') },
+        { name: t('builder.components.helpPanel.blockGuide.taskControl.blocks.goalSetting.name'), use: t('builder.components.helpPanel.blockGuide.taskControl.blocks.goalSetting.use') },
+        { name: t('builder.components.helpPanel.blockGuide.taskControl.blocks.outputFormat.name'), use: t('builder.components.helpPanel.blockGuide.taskControl.blocks.outputFormat.use') },
+        { name: t('builder.components.helpPanel.blockGuide.taskControl.blocks.difficultyLevel.name'), use: t('builder.components.helpPanel.blockGuide.taskControl.blocks.difficultyLevel.use') },
+        { name: t('builder.components.helpPanel.blockGuide.taskControl.blocks.timeManagement.name'), use: t('builder.components.helpPanel.blockGuide.taskControl.blocks.timeManagement.use') },
+        { name: t('builder.components.helpPanel.blockGuide.taskControl.blocks.prioritization.name'), use: t('builder.components.helpPanel.blockGuide.taskControl.blocks.prioritization.use') },
+      ],
+    },
+    {
+      category: t('builder.components.helpPanel.blockGuide.thinkingLogic.title'),
+      description: t('builder.components.helpPanel.blockGuide.thinkingLogic.description'),
+      blocks: [
+        { name: t('builder.components.helpPanel.blockGuide.thinkingLogic.blocks.stepByStep.name'), use: t('builder.components.helpPanel.blockGuide.thinkingLogic.blocks.stepByStep.use') },
+        { name: t('builder.components.helpPanel.blockGuide.thinkingLogic.blocks.conditionalLogic.name'), use: t('builder.components.helpPanel.blockGuide.thinkingLogic.blocks.conditionalLogic.use') },
+        { name: t('builder.components.helpPanel.blockGuide.thinkingLogic.blocks.creativeThinking.name'), use: t('builder.components.helpPanel.blockGuide.thinkingLogic.blocks.creativeThinking.use') },
+        { name: t('builder.components.helpPanel.blockGuide.thinkingLogic.blocks.errorHandling.name'), use: t('builder.components.helpPanel.blockGuide.thinkingLogic.blocks.errorHandling.use') },
+      ],
+    },
+    {
+      category: t('builder.components.helpPanel.blockGuide.skillsDevelopment.title'),
+      description: t('builder.components.helpPanel.blockGuide.skillsDevelopment.description'),
+      blocks: [
+        { name: t('builder.components.helpPanel.blockGuide.skillsDevelopment.blocks.careerPlanning.name'), use: t('builder.components.helpPanel.blockGuide.skillsDevelopment.blocks.careerPlanning.use') },
+        { name: t('builder.components.helpPanel.blockGuide.skillsDevelopment.blocks.skillAssessment.name'), use: t('builder.components.helpPanel.blockGuide.skillsDevelopment.blocks.skillAssessment.use') },
       ],
     },
   ]

@@ -78,7 +78,6 @@ export function Toolbar({ className }: ToolbarProps) {
     }
   }
 
-  // Listen for fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement)

@@ -38,13 +38,13 @@ interface BlockType {
 }
 
 const blockTypes: BlockType[] = [
-  // Core Instruction Blocks
+  // 1. Role & Context - Define AI's identity, background, and working environment
   {
     type: 'role_definition',
     labelKey: 'builder.components.blockPicker.blocks.roleDefinition.label',
     icon: <Users className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.roleDefinition.description',
-    category: 'core',
+    category: 'role_context',
     color: 'from-blue-500 to-blue-600',
   },
   {
@@ -52,59 +52,33 @@ const blockTypes: BlockType[] = [
     labelKey: 'builder.components.blockPicker.blocks.contextSetting.label',
     icon: <Globe className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.contextSetting.description',
-    category: 'core',
+    category: 'role_context',
     color: 'from-purple-500 to-purple-600',
   },
   {
-    type: 'output_format',
-    labelKey: 'builder.components.blockPicker.blocks.outputFormat.label',
-    icon: <FileText className="h-5 w-5" />,
-    descriptionKey: 'builder.components.blockPicker.blocks.outputFormat.description',
-    category: 'core',
-    color: 'from-green-500 to-green-600',
-  },
-
-  // Educational Blocks
-  {
-    type: 'goal_setting',
-    labelKey: 'builder.components.blockPicker.blocks.goalSetting.label',
-    icon: <Target className="h-5 w-5" />,
-    descriptionKey: 'builder.components.blockPicker.blocks.goalSetting.description',
-    category: 'education',
-    color: 'from-orange-500 to-orange-600',
-  },
-  {
-    type: 'learning_style',
-    labelKey: 'builder.components.blockPicker.blocks.learningStyle.label',
-    icon: <Brain className="h-5 w-5" />,
-    descriptionKey: 'builder.components.blockPicker.blocks.learningStyle.description',
-    category: 'education',
-    color: 'from-pink-500 to-pink-600',
+    type: 'personality_traits',
+    labelKey: 'builder.components.blockPicker.blocks.personalityTraits.label',
+    icon: <Heart className="h-5 w-5" />,
+    descriptionKey: 'builder.components.blockPicker.blocks.personalityTraits.description',
+    category: 'role_context',
+    color: 'from-rose-500 to-rose-600',
   },
   {
     type: 'subject_focus',
     labelKey: 'builder.components.blockPicker.blocks.subjectFocus.label',
     icon: <Book className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.subjectFocus.description',
-    category: 'education',
+    category: 'role_context',
     color: 'from-indigo-500 to-indigo-600',
   },
-  {
-    type: 'difficulty_level',
-    labelKey: 'builder.components.blockPicker.blocks.difficultyLevel.label',
-    icon: <BarChart3 className="h-5 w-5" />,
-    descriptionKey: 'builder.components.blockPicker.blocks.difficultyLevel.description',
-    category: 'education',
-    color: 'from-yellow-500 to-yellow-600',
-  },
 
-  // Behavior & Style Blocks
+  // 2. Interaction Style - Communication patterns and feedback approaches
   {
     type: 'communication_style',
     labelKey: 'builder.components.blockPicker.blocks.communicationStyle.label',
     icon: <MessageCircle className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.communicationStyle.description',
-    category: 'behavior',
+    category: 'interaction_style',
     color: 'from-teal-500 to-teal-600',
   },
   {
@@ -112,33 +86,49 @@ const blockTypes: BlockType[] = [
     labelKey: 'builder.components.blockPicker.blocks.feedbackStyle.label',
     icon: <MessageSquare className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.feedbackStyle.description',
-    category: 'behavior',
+    category: 'interaction_style',
     color: 'from-cyan-500 to-cyan-600',
   },
   {
-    type: 'personality_traits',
-    labelKey: 'builder.components.blockPicker.blocks.personalityTraits.label',
-    icon: <Heart className="h-5 w-5" />,
-    descriptionKey: 'builder.components.blockPicker.blocks.personalityTraits.description',
-    category: 'behavior',
-    color: 'from-rose-500 to-rose-600',
+    type: 'learning_style',
+    labelKey: 'builder.components.blockPicker.blocks.learningStyle.label',
+    icon: <Brain className="h-5 w-5" />,
+    descriptionKey: 'builder.components.blockPicker.blocks.learningStyle.description',
+    category: 'interaction_style',
+    color: 'from-pink-500 to-pink-600',
   },
 
-  // Workflow & Process Blocks
+  // 3. Task Control - Goal setting, output formatting, and task management
   {
-    type: 'step_by_step',
-    labelKey: 'builder.components.blockPicker.blocks.stepByStep.label',
-    icon: <Workflow className="h-5 w-5" />,
-    descriptionKey: 'builder.components.blockPicker.blocks.stepByStep.description',
-    category: 'workflow',
-    color: 'from-violet-500 to-violet-600',
+    type: 'goal_setting',
+    labelKey: 'builder.components.blockPicker.blocks.goalSetting.label',
+    icon: <Target className="h-5 w-5" />,
+    descriptionKey: 'builder.components.blockPicker.blocks.goalSetting.description',
+    category: 'task_control',
+    color: 'from-orange-500 to-orange-600',
+  },
+  {
+    type: 'output_format',
+    labelKey: 'builder.components.blockPicker.blocks.outputFormat.label',
+    icon: <FileText className="h-5 w-5" />,
+    descriptionKey: 'builder.components.blockPicker.blocks.outputFormat.description',
+    category: 'task_control',
+    color: 'from-green-500 to-green-600',
+  },
+  {
+    type: 'difficulty_level',
+    labelKey: 'builder.components.blockPicker.blocks.difficultyLevel.label',
+    icon: <BarChart3 className="h-5 w-5" />,
+    descriptionKey: 'builder.components.blockPicker.blocks.difficultyLevel.description',
+    category: 'task_control',
+    color: 'from-yellow-500 to-yellow-600',
   },
   {
     type: 'time_management',
     labelKey: 'builder.components.blockPicker.blocks.timeManagement.label',
     icon: <Clock className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.timeManagement.description',
-    category: 'workflow',
+    category: 'task_control',
     color: 'from-amber-500 to-amber-600',
   },
   {
@@ -146,43 +136,51 @@ const blockTypes: BlockType[] = [
     labelKey: 'builder.components.blockPicker.blocks.prioritization.label',
     icon: <Star className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.prioritization.description',
-    category: 'workflow',
+    category: 'task_control',
     color: 'from-emerald-500 to-emerald-600',
   },
 
-  // Advanced Features
-  {
-    type: 'conditional_logic',
-    labelKey: 'builder.components.blockPicker.blocks.conditionalLogic.label',
-    icon: <Filter className="h-5 w-5" />,
-    descriptionKey: 'builder.components.blockPicker.blocks.conditionalLogic.description',
-    category: 'advanced',
-    color: 'from-gray-500 to-gray-600',
-  },
+  // 4. Thinking & Logic - Cognitive processes and reasoning patterns
   {
     type: 'creative_thinking',
     labelKey: 'builder.components.blockPicker.blocks.creativeThinking.label',
     icon: <Lightbulb className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.creativeThinking.description',
-    category: 'advanced',
+    category: 'thinking_logic',
     color: 'from-lime-500 to-lime-600',
+  },
+  {
+    type: 'step_by_step',
+    labelKey: 'builder.components.blockPicker.blocks.stepByStep.label',
+    icon: <Workflow className="h-5 w-5" />,
+    descriptionKey: 'builder.components.blockPicker.blocks.stepByStep.description',
+    category: 'thinking_logic',
+    color: 'from-violet-500 to-violet-600',
+  },
+  {
+    type: 'conditional_logic',
+    labelKey: 'builder.components.blockPicker.blocks.conditionalLogic.label',
+    icon: <Filter className="h-5 w-5" />,
+    descriptionKey: 'builder.components.blockPicker.blocks.conditionalLogic.description',
+    category: 'thinking_logic',
+    color: 'from-gray-500 to-gray-600',
   },
   {
     type: 'error_handling',
     labelKey: 'builder.components.blockPicker.blocks.errorHandling.label',
     icon: <AlertTriangle className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.errorHandling.description',
-    category: 'advanced',
+    category: 'thinking_logic',
     color: 'from-red-500 to-red-600',
   },
 
-  // Career & Life Planning
+  // 5. Skills & Development - Professional growth and skill assessment
   {
     type: 'career_planning',
     labelKey: 'builder.components.blockPicker.blocks.careerPlanning.label',
     icon: <Compass className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.careerPlanning.description',
-    category: 'planning',
+    category: 'skills_development',
     color: 'from-blue-600 to-indigo-600',
   },
   {
@@ -190,7 +188,7 @@ const blockTypes: BlockType[] = [
     labelKey: 'builder.components.blockPicker.blocks.skillAssessment.label',
     icon: <CheckCircle className="h-5 w-5" />,
     descriptionKey: 'builder.components.blockPicker.blocks.skillAssessment.description',
-    category: 'planning',
+    category: 'skills_development',
     color: 'from-green-600 to-teal-600',
   },
 ]
@@ -198,15 +196,13 @@ const blockTypes: BlockType[] = [
 const categories = [
   { id: 'quick-start', labelKey: 'builder.components.blockPicker.categories.quickStart' },
   { id: 'all', labelKey: 'builder.components.blockPicker.categories.all' },
-  { id: 'core', labelKey: 'builder.components.blockPicker.categories.core' },
-  { id: 'education', labelKey: 'builder.components.blockPicker.categories.education' },
-  { id: 'behavior', labelKey: 'builder.components.blockPicker.categories.behavior' },
-  { id: 'workflow', labelKey: 'builder.components.blockPicker.categories.workflow' },
-  { id: 'advanced', labelKey: 'builder.components.blockPicker.categories.advanced' },
-  { id: 'planning', labelKey: 'builder.components.blockPicker.categories.planning' },
+  { id: 'role_context', labelKey: 'builder.components.blockPicker.categories.roleContext' },
+  { id: 'interaction_style', labelKey: 'builder.components.blockPicker.categories.interactionStyle' },
+  { id: 'task_control', labelKey: 'builder.components.blockPicker.categories.taskControl' },
+  { id: 'thinking_logic', labelKey: 'builder.components.blockPicker.categories.thinkingLogic' },
+  { id: 'skills_development', labelKey: 'builder.components.blockPicker.categories.skillsDevelopment' },
 ]
 
-// 预设组合模板
 const quickStartTemplates = [
   {
     id: 'tutor',
@@ -263,15 +259,13 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode, onAddQuickStar
 
   const handleQuickStartTemplate = (template: typeof quickStartTemplates[0]) => {
     if (onAddQuickStartTemplate) {
-      // 使用新的预填充内容方法
       onAddQuickStartTemplate(template.id)
     }
     else {
-      // 回退到原有逻辑：按顺序添加模板中的所有块
       template.blocks.forEach((blockType, index) => {
         setTimeout(() => {
           onAddNode(blockType)
-        }, index * 200) // 每200ms添加一个块，让用户看到构建过程
+        }, index * 200)
       })
     }
     onOpenChange(false)
@@ -294,23 +288,20 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode, onAddQuickStar
       return
 
     const containerWidth = container.clientWidth
-    const scrollAmount = Math.min(containerWidth * 0.8, 280) // 滚动80%的可见宽度，最多280px
+    const scrollAmount = Math.min(containerWidth * 0.8, 280)
     const newScrollLeft = direction === 'left'
       ? Math.max(0, container.scrollLeft - scrollAmount)
       : Math.min(container.scrollWidth - containerWidth, container.scrollLeft + scrollAmount)
 
-    // 使用更丝滑的滚动动画
     container.scrollTo({
       left: newScrollLeft,
       behavior: 'smooth',
     })
 
-    // 滚动完成后更新按钮状态
     setTimeout(checkScrollButtons, 350)
   }
 
   useEffect(() => {
-    // 延迟检查，确保DOM完全渲染
     const timer = setTimeout(() => {
       checkScrollButtons()
     }, 100)
@@ -329,7 +320,6 @@ export function BlockPickerModal({ open, onOpenChange, onAddNode, onAddQuickStar
     return () => clearTimeout(timer)
   }, [open])
 
-  // 当选中的分类改变时也重新检查
   useEffect(() => {
     const timer = setTimeout(checkScrollButtons, 50)
     return () => clearTimeout(timer)

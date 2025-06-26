@@ -537,7 +537,6 @@ const resources = {
             previous: 'Previous',
             next: 'Next',
             createInstructions: 'Create Instructions',
-            stepOf: 'Step {{current}} of {{total}}',
           },
         },
         // Prompt分析器
@@ -607,18 +606,7 @@ const resources = {
             defaultAssistantTitle: 'AI Assistant',
           },
         },
-        // 简化的预览面板
-        promptPreview: {
-          title: 'AI Instructions Preview',
-          blocksConfigured: '{{count}} blocks configured',
-          helpText: 'Add instruction blocks to see AI instructions preview',
-          actions: {
-            copy: 'Copy',
-            export: 'Export',
-            test: 'Try it',
-            save: 'Save',
-          },
-        },
+
         // 引导模式
         guided: {
           welcome: {
@@ -686,12 +674,11 @@ const resources = {
             categories: {
               quickStart: 'Quick Start',
               all: 'All',
-              core: 'Core',
-              education: 'Education',
-              behavior: 'Behavior',
-              workflow: 'Workflow',
-              advanced: 'Advanced',
-              planning: 'Planning',
+              roleContext: 'Role & Context',
+              interactionStyle: 'Interaction Style',
+              taskControl: 'Task Control',
+              thinkingLogic: 'Thinking & Logic',
+              skillsDevelopment: 'Skills & Development',
             },
             quickStart: {
               title: 'Get Started Quickly',
@@ -824,10 +811,7 @@ const resources = {
               ctrlY: 'Ctrl+Y',
             },
           },
-          nodeSidebar: {
-            title: 'Blocks',
-            addBlock: 'Add a new block',
-          },
+
           promptPreview: {
             title: 'Prompt Preview',
             formats: {
@@ -853,7 +837,7 @@ const resources = {
               systemPromptCopied: 'System prompt copied to clipboard!',
             },
             stats: {
-              blocks: '{{count}} block{{s}} configured',
+              blocks: '{{count}} block(s) configured',
               tokens: '~{{count}} tokens',
             },
             helpText: 'Add instruction blocks to your canvas to see the generated prompt here',
@@ -887,6 +871,69 @@ const resources = {
             smartSuggestionsTooltip: 'Get AI-powered block recommendations',
             smartSuggestionsTooltipSub: 'Based on your current blocks and best practices',
           },
+          valueDemonstration: {
+            title: 'Your Blocks in Action',
+            subtitle: 'See how each building block improves your AI\'s responses',
+            showImpact: 'See Impact',
+            beforeTitle: 'Basic AI Response',
+            afterTitle: 'Enhanced Response',
+            beforeResponse: 'Hello! I\'m an AI assistant. How can I help you today? I\'ll do my best to provide useful information.',
+            afterDescription: 'Using {{count}} building blocks, AI provides more professional, personalized, and structured responses',
+            blocksTitle: 'Specific Improvements from Each Block',
+            cumulativeTitle: 'Cumulative Effect',
+            blocksCount: '{{count}} building blocks',
+            qualityImprovement: '{{percent}}% quality improvement',
+            professionalFeatures: '{{count}} professional features',
+            addMoreBlocks: 'Continue adding more blocks',
+            keepBuilding: 'Each additional block makes your AI more precise and professional',
+            blocks: {
+              roleDefinition: 'Role Definition',
+              communicationStyle: 'Communication Style',
+              outputFormat: 'Output Format',
+              learningStyle: 'Learning Style',
+              goalSetting: 'Goal Setting',
+              contextSetting: 'Context Setting',
+            },
+            improvements: {
+              personalizedApproach: 'Personalized approach and professional identity',
+              professionalTone: 'Consistent communication style',
+              structuredFormat: 'Organized and structured responses',
+              structuredLearning: 'Adapted learning methodology',
+              goalOriented: 'Clear goal-oriented guidance',
+              tailoredResponse: 'Tailored response approach',
+              proactiveSupport: 'Proactive support and suggestions',
+              actionableContent: 'Actionable and practical content',
+            },
+            before: 'Before adding:',
+            after: 'After adding:',
+            blockExamples: {
+              roleDefinition: {
+                before: 'Hello, how can I help you?',
+                afterTemplate: 'As your {{role}}, I will provide professional assistance.',
+                afterWithIdentity: '{{identity}}. I will provide professional assistance.',
+              },
+              communicationStyle: {
+                before: 'I will try my best to help you solve the problem.',
+                afterTemplate: 'I will communicate with you using {{style}} approach, ensuring you can easily understand my responses.',
+              },
+              outputFormat: {
+                before: 'Here is some information...',
+                afterTemplate: '📋 Structured Response\n{{format}}\n\nMaking information clearer and easier to understand.',
+              },
+              learningStyle: {
+                before: 'This concept is...',
+                afterTemplate: '📚 Learning Method: {{style}}\nI will adjust my explanation based on your learning preferences.',
+              },
+              goalSetting: {
+                before: 'I will try my best to answer your questions.',
+                afterTemplate: '🎯 Goal-Oriented: {{goal}}\nLet\'s work step by step to achieve your objectives.',
+              },
+              contextSetting: {
+                before: 'I am here to help you.',
+                afterTemplate: '🔧 Context Background: {{context}}\nBased on this background, I can provide more accurate advice.',
+              },
+            },
+          },
           helpPanel: {
             title: 'ProHelen Help Center',
             tabs: {
@@ -916,9 +963,9 @@ const resources = {
               },
             },
             blockGuide: {
-              core: {
-                title: 'Core Blocks',
-                description: 'Essential building blocks for any instruction',
+              roleContext: {
+                title: 'Role & Context',
+                description: 'AI identity, background, and work environment',
                 blocks: {
                   roleDefinition: {
                     name: 'Role Definition',
@@ -928,23 +975,9 @@ const resources = {
                     name: 'Context Setting',
                     use: 'Provide background information and situational context',
                   },
-                  outputFormat: {
-                    name: 'Output Format',
-                    use: 'Specify how you want the AI to structure its responses',
-                  },
-                },
-              },
-              educational: {
-                title: 'Educational Blocks',
-                description: 'Specialized for learning and teaching scenarios',
-                blocks: {
-                  goalSetting: {
-                    name: 'Goal Setting',
-                    use: 'Define specific learning objectives and outcomes',
-                  },
-                  learningStyle: {
-                    name: 'Learning Style',
-                    use: 'Customize approach based on learning preferences',
+                  personalityTraits: {
+                    name: 'Personality',
+                    use: 'Add character traits and behavioral patterns',
                   },
                   subjectFocus: {
                     name: 'Subject Focus',
@@ -952,9 +985,9 @@ const resources = {
                   },
                 },
               },
-              behavior: {
-                title: 'Behavior Blocks',
-                description: 'Control AI personality and communication style',
+              interactionStyle: {
+                title: 'Interaction Style',
+                description: 'Communication patterns and feedback approaches',
                 blocks: {
                   communicationStyle: {
                     name: 'Communication Style',
@@ -964,9 +997,71 @@ const resources = {
                     name: 'Feedback Style',
                     use: 'Define how the AI should provide corrections and guidance',
                   },
-                  personality: {
-                    name: 'Personality',
-                    use: 'Add character traits and behavioral patterns',
+                  learningStyle: {
+                    name: 'Learning Style',
+                    use: 'Customize approach based on learning preferences',
+                  },
+                },
+              },
+              taskControl: {
+                title: 'Task Control',
+                description: 'Goal setting, output formatting, and task management',
+                blocks: {
+                  goalSetting: {
+                    name: 'Goal Setting',
+                    use: 'Define specific learning objectives and outcomes',
+                  },
+                  outputFormat: {
+                    name: 'Output Format',
+                    use: 'Specify how you want the AI to structure its responses',
+                  },
+                  difficultyLevel: {
+                    name: 'Difficulty Level',
+                    use: 'Set appropriate complexity level',
+                  },
+                  timeManagement: {
+                    name: 'Time Management',
+                    use: 'Plan study schedule and timing',
+                  },
+                  prioritization: {
+                    name: 'Prioritization',
+                    use: 'Set priorities and importance levels',
+                  },
+                },
+              },
+              thinkingLogic: {
+                title: 'Thinking & Logic',
+                description: 'Cognitive processes and reasoning patterns',
+                blocks: {
+                  stepByStep: {
+                    name: 'Step-by-Step',
+                    use: 'Break down into sequential steps',
+                  },
+                  conditionalLogic: {
+                    name: 'Conditional Logic',
+                    use: 'Add if-then conditional responses',
+                  },
+                  creativeThinking: {
+                    name: 'Creative Thinking',
+                    use: 'Encourage creative problem solving',
+                  },
+                  errorHandling: {
+                    name: 'Error Handling',
+                    use: 'Handle mistakes and corrections',
+                  },
+                },
+              },
+              skillsDevelopment: {
+                title: 'Skills & Development',
+                description: 'Professional growth and skill assessment',
+                blocks: {
+                  careerPlanning: {
+                    name: 'Career Planning',
+                    use: 'Career development guidance',
+                  },
+                  skillAssessment: {
+                    name: 'Skill Assessment',
+                    use: 'Evaluate current skills and gaps',
                   },
                 },
               },
@@ -1061,6 +1156,7 @@ const resources = {
             progress: {
               step: 'Step',
               of: 'of',
+              steps: '',
             },
             buttons: {
               skip: 'Skip Tour',
@@ -1096,48 +1192,18 @@ const resources = {
             nextSteps: 'Next Steps',
             checklist: {
               roleDefinition: 'Define AI assistant role and expertise',
+              contextSetting: 'Provide context and background information',
               outputFormat: 'Specify response format and structure',
+              taskClarity: 'Define clear tasks and objectives',
               communicationStyle: 'Set tone and communication approach',
               customContent: 'Add custom content to most blocks',
+              examples: 'Include examples and demonstrations',
               diversity: 'Use blocks from different categories',
             },
             suggestions: {
-              addCore: 'Start by adding core blocks like Role Definition and Output Format to establish your AI\'s foundation.',
-              addContent: 'Great foundation! Now customize your blocks with specific content to make your AI more effective.',
-              refine: 'Almost perfect! Fine-tune your content and consider adding advanced blocks for specialized behaviors.',
-            },
-          },
-          valueDemonstration: {
-            title: 'See Your Impact',
-            subtitle: 'You\'ve built',
-            blocksUsed: 'blocks! Here\'s how they improve AI responses',
-            showImpact: 'See Impact',
-            scenario: 'Scenario',
-            beforeTitle: 'Basic Prompt',
-            afterTitle: 'ProHelen Enhanced',
-            userInput: 'User Input',
-            aiResponse: 'AI Response',
-            enhancedPrompt: 'Enhanced with ProHelen',
-            genericResponse: 'Generic, basic response',
-            optimizedResponse: 'Specific, actionable response',
-            keyImprovements: 'Key Improvements',
-            addMoreBlocks: 'Add More Blocks',
-            keepBuilding: 'Keep building to unlock even better results!',
-            scenarios: {
-              tutoring: 'Learning & Tutoring',
-              business: 'Business & Professional',
-              general: 'General Assistance',
-            },
-            improvements: {
-              personalizedApproach: 'Personalized learning approach',
-              structuredLearning: 'Structured step-by-step guidance',
-              clearRoadmap: 'Clear progress roadmap',
-              professionalTone: 'Professional business tone',
-              structuredFormat: 'Well-structured format',
-              actionableContent: 'Actionable content',
-              tailoredResponse: 'Tailored to your needs',
-              proactiveSupport: 'Proactive assistance',
-              goalOriented: 'Goal-oriented approach',
+              addCore: 'Start by adding essential blocks: Role Definition, Context Setting, and Output Format to establish your AI\'s foundation.',
+              addContent: 'Great foundation! Now add specific content and examples to make your AI more effective and reliable.',
+              refine: 'Excellent progress! Fine-tune your content, add more examples, and consider advanced blocks for specialized behaviors.',
             },
           },
         },
@@ -1158,8 +1224,10 @@ const resources = {
             categoryLabel: 'Category',
             tagsLabel: 'Tags',
             tagsPlaceholder: 'Add tags...',
+            tagsPlaceholderImproved: 'Type and press Enter or comma to add tags...',
+            tagsHint: '💡 Tip: Press Enter or comma to quickly add tags',
             addTag: 'Add',
-            addToFavorites: 'Add to favorites',
+            removeTag: 'Remove tag',
             cancel: 'Cancel',
             save: 'Save Instruction',
             saving: 'Saving...',
@@ -1209,6 +1277,7 @@ const resources = {
             inputPlaceholder: 'Type your test message... (Press Enter to send)',
             autoMessage: 'Hello! Please introduce yourself and explain what you can help me with.',
             copied: 'Copied to clipboard',
+            newConversation: 'New Conversation',
           },
         },
       },
@@ -1747,7 +1816,6 @@ const resources = {
             previous: '上一步',
             next: '下一步',
             createInstructions: '创建指令',
-            stepOf: '第 {{current}} 步，共 {{total}} 步',
           },
         },
         // Prompt分析器
@@ -1896,12 +1964,11 @@ const resources = {
             categories: {
               quickStart: '快速开始',
               all: '全部',
-              core: '核心',
-              education: '教育',
-              behavior: '行为',
-              workflow: '工作流',
-              advanced: '高级',
-              planning: '规划',
+              roleContext: '角色与上下文',
+              interactionStyle: '交互风格',
+              taskControl: '任务控制',
+              thinkingLogic: '思维与逻辑',
+              skillsDevelopment: '技能发展',
             },
             quickStart: {
               title: '快速开始',
@@ -2034,10 +2101,7 @@ const resources = {
               ctrlY: 'Ctrl+Y',
             },
           },
-          nodeSidebar: {
-            title: '模块',
-            addBlock: '添加新模块',
-          },
+
           promptPreview: {
             title: '提示预览',
             formats: {
@@ -2097,6 +2161,70 @@ const resources = {
             smartSuggestionsTooltip: '获取AI驱动的块推荐',
             smartSuggestionsTooltipSub: '基于您当前的块和最佳实践',
           },
+          valueDemonstration: {
+            title: '构建块效果展示',
+            subtitle: '看看你添加的每个构建块如何改进AI的回答质量',
+            showImpact: '查看效果',
+            beforeTitle: '基础AI回答',
+            afterTitle: '优化后的AI回答',
+            beforeResponse: '你好！我是AI助手，有什么可以帮助你的吗？我会尽力为你提供有用的信息和建议。',
+            afterDescription: '使用 {{count}} 个构建块后，AI提供更专业、个性化和结构化的回答',
+            blocksTitle: '每个构建块的具体改进',
+            cumulativeTitle: '累积效果',
+            blocksCount: '{{count}}个构建块',
+            qualityImprovement: '{{percent}}%回答质量提升',
+            professionalFeatures: '{{count}}个专业特性',
+            addMoreBlocks: '继续添加更多构建块',
+            keepBuilding: '每多添加一个构建块，AI的回答就会更加精准和专业',
+            blocks: {
+              roleDefinition: '角色定义',
+              communicationStyle: '沟通风格',
+              outputFormat: '输出格式',
+              learningStyle: '学习风格',
+              goalSetting: '目标设定',
+              contextSetting: '上下文设置',
+            },
+            improvements: {
+              personalizedApproach: '个性化方法和专业身份',
+              professionalTone: '一致的沟通风格',
+              structuredFormat: '组织化和结构化的回答',
+              structuredLearning: '适应性学习方法',
+              goalOriented: '清晰的目标导向指导',
+              tailoredResponse: '定制化回答方法',
+              proactiveSupport: '主动支持和建议',
+              actionableContent: '可操作的实用内容',
+            },
+            before: '添加前:',
+            after: '添加后:',
+            blockExamples: {
+              roleDefinition: {
+                before: '你好，有什么可以帮助你的吗？',
+                afterTemplate: '作为你的{{role}}，我将为你提供专业的帮助。',
+                afterWithIdentity: '{{identity}}。我将为你提供专业的帮助。',
+              },
+              communicationStyle: {
+                before: '我会尽力帮助你解决问题。',
+                afterTemplate: '我会采用{{style}}的方式与你交流，确保你能轻松理解我的回答。',
+              },
+              outputFormat: {
+                before: '这里是一些信息...',
+                afterTemplate: '📋 结构化回答\n{{format}}\n\n让信息更清晰易懂。',
+              },
+              learningStyle: {
+                before: '这个概念是...',
+                afterTemplate: '📚 学习方法：{{style}}\n我会根据你的学习偏好来调整解释方式。',
+              },
+              goalSetting: {
+                before: '我会尽量回答你的问题。',
+                afterTemplate: '🎯 目标导向：{{goal}}\n让我们一步步实现你的目标。',
+              },
+              contextSetting: {
+                before: '我来帮助你。',
+                afterTemplate: '🔧 上下文背景：{{context}}\n基于这个背景，我能提供更准确的建议。',
+              },
+            },
+          },
+
           helpPanel: {
             title: 'ProHelen Help Center',
             tabs: {
@@ -2126,9 +2254,9 @@ const resources = {
               },
             },
             blockGuide: {
-              core: {
-                title: '核心块',
-                description: '任何指令的基本构建块',
+              roleContext: {
+                title: '角色与上下文',
+                description: 'AI身份、背景和工作环境',
                 blocks: {
                   roleDefinition: {
                     name: '角色定义',
@@ -2138,23 +2266,9 @@ const resources = {
                     name: '上下文设置',
                     use: '提供背景信息和情境上下文',
                   },
-                  outputFormat: {
-                    name: '输出格式',
-                    use: '指定您希望AI如何构建其响应',
-                  },
-                },
-              },
-              educational: {
-                title: '教育块',
-                description: '专门用于学习和教学场景',
-                blocks: {
-                  goalSetting: {
-                    name: '目标设定',
-                    use: '定义具体的学习目标和成果',
-                  },
-                  learningStyle: {
-                    name: '学习风格',
-                    use: '基于学习偏好自定义方法',
+                  personalityTraits: {
+                    name: '个性特征',
+                    use: '添加性格特征和行为模式',
                   },
                   subjectFocus: {
                     name: '主题焦点',
@@ -2162,9 +2276,9 @@ const resources = {
                   },
                 },
               },
-              behavior: {
-                title: '行为块',
-                description: '控制AI个性和沟通风格',
+              interactionStyle: {
+                title: '交互风格',
+                description: '沟通模式和反馈方式',
                 blocks: {
                   communicationStyle: {
                     name: '沟通风格',
@@ -2174,9 +2288,71 @@ const resources = {
                     name: '反馈风格',
                     use: '定义AI应如何提供纠正和指导',
                   },
-                  personality: {
-                    name: '个性',
-                    use: '添加性格特征和行为模式',
+                  learningStyle: {
+                    name: '学习风格',
+                    use: '基于学习偏好自定义方法',
+                  },
+                },
+              },
+              taskControl: {
+                title: '任务控制',
+                description: '目标设定、输出格式和任务管理',
+                blocks: {
+                  goalSetting: {
+                    name: '目标设定',
+                    use: '定义具体的学习目标和成果',
+                  },
+                  outputFormat: {
+                    name: '输出格式',
+                    use: '指定您希望AI如何构建其响应',
+                  },
+                  difficultyLevel: {
+                    name: '难度级别',
+                    use: '设置适当的复杂度级别',
+                  },
+                  timeManagement: {
+                    name: '时间管理',
+                    use: '规划学习时间表和时机',
+                  },
+                  prioritization: {
+                    name: '优先级排序',
+                    use: '设置优先级和重要性级别',
+                  },
+                },
+              },
+              thinkingLogic: {
+                title: '思维与逻辑',
+                description: '认知过程和推理模式',
+                blocks: {
+                  stepByStep: {
+                    name: '逐步指导',
+                    use: '分解为顺序步骤',
+                  },
+                  conditionalLogic: {
+                    name: '条件逻辑',
+                    use: '添加if-then条件响应',
+                  },
+                  creativeThinking: {
+                    name: '创意思维',
+                    use: '鼓励创造性问题解决',
+                  },
+                  errorHandling: {
+                    name: '错误处理',
+                    use: '处理错误和纠正',
+                  },
+                },
+              },
+              skillsDevelopment: {
+                title: '技能发展',
+                description: '专业成长和技能评估',
+                blocks: {
+                  careerPlanning: {
+                    name: '职业规划',
+                    use: '职业发展指导',
+                  },
+                  skillAssessment: {
+                    name: '技能评估',
+                    use: '评估当前技能和差距',
                   },
                 },
               },
@@ -2271,6 +2447,7 @@ const resources = {
             progress: {
               step: '第',
               of: '步，共',
+              steps: '步',
             },
             buttons: {
               skip: '跳过教程',
@@ -2306,48 +2483,18 @@ const resources = {
             nextSteps: '下一步',
             checklist: {
               roleDefinition: '定义AI助手角色和专业知识',
+              contextSetting: '提供上下文和背景信息',
               outputFormat: '指定响应格式和结构',
+              taskClarity: '定义明确的任务和目标',
               communicationStyle: '设置语调和沟通方式',
               customContent: '为大部分模块添加自定义内容',
+              examples: '包含示例和演示',
               diversity: '使用不同类别的模块',
             },
             suggestions: {
-              addCore: '首先添加角色定义和输出格式等核心模块来建立AI的基础。',
-              addContent: '基础很好！现在为您的模块自定义具体内容，让您的AI更有效。',
-              refine: '几乎完美！调整您的内容并考虑添加高级模块来实现专门行为。',
-            },
-          },
-          valueDemonstration: {
-            title: '看看效果提升',
-            subtitle: '你已经构建了',
-            blocksUsed: '个模块！看看它们如何改善AI回复',
-            showImpact: '查看效果',
-            scenario: '使用场景',
-            beforeTitle: '普通指令',
-            afterTitle: 'ProHelen增强',
-            userInput: '用户输入',
-            aiResponse: 'AI回复',
-            enhancedPrompt: 'ProHelen增强后',
-            genericResponse: '通用、基础的回复',
-            optimizedResponse: '具体、可执行的回复',
-            keyImprovements: '关键改进',
-            addMoreBlocks: '添加更多模块',
-            keepBuilding: '继续构建来解锁更好的效果！',
-            scenarios: {
-              tutoring: '学习辅导',
-              business: '商务专业',
-              general: '通用助手',
-            },
-            improvements: {
-              personalizedApproach: '个性化学习方法',
-              structuredLearning: '结构化分步指导',
-              clearRoadmap: '清晰的进度路线',
-              professionalTone: '专业商务语调',
-              structuredFormat: '结构化格式',
-              actionableContent: '可执行的内容',
-              tailoredResponse: '针对性回复',
-              proactiveSupport: '主动式协助',
-              goalOriented: '目标导向方法',
+              addCore: '首先添加核心模块：角色定义、上下文设置和输出格式，建立AI的基础框架。',
+              addContent: '基础很好！现在添加具体内容和示例，让您的AI更有效、更可靠。',
+              refine: '进展优秀！优化您的内容，添加更多示例，并考虑高级模块来实现专门行为。',
             },
           },
         },
@@ -2368,8 +2515,10 @@ const resources = {
             categoryLabel: '分类',
             tagsLabel: '标签',
             tagsPlaceholder: '添加标签...',
+            tagsPlaceholderImproved: '输入标签后按 Enter 或逗号添加...',
+            tagsHint: '💡 提示：按 Enter 或逗号快速添加标签',
             addTag: '添加',
-            addToFavorites: '添加到收藏',
+            removeTag: '删除标签',
             cancel: '取消',
             save: '保存指令',
             saving: '保存中...',
@@ -2419,6 +2568,7 @@ const resources = {
             inputPlaceholder: '输入您的测试消息...（按Enter发送）',
             autoMessage: '你好！请介绍一下你自己，并说明你可以帮助我做什么。',
             copied: '已复制到剪贴板',
+            newConversation: '新对话',
           },
         },
       },

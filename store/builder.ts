@@ -66,16 +66,14 @@ interface BuilderActions {
   redo: () => void
   canUndo: () => boolean
   canRedo: () => boolean
-  // 新增：prompt分析相关方法
   applyAnalysisResults: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[], userQuery?: string) => void
   createEnhancementBlocks: (enhancements: SuggestedEnhancement[]) => void
-  // 新增：快速开始模板相关方法
   addQuickStartTemplate: (templateId: string) => void
 }
 
-// 定义块的优先级和连接规则
+// block priority and connection rules
 const BLOCK_PRIORITY: Record<string, number> = {
-  role_definition: 1, // 最高优先级，通常是起始点
+  role_definition: 1,
   context_setting: 2,
   communication_style: 3,
   learning_style: 3,
@@ -88,14 +86,14 @@ const BLOCK_PRIORITY: Record<string, number> = {
   step_by_step: 9,
   time_management: 9,
   prioritization: 9,
-  conditional_logic: 10, // 逻辑性块，较后执行
-  error_handling: 11, // 错误处理，最后执行
+  conditional_logic: 10,
+  error_handling: 11,
   career_planning: 8,
   skill_assessment: 8,
   feedback_style: 8,
 }
 
-// 定义块之间的逻辑连接规则
+// connection rules
 const CONNECTION_RULES: Record<string, string[]> = {
   role_definition: ['context_setting', 'communication_style', 'learning_style'],
   context_setting: ['output_format', 'goal_setting', 'subject_focus'],
@@ -116,7 +114,7 @@ const CONNECTION_RULES: Record<string, string[]> = {
   feedback_style: ['step_by_step', 'error_handling'],
 }
 
-// 添加快速开始模板的预设内容
+// quick start content
 const QUICK_START_CONTENT: Record<string, Record<string, string>> = {
   tutor: {
     role_definition: `You are an expert AI tutor and learning coach. Your role is to:
@@ -233,12 +231,12 @@ Common issues and solutions`,
   },
 }
 
-// 自动连接算法
+// auto connect algorithm
 function autoConnect(nodes: Node<CustomNodeData>[]): Edge[] {
   if (nodes.length === 0)
     return []
 
-  // 按优先级排序节点
+  // sort nodes by priority
   const sortedNodes = [...nodes].sort((a, b) => {
     const priorityA = BLOCK_PRIORITY[a.data.type] || 999
     const priorityB = BLOCK_PRIORITY[b.data.type] || 999
@@ -248,31 +246,30 @@ function autoConnect(nodes: Node<CustomNodeData>[]): Edge[] {
   const edges: Edge[] = []
   const nodeTypes = nodes.map(n => n.data.type)
 
-  // 为每个节点找到合适的连接目标
+  // find suitable connection targets for each node
   sortedNodes.forEach((sourceNode, index) => {
     const sourceType = sourceNode.data.type
     const possibleTargets = CONNECTION_RULES[sourceType] || []
 
-    // 在可能的目标中找到实际存在的节点
+    // find actual existing nodes in possible targets
     const availableTargets = possibleTargets.filter(targetType =>
       nodeTypes.includes(targetType),
     ).map(targetType =>
       nodes.find(n => n.data.type === targetType)!,
     )
 
-    // 连接到最高优先级的可用目标
+    // connect to the highest priority available target
     if (availableTargets.length > 0) {
-      // 按优先级排序目标
       availableTargets.sort((a, b) => {
         const priorityA = BLOCK_PRIORITY[a.data.type] || 999
         const priorityB = BLOCK_PRIORITY[b.data.type] || 999
         return priorityA - priorityB
       })
 
-      // 连接到第一个（优先级最高的）目标
+      // connect to the first (highest priority) target
       const targetNode = availableTargets[0]
 
-      // 检查是否已存在连接
+      // check if connection already exists
       const existingConnection = edges.find(edge =>
         edge.source === sourceNode.id && edge.target === targetNode.id,
       )
@@ -286,7 +283,7 @@ function autoConnect(nodes: Node<CustomNodeData>[]): Edge[] {
       }
     }
 
-    // 如果没有预定义规则，连接到下一个优先级更高的节点
+    // if no predefined rules, connect to the next higher priority node
     if (availableTargets.length === 0 && index < sortedNodes.length - 1) {
       const nextNode = sortedNodes[index + 1]
       const existingConnection = edges.find(edge =>
@@ -303,7 +300,7 @@ function autoConnect(nodes: Node<CustomNodeData>[]): Edge[] {
     }
   })
 
-  // 确保没有孤立的节点（除了最后一个）
+  // ensure no isolated nodes (except the last one)
   const connectedSources = new Set(edges.map(e => e.source))
   const connectedTargets = new Set(edges.map(e => e.target))
 
@@ -312,7 +309,6 @@ function autoConnect(nodes: Node<CustomNodeData>[]): Edge[] {
     const isLastNode = index === sortedNodes.length - 1
 
     if (!isConnected && !isLastNode && index < sortedNodes.length - 1) {
-      // 连接到下一个节点
       const nextNode = sortedNodes[index + 1]
       edges.push({
         id: `auto-fallback-${node.id}-${nextNode.id}`,
@@ -353,13 +349,11 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
 
     const nodes = get().nodes
 
-    // 改进：智能计算横向布局位置
     const nodePosition = position || (() => {
-      const nodeSpacing = 350 // 节点间距
-      const startX = 200 // 起始X位置
-      const baseY = 200 // 基础Y位置
+      const nodeSpacing = 350
+      const startX = 200
+      const baseY = 200
 
-      // 计算新节点在横向布局中的位置
       const newX = startX + (nodes.length * nodeSpacing)
 
       return {
@@ -368,7 +362,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       }
     })()
 
-    // 特殊的label映射
+    // special label mapping
     const labelMap: Record<string, string> = {
       step_by_step: 'Step by Step',
       role_definition: 'Role Definition',
@@ -399,7 +393,6 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
 
     const newNodes = [...nodes, newNode]
 
-    // 自动生成连接
     const autoEdges = autoConnect(newNodes)
 
     set({
@@ -416,13 +409,11 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
 
     const nodes = get().nodes
 
-    // 改进：智能计算横向布局位置
     const nodePosition = position || (() => {
-      const nodeSpacing = 350 // 节点间距
-      const startX = 200 // 起始X位置
-      const baseY = 200 // 基础Y位置
+      const nodeSpacing = 350
+      const startX = 200
+      const baseY = 200
 
-      // 计算新节点在横向布局中的位置
       const newX = startX + (nodes.length * nodeSpacing)
 
       return {
@@ -431,7 +422,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       }
     })()
 
-    // 特殊的label映射
+    // special label mapping
     const labelMap: Record<string, string> = {
       step_by_step: 'Step by Step',
       role_definition: 'Role Definition',
@@ -463,7 +454,6 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
 
     const newNodes = [...nodes, newNode]
 
-    // 自动生成连接
     const autoEdges = autoConnect(newNodes)
 
     set({
@@ -478,10 +468,8 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
 
     const state = get()
 
-    // 删除节点
     const newNodes = state.nodes.filter(node => node.id !== nodeId)
 
-    // 重新生成所有连接
     const autoEdges = autoConnect(newNodes)
 
     set({
@@ -735,11 +723,10 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
 
     systemPrompt = systemSections.join('\n').trim()
 
-    // 如果有连接关系，构建流程路径
+    // if there are edges, build the flow description
     if (edges.length > 0) {
-      // 构建更复杂的流程路径，支持分支
       const getFlowDescription = () => {
-        // 找到起始节点（通常是role_definition）
+        // find the start node (usually role_definition)
         const startNodes = nodes.filter(node =>
           !edges.some(edge => edge.target === node.id),
         )
@@ -751,7 +738,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
         const visited = new Set<string>()
         const paths: string[] = []
 
-        // 递归构建所有路径
+        // recursively build all paths
         const buildPaths = (nodeId: string, currentPath: string[] = []) => {
           if (visited.has(nodeId))
             return
@@ -762,22 +749,18 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
 
           const newPath = [...currentPath, node.data.label]
 
-          // 找到所有出边
           const outgoingEdges = edges.filter(edge => edge.source === nodeId)
 
           if (outgoingEdges.length === 0) {
-            // 叶子节点，保存路径
             if (newPath.length > 1) {
               paths.push(newPath.join(' → '))
             }
           }
           else if (outgoingEdges.length === 1) {
-            // 单个连接，继续构建
             visited.add(nodeId)
             buildPaths(outgoingEdges[0].target, newPath)
           }
           else {
-            // 多个分支，为每个分支创建路径
             visited.add(nodeId)
             outgoingEdges.forEach((edge) => {
               buildPaths(edge.target, newPath)
@@ -803,14 +786,14 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       }
     }
 
-    // Human prompt - 主要包含用户交互指导
+    // Human prompt - mainly contains user interaction guidelines
     const userGuidelines = []
     if (contentByType.context.some(c => c.includes('user') || c.includes('User'))) {
       userGuidelines.push('Please interact according to the defined context and guidelines above.')
     }
     humanPrompt = userGuidelines.join('\n')
 
-    // Assistant prompt - 响应格式和行为提醒
+    // Assistant prompt - response format and behavior reminders
     const responseGuidelines = []
     if (contentByType.format.length > 0) {
       responseGuidelines.push('Remember to follow the specified output format in your responses.')
@@ -820,7 +803,6 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
     }
     assistantPrompt = responseGuidelines.join('\n')
 
-    // 更新预览
     set({
       preview: {
         system: systemPrompt || 'No system instructions defined yet. Add blocks to build your prompt.',
@@ -838,11 +820,10 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   importFlowData: (flowData) => {
     const { nodes, edges } = flowData
 
-    // 重新计算节点位置，使其居中显示
     const adjustedNodes = nodes.map((node: Node<CustomNodeData>, index: number) => {
-      const nodeSpacing = 350 // 节点间距
-      const startX = 200 // 起始X位置（更居中）
-      const baseY = 300 // 基础Y位置（更居中）
+      const nodeSpacing = 350
+      const startX = 200
+      const baseY = 300
 
       return {
         ...node,
@@ -867,6 +848,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       tags: [],
       isTemplate: false,
       sourceId: null,
+      originalUserQuery: '',
       history: [],
       historyIndex: -1,
     })

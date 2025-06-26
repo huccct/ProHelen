@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 interface TourStep {
@@ -18,6 +18,23 @@ interface OnboardingTourProps {
   isOpen: boolean
   onClose: () => void
   onComplete: () => void
+}
+
+const TOOLTIP_CONFIG = {
+  WIDTH: 320,
+  HEIGHT: 200,
+  MARGIN: 12,
+  PADDING: 8,
+} as const
+
+interface BoundaryCheck {
+  canPlaceLeft: boolean
+  canPlaceRight: boolean
+  canPlaceTop: boolean
+  canPlaceBottom: boolean
+  canCenterHorizontally: boolean
+  centerX: number
+  tooltipHalfWidth: number
 }
 
 export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourProps) {
@@ -79,6 +96,187 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
 
   const currentTourStep = tourSteps[currentStep]
 
+  const ProgressBar = ({ variant = 'default' }: { variant?: 'default' | 'compact' }) => {
+    const progressPercentage = ((currentStep + 1) / tourSteps.length) * 100
+
+    return (
+      <div className={variant === 'compact' ? '' : 'my-4'}>
+        <div className={`flex justify-between text-xs text-muted-foreground ${variant === 'compact' ? 'mb-1' : 'mb-2'}`}>
+          <span className="whitespace-nowrap">
+            {t('builder.components.onboardingTour.progress.step')}
+            {' '}
+            {currentStep + 1}
+            {' '}
+            {t('builder.components.onboardingTour.progress.of')}
+            {' '}
+            {tourSteps.length}
+            {' '}
+            {t('builder.components.onboardingTour.progress.steps', '步')}
+          </span>
+        </div>
+        <div className={`${variant === 'compact' ? 'h-0.5' : 'h-1'} bg-muted rounded-full overflow-hidden`}>
+          <div
+            className="h-full bg-primary transition-all duration-300"
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  /**
+   * boundary check
+   * @param rect - the bounding client rect of the target element
+   * @returns the boundary check result
+   */
+  const getBoundaryCheck = (rect: DOMRect): BoundaryCheck => {
+    const canPlaceLeft = rect.left - TOOLTIP_CONFIG.WIDTH - TOOLTIP_CONFIG.MARGIN >= 0
+    const canPlaceRight = rect.right + TOOLTIP_CONFIG.WIDTH + TOOLTIP_CONFIG.MARGIN <= window.innerWidth
+    const canPlaceTop = rect.top - TOOLTIP_CONFIG.HEIGHT - TOOLTIP_CONFIG.MARGIN >= 0
+    const canPlaceBottom = rect.bottom + TOOLTIP_CONFIG.HEIGHT + TOOLTIP_CONFIG.MARGIN <= window.innerHeight
+
+    const centerX = rect.left + rect.width / 2
+    const tooltipHalfWidth = TOOLTIP_CONFIG.WIDTH / 2
+    const canCenterHorizontally = centerX - tooltipHalfWidth >= 0 && centerX + tooltipHalfWidth <= window.innerWidth
+
+    return {
+      canPlaceLeft,
+      canPlaceRight,
+      canPlaceTop,
+      canPlaceBottom,
+      canCenterHorizontally,
+      centerX,
+      tooltipHalfWidth,
+    }
+  }
+
+  const calculateTooltipPosition = (rect: DOMRect, position: string, stepId: string): string => {
+    if (stepId === 'canvas') {
+      return 'top-4 left-4'
+    }
+
+    const { canPlaceLeft, canPlaceRight, canPlaceTop, canPlaceBottom, canCenterHorizontally, centerX, tooltipHalfWidth } = getBoundaryCheck(rect)
+
+    const fallbackStrategies = {
+      left: () => canPlaceRight
+        ? 'left-full ml-3 top-1/2 transform -translate-y-1/2'
+        : canPlaceBottom && canCenterHorizontally
+          ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
+          : 'top-full mt-3 left-0',
+
+      right: () => canPlaceLeft
+        ? 'right-full mr-3 top-1/2 transform -translate-y-1/2'
+        : canPlaceBottom && canCenterHorizontally
+          ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
+          : 'top-full mt-3 right-0',
+
+      top: () => canCenterHorizontally
+        ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
+        : centerX < tooltipHalfWidth
+          ? 'top-full mt-3 left-0'
+          : 'top-full mt-3 right-0',
+
+      bottom: () => canCenterHorizontally
+        ? 'bottom-full mb-3 left-1/2 transform -translate-x-1/2'
+        : centerX < tooltipHalfWidth
+          ? 'bottom-full mb-3 left-0'
+          : 'bottom-full mb-3 right-0',
+    }
+
+    const canPlaceInPreferred = {
+      left: canPlaceLeft,
+      right: canPlaceRight,
+      top: canPlaceTop,
+      bottom: canPlaceBottom,
+    }
+
+    if (!canPlaceInPreferred[position as keyof typeof canPlaceInPreferred]) {
+      return fallbackStrategies[position as keyof typeof fallbackStrategies]()
+    }
+
+    if ((position === 'top' || position === 'bottom') && !canCenterHorizontally) {
+      const positionClass = position === 'top' ? 'bottom-full mb-3' : 'top-full mt-3'
+      return centerX < tooltipHalfWidth ? `${positionClass} left-0` : `${positionClass} right-0`
+    }
+
+    const defaultPositions = {
+      top: 'bottom-full mb-3 left-1/2 transform -translate-x-1/2',
+      bottom: 'top-full mt-3 left-1/2 transform -translate-x-1/2',
+      left: 'right-full mr-3 top-1/2 transform -translate-y-1/2',
+      right: 'left-full ml-3 top-1/2 transform -translate-y-1/2',
+    }
+
+    return defaultPositions[position as keyof typeof defaultPositions] || defaultPositions.bottom
+  }
+
+  const calculateArrowPosition = (rect: DOMRect, position: string, stepId: string): string => {
+    if (stepId === 'canvas') {
+      return 'hidden'
+    }
+
+    const { canPlaceLeft, canPlaceRight, canPlaceTop, canPlaceBottom, canCenterHorizontally } = getBoundaryCheck(rect)
+
+    const borderStyles = {
+      leftToRight: 'border-b border-l',
+      rightToLeft: 'border-t border-r',
+      topToBottom: 'border-b border-r',
+      bottomToTop: 'border-t border-l',
+    }
+
+    if (position === 'left' && !canPlaceLeft) {
+      return canPlaceRight
+        ? `right-full -mr-1 top-1/2 transform -translate-y-1/2 ${borderStyles.leftToRight}`
+        : `top-full -mt-1 ${borderStyles.topToBottom}`
+    }
+
+    if (position === 'right' && !canPlaceRight) {
+      return canPlaceLeft
+        ? `left-full -ml-1 top-1/2 transform -translate-y-1/2 ${borderStyles.rightToLeft}`
+        : `top-full -mt-1 ${borderStyles.topToBottom}`
+    }
+
+    if (position === 'top' && !canPlaceTop) {
+      return canCenterHorizontally
+        ? `bottom-full -mb-1 left-1/2 transform -translate-x-1/2 ${borderStyles.bottomToTop}`
+        : `bottom-full -mb-1 left-4 ${borderStyles.bottomToTop}`
+    }
+
+    if (position === 'bottom' && !canPlaceBottom) {
+      return canCenterHorizontally
+        ? `top-full -mt-1 left-1/2 transform -translate-x-1/2 ${borderStyles.topToBottom}`
+        : `top-full -mt-1 left-4 ${borderStyles.topToBottom}`
+    }
+
+    if ((position === 'top' || position === 'bottom') && !canCenterHorizontally) {
+      const borderClass = position === 'top' ? borderStyles.topToBottom : borderStyles.bottomToTop
+      const positionClass = position === 'top' ? 'top-full -mt-1' : 'bottom-full -mb-1'
+      return `${positionClass} left-4 ${borderClass}`
+    }
+
+    const defaultArrowPositions = {
+      top: `top-full -mt-1 left-1/2 transform -translate-x-1/2 ${borderStyles.topToBottom}`,
+      bottom: `bottom-full -mb-1 left-1/2 transform -translate-x-1/2 ${borderStyles.bottomToTop}`,
+      left: `left-full -ml-1 top-1/2 transform -translate-y-1/2 ${borderStyles.rightToLeft}`,
+      right: `right-full -mr-1 top-1/2 transform -translate-y-1/2 ${borderStyles.leftToRight}`,
+    }
+
+    return defaultArrowPositions[position as keyof typeof defaultArrowPositions] || defaultArrowPositions.bottom
+  }
+
+  const elementRect = useMemo(() => {
+    return targetElement?.getBoundingClientRect()
+  }, [targetElement, currentStep])
+
+  const { tooltipPosition, arrowPosition } = useMemo(() => {
+    if (!elementRect)
+      return { tooltipPosition: '', arrowPosition: '' }
+
+    return {
+      tooltipPosition: calculateTooltipPosition(elementRect, currentTourStep.position, currentTourStep.id),
+      arrowPosition: calculateArrowPosition(elementRect, currentTourStep.position, currentTourStep.id),
+    }
+  }, [elementRect, currentTourStep.position, currentTourStep.id])
+
   useEffect(() => {
     if (!isOpen || !currentTourStep.target)
       return
@@ -115,7 +313,6 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
   const isWelcomeStep = currentStep === 0
   const isLastStep = currentStep === tourSteps.length - 1
 
-  // 欢迎步骤使用居中Dialog
   if (isWelcomeStep) {
     return (
       <Dialog open={isOpen} onOpenChange={handleSkip}>
@@ -129,23 +326,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
             </DialogDescription>
           </DialogHeader>
 
-          {/* Progress bar */}
-          <div className="my-4">
-            <div className="flex justify-between text-xs text-muted-foreground mb-2">
-              <span className="whitespace-nowrap">
-                {t('builder.components.onboardingTour.progress.step')}
-                {currentStep + 1}
-                {t('builder.components.onboardingTour.progress.of')}
-                {tourSteps.length}
-              </span>
-            </div>
-            <div className="h-1 bg-muted rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary transition-all duration-300"
-                style={{ width: `${((currentStep + 1) / tourSteps.length) * 100}%` }}
-              />
-            </div>
-          </div>
+          <ProgressBar />
 
           <DialogFooter>
             <div className="flex justify-between items-center w-full gap-4">
@@ -172,206 +353,53 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
     )
   }
 
-  // 其他步骤使用Tooltip跟随目标元素
-  if (!targetElement)
+  if (!targetElement || !elementRect)
     return null
 
   return (
     <>
-      {/* Spotlight effect */}
       {currentTourStep.spotlight !== false && (
         <div
           className="fixed z-[9999] border-4 border-primary/30 rounded-lg pointer-events-none transition-all duration-300"
           style={(() => {
-            const rect = targetElement.getBoundingClientRect()
-            const padding = 8
-
-            // for specific elements, we need to limit the area to avoid overflow
             if (currentTourStep.id === 'canvas' || currentTourStep.id === 'toolbar') {
               return {
-                left: rect.left,
-                top: rect.top,
-                width: rect.width,
-                height: rect.height,
+                left: elementRect.left,
+                top: elementRect.top,
+                width: elementRect.width,
+                height: elementRect.height,
                 boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.8)',
               }
             }
 
-            // for other elements, we use boundary check logic
-            const left = Math.max(0, rect.left - padding)
-            const top = Math.max(0, rect.top - padding)
-            const right = Math.min(window.innerWidth, rect.right + padding)
-            const bottom = Math.min(window.innerHeight, rect.bottom + padding)
-            const width = right - left
-            const height = bottom - top
+            const left = Math.max(0, elementRect.left - TOOLTIP_CONFIG.PADDING)
+            const top = Math.max(0, elementRect.top - TOOLTIP_CONFIG.PADDING)
+            const right = Math.min(window.innerWidth, elementRect.right + TOOLTIP_CONFIG.PADDING)
+            const bottom = Math.min(window.innerHeight, elementRect.bottom + TOOLTIP_CONFIG.PADDING)
 
             return {
               left,
               top,
-              width,
-              height,
+              width: right - left,
+              height: bottom - top,
               boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.8)',
             }
           })()}
         />
       )}
 
-      {/* Tour Tooltip */}
       <div
         className="fixed z-[10000] pointer-events-none"
         style={{
-          left: targetElement.getBoundingClientRect().left,
-          top: targetElement.getBoundingClientRect().top,
-          width: targetElement.getBoundingClientRect().width,
-          height: targetElement.getBoundingClientRect().height,
+          left: elementRect.left,
+          top: elementRect.top,
+          width: elementRect.width,
+          height: elementRect.height,
         }}
       >
-        <div
-          className={`absolute bg-background border border-border text-foreground p-4 w-80 max-w-[90vw] rounded-lg shadow-xl pointer-events-auto ${
-            (() => {
-              // 画布特殊处理：显示在画布内部的固定位置
-              if (currentTourStep.id === 'canvas') {
-                return 'top-4 left-4'
-              }
-
-              const rect = targetElement.getBoundingClientRect()
-              const tooltipWidth = 320 // w-80 = 320px
-              const tooltipHeight = 200 // 估计高度
-              const margin = 12 // mb-3/mt-3 = 12px
-
-              // 检查各方向是否有足够空间
-              const canPlaceLeft = rect.left - tooltipWidth - margin >= 0
-              const canPlaceRight = rect.right + tooltipWidth + margin <= window.innerWidth
-              const canPlaceTop = rect.top - tooltipHeight - margin >= 0
-              const canPlaceBottom = rect.bottom + tooltipHeight + margin <= window.innerHeight
-
-              // 检查水平居中时是否会超出边界
-              const centerX = rect.left + rect.width / 2
-              const tooltipHalfWidth = tooltipWidth / 2
-              const canCenterHorizontally = centerX - tooltipHalfWidth >= 0 && centerX + tooltipHalfWidth <= window.innerWidth
-
-              // 根据原始位置和边界条件调整
-              if (currentTourStep.position === 'left' && !canPlaceLeft) {
-                return canPlaceRight
-                  ? 'left-full ml-3 top-1/2 transform -translate-y-1/2'
-                  : canPlaceBottom && canCenterHorizontally
-                    ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
-                    : 'top-full mt-3 left-0'
-              }
-              else if (currentTourStep.position === 'right' && !canPlaceRight) {
-                return canPlaceLeft
-                  ? 'right-full mr-3 top-1/2 transform -translate-y-1/2'
-                  : canPlaceBottom && canCenterHorizontally
-                    ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
-                    : 'top-full mt-3 right-0'
-              }
-              else if (currentTourStep.position === 'top' && !canPlaceTop) {
-                return canCenterHorizontally
-                  ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
-                  : centerX < tooltipHalfWidth
-                    ? 'top-full mt-3 left-0'
-                    : 'top-full mt-3 right-0'
-              }
-              else if (currentTourStep.position === 'bottom' && !canPlaceBottom) {
-                return canCenterHorizontally
-                  ? 'bottom-full mb-3 left-1/2 transform -translate-x-1/2'
-                  : centerX < tooltipHalfWidth
-                    ? 'bottom-full mb-3 left-0'
-                    : 'bottom-full mb-3 right-0'
-              }
-
-              // 使用原始位置，但检查水平居中
-              if ((currentTourStep.position === 'top' || currentTourStep.position === 'bottom') && !canCenterHorizontally) {
-                const positionClass = currentTourStep.position === 'top' ? 'bottom-full mb-3' : 'top-full mt-3'
-                return centerX < tooltipHalfWidth
-                  ? `${positionClass} left-0`
-                  : `${positionClass} right-0`
-              }
-
-              // 使用原始位置
-              return currentTourStep.position === 'top'
-                ? 'bottom-full mb-3 left-1/2 transform -translate-x-1/2'
-                : currentTourStep.position === 'bottom'
-                  ? 'top-full mt-3 left-1/2 transform -translate-x-1/2'
-                  : currentTourStep.position === 'left'
-                    ? 'right-full mr-3 top-1/2 transform -translate-y-1/2'
-                    : currentTourStep.position === 'right'
-                      ? 'left-full ml-3 top-1/2 transform -translate-y-1/2'
-                      : 'bottom-full mb-3 left-1/2 transform -translate-x-1/2'
-            })()
-          }`}
-        >
+        <div className={`absolute bg-background border border-border text-foreground p-4 w-80 max-w-[90vw] rounded-lg shadow-xl pointer-events-auto ${tooltipPosition}`}>
           {/* Arrow */}
-          <div
-            className={`absolute w-2 h-2 bg-background border-border transform rotate-45 ${
-              (() => {
-                // 画布特殊处理：隐藏箭头或显示在合适位置
-                if (currentTourStep.id === 'canvas') {
-                  return 'hidden' // 画布tooltip不需要箭头
-                }
-
-                const rect = targetElement.getBoundingClientRect()
-                const tooltipWidth = 320
-                const tooltipHeight = 200
-                const margin = 12
-
-                const canPlaceLeft = rect.left - tooltipWidth - margin >= 0
-                const canPlaceRight = rect.right + tooltipWidth + margin <= window.innerWidth
-                const canPlaceTop = rect.top - tooltipHeight - margin >= 0
-                const canPlaceBottom = rect.bottom + tooltipHeight + margin <= window.innerHeight
-
-                const centerX = rect.left + rect.width / 2
-                const tooltipHalfWidth = tooltipWidth / 2
-                const canCenterHorizontally = centerX - tooltipHalfWidth >= 0 && centerX + tooltipHalfWidth <= window.innerWidth
-
-                // 确定实际位置和箭头位置
-                if (currentTourStep.position === 'left' && !canPlaceLeft) {
-                  if (canPlaceRight) {
-                    return 'right-full -mr-1 top-1/2 transform -translate-y-1/2 border-b border-l'
-                  }
-                  else {
-                    return `top-full -mt-1 border-b border-r`
-                  }
-                }
-                else if (currentTourStep.position === 'right' && !canPlaceRight) {
-                  if (canPlaceLeft) {
-                    return 'left-full -ml-1 top-1/2 transform -translate-y-1/2 border-t border-r'
-                  }
-                  else {
-                    return `top-full -mt-1 border-b border-r`
-                  }
-                }
-                else if (currentTourStep.position === 'top' && !canPlaceTop) {
-                  return canCenterHorizontally
-                    ? 'bottom-full -mb-1 left-1/2 transform -translate-x-1/2 border-t border-l'
-                    : 'bottom-full -mb-1 left-4 border-t border-l'
-                }
-                else if (currentTourStep.position === 'bottom' && !canPlaceBottom) {
-                  return canCenterHorizontally
-                    ? 'top-full -mt-1 left-1/2 transform -translate-x-1/2 border-b border-r'
-                    : 'top-full -mt-1 left-4 border-b border-r'
-                }
-
-                // 原始位置但检查水平居中
-                if ((currentTourStep.position === 'top' || currentTourStep.position === 'bottom') && !canCenterHorizontally) {
-                  const borderClass = currentTourStep.position === 'top' ? 'border-b border-r' : 'border-t border-l'
-                  const positionClass = currentTourStep.position === 'top' ? 'top-full -mt-1' : 'bottom-full -mb-1'
-                  return `${positionClass} left-4 ${borderClass}`
-                }
-
-                // 使用原始位置
-                return currentTourStep.position === 'top'
-                  ? 'top-full -mt-1 left-1/2 transform -translate-x-1/2 border-b border-r'
-                  : currentTourStep.position === 'bottom'
-                    ? 'bottom-full -mb-1 left-1/2 transform -translate-x-1/2 border-t border-l'
-                    : currentTourStep.position === 'left'
-                      ? 'left-full -ml-1 top-1/2 transform -translate-y-1/2 border-t border-r'
-                      : currentTourStep.position === 'right'
-                        ? 'right-full -mr-1 top-1/2 transform -translate-y-1/2 border-b border-l'
-                        : 'top-full -mt-1 left-1/2 transform -translate-x-1/2 border-b border-r'
-              })()
-            }`}
-          />
+          <div className={`absolute w-2 h-2 bg-background border-border transform rotate-45 ${arrowPosition}`} />
 
           <div className="space-y-3">
             <div>
@@ -383,25 +411,8 @@ export function OnboardingTour({ isOpen, onClose, onComplete }: OnboardingTourPr
               </p>
             </div>
 
-            {/* Progress bar */}
-            <div>
-              <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                <span className="whitespace-nowrap">
-                  {t('builder.components.onboardingTour.progress.step')}
-                  {currentStep + 1}
-                  {t('builder.components.onboardingTour.progress.of')}
-                  {tourSteps.length}
-                </span>
-              </div>
-              <div className="h-0.5 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary transition-all duration-300"
-                  style={{ width: `${((currentStep + 1) / tourSteps.length) * 100}%` }}
-                />
-              </div>
-            </div>
+            <ProgressBar variant="compact" />
 
-            {/* Actions */}
             <div className="flex justify-between items-center pt-1 gap-2">
               <Button
                 variant="ghost"

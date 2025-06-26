@@ -20,21 +20,28 @@ export function ProgressIndicator({ className }: ProgressIndicatorProps) {
   const [showDetails, setShowDetails] = useState(false)
   const nodes = useBuilderStore(state => state.nodes)
 
-  // 计算完整度评分
+  // calculate the completeness score based on prompt engineering best practices
   const calculateCompleteness = () => {
     let score = 0
     const checklist: Array<{ id: string, label: string, completed: boolean, points: number }> = []
 
-    // 检查核心模块
+    // Core essential blocks (60 points total)
     const hasRoleDefinition = nodes.some(node => node.data?.type === 'role_definition')
+    const hasContextSetting = nodes.some(node => node.data?.type === 'context_setting')
     const hasOutputFormat = nodes.some(node => node.data?.type === 'output_format')
-    const hasCommunicationStyle = nodes.some(node => node.data?.type === 'communication_style')
 
     checklist.push({
       id: 'role',
       label: t('builder.components.progressIndicator.checklist.roleDefinition'),
       completed: hasRoleDefinition,
-      points: 25,
+      points: 20,
+    })
+
+    checklist.push({
+      id: 'context',
+      label: t('builder.components.progressIndicator.checklist.contextSetting'),
+      completed: hasContextSetting,
+      points: 20,
     })
 
     checklist.push({
@@ -44,29 +51,61 @@ export function ProgressIndicator({ className }: ProgressIndicatorProps) {
       points: 20,
     })
 
+    // Task clarity check - analyze content for clear task definition
+    const hasTaskClarity = nodes.some((node) => {
+      const content = node.data?.content?.toLowerCase() || ''
+      return content.includes('任务') || content.includes('task')
+        || content.includes('目标') || content.includes('goal')
+        || content.includes('需要') || content.includes('need')
+        || content.includes('帮助') || content.includes('help')
+    })
+
+    checklist.push({
+      id: 'taskClarity',
+      label: t('builder.components.progressIndicator.checklist.taskClarity'),
+      completed: hasTaskClarity,
+      points: 15,
+    })
+
+    // Communication style (reduced importance)
+    const hasCommunicationStyle = nodes.some(node => node.data?.type === 'communication_style')
     checklist.push({
       id: 'communication',
       label: t('builder.components.progressIndicator.checklist.communicationStyle'),
       completed: hasCommunicationStyle,
-      points: 15,
+      points: 10,
     })
 
-    // 检查内容完整性
+    // Content quality assessment (improved scoring)
     const nodesWithContent = nodes.filter(node =>
-      node.data?.content && node.data.content.trim().length > 0,
+      node.data?.content && node.data.content.trim().length > 20, // Require meaningful content
     ).length
     const contentCompleteness = nodes.length > 0 ? (nodesWithContent / nodes.length) * 100 : 0
+
+    // Check for examples in content
+    const hasExamples = nodes.some((node) => {
+      const content = node.data?.content?.toLowerCase() || ''
+      return content.includes('例如') || content.includes('example')
+        || content.includes('示例') || content.includes('比如')
+        || content.includes('for example') || content.includes('such as')
+    })
 
     checklist.push({
       id: 'content',
       label: t('builder.components.progressIndicator.checklist.customContent'),
-      completed: contentCompleteness >= 75, // 75%的块有内容才算完成
-      points: 15, // 降低到15分，因为内容完整度是动态计算的
+      completed: contentCompleteness >= 75,
+      points: 15,
     })
 
-    // 检查多样性（不同类别的模块）
+    checklist.push({
+      id: 'examples',
+      label: t('builder.components.progressIndicator.checklist.examples'),
+      completed: hasExamples,
+      points: 10,
+    })
+
+    // Diversity scoring (reduced importance)
     const categories = new Set(nodes.filter(node => node.data?.type).map((node) => {
-      // 根据节点类型判断类别
       const nodeType = node.data.type
       if (['role_definition', 'context_setting', 'output_format'].includes(nodeType))
         return 'core'
@@ -83,32 +122,38 @@ export function ProgressIndicator({ className }: ProgressIndicatorProps) {
       return 'other'
     }))
 
-    const diversityBonus = Math.min(15, Math.max(0, categories.size - 1) * 5)
-
     checklist.push({
       id: 'diversity',
       label: t('builder.components.progressIndicator.checklist.diversity'),
-      completed: categories.size >= 3,
-      points: 15,
+      completed: categories.size >= 2,
+      points: 10,
     })
 
-    // 计算总分
+    // Calculate final score
     const baseScore = checklist.reduce((total, item) => total + (item.completed ? item.points : 0), 0)
-    const contentScore = Math.round(contentCompleteness * 0.2) // 内容完整度占20分
-    score = baseScore + contentScore + diversityBonus
+
+    // Bonus for high-quality content (replace previous simple bonus)
+    let qualityBonus = 0
+    if (contentCompleteness >= 90)
+      qualityBonus += 5
+    if (categories.size >= 3)
+      qualityBonus += 5
+
+    score = baseScore + qualityBonus
 
     return {
       score: Math.min(100, Math.round(score)),
       checklist,
       nodeCount: nodes.length,
       contentProgress: Math.round(contentCompleteness),
+      hasExamples,
+      hasTaskClarity,
       diversityCount: categories.size,
     }
   }
 
   const progress = calculateCompleteness()
 
-  // 获取进度状态
   const getProgressStatus = (score: number) => {
     if (score >= 80)
       return { status: 'excellent', color: 'text-green-600', bgColor: 'bg-green-100' }
@@ -122,12 +167,11 @@ export function ProgressIndicator({ className }: ProgressIndicatorProps) {
   const status = getProgressStatus(progress.score)
 
   if (nodes.length === 0) {
-    return null // 没有节点时不显示
+    return null
   }
 
   return (
     <>
-      {/* 主进度指示器 */}
       <div className={`${className}`}>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -139,7 +183,6 @@ export function ProgressIndicator({ className }: ProgressIndicatorProps) {
             >
               <div className="flex items-center gap-2">
                 <div className="relative w-8 h-8">
-                  {/* 圆形进度条 */}
                   <svg className="w-8 h-8 -rotate-90" viewBox="0 0 32 32">
                     <circle
                       cx="16"
@@ -188,9 +231,8 @@ export function ProgressIndicator({ className }: ProgressIndicatorProps) {
         </Tooltip>
       </div>
 
-      {/* 详细进度对话框 */}
       <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Target className="h-5 w-5 text-primary" />
@@ -198,8 +240,7 @@ export function ProgressIndicator({ className }: ProgressIndicatorProps) {
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-6">
-            {/* 总体评分 */}
+          <div className="space-y-4">
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
@@ -217,7 +258,6 @@ export function ProgressIndicator({ className }: ProgressIndicatorProps) {
                   </div>
                 </div>
 
-                {/* 进度条 */}
                 <div className="w-full bg-muted rounded-full h-3 mb-2">
                   <motion.div
                     className={`h-3 rounded-full ${status.bgColor} ${status.color} bg-gradient-to-r from-current to-current opacity-80`}
@@ -234,35 +274,34 @@ export function ProgressIndicator({ className }: ProgressIndicatorProps) {
               </CardContent>
             </Card>
 
-            {/* 完成清单 */}
             <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
+              <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
                 {t('builder.components.progressIndicator.improvementChecklist')}
               </h3>
 
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {progress.checklist.map(item => (
                   <motion.div
                     key={item.id}
-                    className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg"
+                    className="flex items-center gap-3 p-2.5 bg-muted/30 rounded-lg"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 }}
                   >
                     {item.completed
                       ? (
-                          <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                         )
                       : (
-                          <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                          <Circle className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                         )}
                     <div className="flex-1">
-                      <div className={`font-medium ${item.completed ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      <div className={`text-sm font-medium ${item.completed ? 'text-foreground' : 'text-muted-foreground'}`}>
                         {item.label}
                       </div>
                     </div>
-                    <Badge variant={item.completed ? 'default' : 'secondary'}>
+                    <Badge variant={item.completed ? 'default' : 'secondary'} className="text-xs">
                       {item.points}
                       {' '}
                       {t('builder.components.progressIndicator.points')}
@@ -272,41 +311,39 @@ export function ProgressIndicator({ className }: ProgressIndicatorProps) {
               </div>
             </div>
 
-            {/* 统计信息 */}
-            <div className="grid grid-cols-3 gap-4 p-4 bg-muted/30 rounded-lg">
+            <div className="grid grid-cols-3 gap-3 p-3 bg-muted/30 rounded-lg">
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{progress.nodeCount}</div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xl font-bold text-primary">{progress.nodeCount}</div>
+                <div className="text-xs text-muted-foreground">
                   {t('builder.components.progressIndicator.totalBlocks')}
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{progress.diversityCount}</div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xl font-bold text-primary">{progress.diversityCount}</div>
+                <div className="text-xs text-muted-foreground">
                   {t('builder.components.progressIndicator.categories')}
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">
+                <div className="text-xl font-bold text-primary">
                   {progress.contentProgress}
                   %
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs text-muted-foreground">
                   {t('builder.components.progressIndicator.customized')}
                 </div>
               </div>
             </div>
 
-            {/* 建议 */}
             {progress.score < 100 && (
-              <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="flex items-start gap-3">
-                  <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+                    <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
                       {t('builder.components.progressIndicator.nextSteps')}
                     </h4>
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                    <p className="text-xs text-blue-700 dark:text-blue-300">
                       {progress.score < 30
                         ? t('builder.components.progressIndicator.suggestions.addCore')
                         : progress.score < 60

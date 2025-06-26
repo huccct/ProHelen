@@ -24,8 +24,6 @@ function selector(state: any) {
   }
 }
 
-// 简化为单一预览格式
-
 export function PromptPreview({ className, style }: PromptPreviewProps) {
   const { t } = useTranslation()
   const { preview, nodes, exportFlowData } = useBuilderStore(useShallow(selector))
@@ -63,7 +61,6 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     return preview.system
   }
 
-  // 使用结构化的自定义指令格式作为唯一预览
   const currentContent = generateCustomInstructions()
 
   const handleCopy = async () => {
@@ -144,7 +141,6 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
           content: systemPrompt,
           tags: instructionData.tags,
           flowData,
-          isFavorite: instructionData.isFavorite,
         }),
       })
 
@@ -165,25 +161,21 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     }
   }
 
-  // 移除格式切换按钮
-
   const hasContent = preview.system || preview.human || preview.assistant
   const nodeCount = nodes.length
 
   return (
     <aside className={className} style={style} data-tour="preview-panel">
       <div className="p-4 flex flex-col h-full bg-card/50">
-        {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-medium text-foreground">{t('builder.promptPreview.title')}</h3>
+            <h3 className="text-sm font-medium text-foreground">{t('builder.components.promptPreview.title')}</h3>
             <p className="text-xs text-muted-foreground mt-1">
-              {t('builder.promptPreview.blocksConfigured', { count: nodeCount })}
+              {t('builder.components.promptPreview.stats.blocks', { count: nodeCount })}
             </p>
           </div>
         </div>
 
-        {/* Content */}
         <div className="flex-1 mb-4">
           <div className="relative h-full border border-border rounded-lg bg-background">
             <div className="absolute inset-0 p-4 overflow-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -192,7 +184,6 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               </pre>
             </div>
 
-            {/* Character count */}
             {hasContent && (
               <div className="absolute bottom-2 right-2 px-2 py-1 bg-muted rounded text-xs text-muted-foreground">
                 {currentContent.length}
@@ -203,7 +194,6 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
           </div>
         </div>
 
-        {/* Actions */}
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <Button
@@ -214,7 +204,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Copy className="h-3 w-3 mr-1" />
-              {t('builder.promptPreview.actions.copy')}
+              {t('builder.components.promptPreview.actions.copy')}
             </Button>
             <Button
               variant="outline"
@@ -224,7 +214,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="h-3 w-3 mr-1" />
-              {t('builder.promptPreview.actions.export')}
+              {t('builder.components.promptPreview.actions.export')}
             </Button>
           </div>
 
@@ -236,7 +226,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Play className="h-3 w-3 mr-1" />
-            {t('builder.promptPreview.actions.test')}
+            {t('builder.components.promptPreview.actions.test')}
           </Button>
 
           <Button
@@ -247,23 +237,21 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
             className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-3 w-3 mr-1" />
-            {t('builder.promptPreview.actions.save')}
+            {t('builder.components.promptPreview.actions.save')}
           </Button>
         </div>
 
-        {/* Help Text */}
         {!hasContent && (
           <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-border">
             <p className="text-xs text-muted-foreground text-center">
               💡
               {' '}
-              {t('builder.promptPreview.helpText')}
+              {t('builder.components.promptPreview.helpText')}
             </p>
           </div>
         )}
       </div>
 
-      {/* Hide webkit scrollbar */}
       <style jsx>
         {`
         div::-webkit-scrollbar {
@@ -272,7 +260,6 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
       `}
       </style>
 
-      {/* Save Instruction Modal */}
       <SaveInstructionModal
         open={showSaveModal}
         onOpenChange={setShowSaveModal}

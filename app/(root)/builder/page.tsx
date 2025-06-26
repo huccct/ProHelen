@@ -12,14 +12,11 @@ import { useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { GuidedCanvas } from './_components/guided-canvas'
-import { GuidedHeader } from './_components/guided-header'
-import { GuidedWelcome } from './_components/guided-welcome'
 import { PromptAnalyzer } from './_components/prompt-analyzer'
 import { PromptPreview } from './_components/prompt-preview'
 
-// 添加界面模式类型
-type InterfaceMode = 'guided' | 'advanced' | 'analyze'
+// Interface mode include advanced, analyze
+type InterfaceMode = 'advanced' | 'analyze'
 
 function BuilderContent() {
   const { t } = useTranslation()
@@ -39,254 +36,37 @@ function BuilderContent() {
   const [showHelpPanel, setShowHelpPanel] = useState(false)
   const [showOnboardingTour, setShowOnboardingTour] = useState(false)
 
-  // 添加界面模式状态
+  // init interface mode
   const [interfaceMode, setInterfaceMode] = useState<InterfaceMode>('analyze')
 
-  // 添加引导状态
-  const [guidedState, setGuidedState] = useState({
-    step: 'welcome', // welcome, arrange, customize, test
-    isFirstTime: true,
-    showHints: true,
-  })
-
-  // 检查是否应该显示简化模式
   useEffect(() => {
     const hasTemplate = searchParams.get('template')
     const hasInstruction = searchParams.get('instruction')
 
-    // 只有从模板/指令导入时才使用高级模式，其他情况都从简单模式开始
+    // only use advanced mode when importing from template or instruction
     if (hasTemplate || hasInstruction) {
       setInterfaceMode('advanced')
     }
   }, [searchParams])
 
-  const _handleWizardComplete = useCallback((config: any) => {
-    // 根据用户配置自动创建blocks
-    const { addNode, setTitle, setDescription, updateNodeData } = useBuilderStore.getState()
-
-    // 生成动态标题
-    let generatedTitle = 'My AI Assistant'
-    if (config.purpose) {
-      generatedTitle = config.purpose.label.replace('🎓 ', '').replace('✍️ ', '').replace('💼 ', '').replace('🏠 ', '')
-    }
-
-    // 生成描述
-    let generatedDescription = 'Created with Quick Setup'
-    if (config.purpose && config.tone) {
-      generatedDescription = `${config.purpose.description} with ${config.tone.description.toLowerCase()}`
-    }
-
-    setTitle(generatedTitle)
-    setDescription(generatedDescription)
-
-    // 生成Role Definition内容
-    let roleContent = `You are a helpful AI assistant`
-    if (config.purpose) {
-      switch (config.purpose.value) {
-        case 'learning':
-          roleContent = `You are an expert learning coach and tutor. Your role is to help users learn new knowledge effectively, answer their questions clearly, and guide them through skill development.`
-          break
-        case 'writing':
-          roleContent = `You are a professional writing assistant. Your expertise includes helping with articles, emails, creative content, and improving writing quality across different formats.`
-          break
-        case 'work':
-          roleContent = `You are a productivity and business consultant. You help users improve their work efficiency, analyze data, solve business problems, and make informed decisions.`
-          break
-        case 'personal':
-          roleContent = `You are a personal life assistant. You provide guidance on daily decisions, health advice, personal planning, and help users organize their personal lives.`
-          break
-      }
-    }
-
-    // 智能横向布局配置
-    const nodeSpacing = 350 // 节点间距
-    const startX = 200 // 起始X位置
-    const baseY = 200 // 基础Y位置
-    let nodeIndex = 0 // 节点索引计数器
-
-    // 添加核心块 - Role Definition (所有类型都需要)
-    addNode('role_definition', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-    nodeIndex++
-
-    // 根据用途添加相应的块
-    if (config.purpose) {
-      switch (config.purpose.value) {
-        case 'learning':
-          addNode('learning_style', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          addNode('subject_focus', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          addNode('difficulty_level', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          break
-        case 'writing':
-          addNode('communication_style', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          addNode('output_format', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          addNode('creative_thinking', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          break
-        case 'work':
-          addNode('context_setting', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          addNode('output_format', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          addNode('prioritization', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          break
-        case 'personal':
-          addNode('communication_style', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          addNode('personality_traits', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          addNode('goal_setting', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-          nodeIndex++
-          break
-      }
-    }
-
-    // 根据经验水平添加相应的块
-    if (config.expertise?.value === 'beginner') {
-      addNode('step_by_step', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-      nodeIndex++
-    }
-    else if (config.expertise?.value === 'advanced') {
-      addNode('conditional_logic', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-      nodeIndex++
-    }
-
-    // 如果有具体目标且不是personal类型（personal类型已经添加过goal_setting），添加目标设置块
-    if (config.goal?.value && config.purpose?.value !== 'personal') {
-      addNode('goal_setting', { x: startX + nodeIndex * nodeSpacing, y: baseY })
-      nodeIndex++
-    }
-
-    // 等待节点创建完成后填充内容
-    setTimeout(() => {
-      const state = useBuilderStore.getState()
-      const nodes = state.nodes
-
-      // 填充Role Definition内容
-      const roleNode = nodes.find(n => n.data.type === 'role_definition')
-      if (roleNode) {
-        updateNodeData(roleNode.id, { content: roleContent })
-      }
-
-      // 填充所有blocks的内容
-      nodes.forEach((node) => {
-        const nodeType = node.data.type
-        let content = ''
-
-        switch (nodeType) {
-          case 'communication_style':
-            if (config.tone) {
-              switch (config.tone.value) {
-                case 'professional':
-                  content = 'Maintain a professional and formal tone. Be authoritative, use proper terminology, and present information in a structured manner.'
-                  break
-                case 'friendly':
-                  content = 'Use a warm, friendly, and approachable tone. Be conversational, encouraging, and make the user feel comfortable.'
-                  break
-                case 'encouraging':
-                  content = 'Be motivating and supportive. Provide positive reinforcement, celebrate progress, and help build confidence.'
-                  break
-                case 'direct':
-                  content = 'Be concise and direct. Get straight to the point, avoid unnecessary details, and provide clear, actionable information.'
-                  break
-              }
-            }
-            break
-
-          case 'learning_style':
-            content = `Adapt your teaching approach to be interactive and engaging. Use examples, analogies, and step-by-step explanations. Encourage questions and provide multiple ways to understand concepts.`
-            break
-
-          case 'subject_focus':
-            content = `Focus on the specific subject matter the user wants to learn. Provide accurate, up-to-date information and relate concepts to real-world applications.`
-            break
-
-          case 'difficulty_level':
-            if (config.expertise) {
-              switch (config.expertise.value) {
-                case 'beginner':
-                  content = 'Adjust explanations for beginners. Use simple language, provide basic concepts first, and include plenty of examples.'
-                  break
-                case 'intermediate':
-                  content = 'Provide intermediate-level guidance. Assume some basic knowledge but still explain complex concepts clearly.'
-                  break
-                case 'advanced':
-                  content = 'Offer advanced insights. Use technical language when appropriate and focus on nuanced or complex aspects.'
-                  break
-              }
-            }
-            break
-
-          case 'output_format':
-            content = `Structure your responses clearly with headings, bullet points, or numbered lists when appropriate. Make information easy to scan and understand.`
-            break
-
-          case 'creative_thinking':
-            content = `Encourage creative approaches to writing. Suggest different perspectives, brainstorming techniques, and innovative ways to express ideas.`
-            break
-
-          case 'context_setting':
-            content = `Understand the user's work environment and constraints. Consider their industry, role, and specific challenges when providing advice.`
-            break
-
-          case 'prioritization':
-            content = `Help users identify what's most important and urgent. Provide frameworks for decision-making and task management.`
-            break
-
-          case 'personality_traits':
-            content = `Be empathetic, understanding, and non-judgmental. Show genuine interest in the user's well-being and personal growth.`
-            break
-
-          case 'goal_setting':
-            if (config.goal?.value) {
-              content = `Primary Goal: ${config.goal.value}\n\nFocus on helping the user achieve this specific objective through structured guidance and support.`
-            }
-            else {
-              content = `Help users set clear, achievable goals. Use the SMART criteria (Specific, Measurable, Achievable, Relevant, Time-bound) when appropriate.`
-            }
-            break
-
-          case 'step_by_step':
-            content = `Break down complex tasks into manageable steps. Provide clear instructions and check for understanding before moving to the next step.`
-            break
-
-          case 'conditional_logic':
-            content = `Adapt your responses based on the user's specific situation. Ask clarifying questions when needed and provide tailored advice.`
-            break
-        }
-
-        if (content && !node.data.content) {
-          updateNodeData(node.id, { content })
-        }
-      })
-
-      // 自动连接系统会处理所有连接，不需要手动创建
-    }, 100)
-
-    // 切换到引导模式而不是高级模式
-    setInterfaceMode('guided')
-  }, [setInterfaceMode])
-
-  const handleSwitchToAdvanced = useCallback(() => {
+  const handleSwitchToAdvanced = () => {
     setInterfaceMode('advanced')
-  }, [])
+  }
 
-  // 新增：处理分析完成的回调
+  /**
+   * Handle analysis complete callback
+   * @param blocks - Blocks to apply analysis results to
+   * @param enhancements - Enhancements to apply analysis results to
+   * @param userQuery - User query to apply analysis results to
+   * @returns void
+   */
   const handleAnalysisComplete = useCallback((blocks: any[], enhancements: any[], userQuery?: string) => {
     const { applyAnalysisResults } = useBuilderStore.getState()
 
-    // 应用分析结果到store，包括用户的原始问题
     applyAnalysisResults(blocks, enhancements, userQuery)
 
-    // 生成标题和描述
     const firstBlock = blocks.find(b => b.type === 'role_definition')
     if (firstBlock) {
-      // 使用完整内容作为标题，让用户可以完整查看和编辑
       setTitle(firstBlock.content || t('builder.analyzer.defaults.defaultAssistantTitle'))
     }
     else {
@@ -295,7 +75,6 @@ function BuilderContent() {
 
     setDescription(t('builder.analyzer.defaults.generatedByAnalysis'))
 
-    // 切换到高级模式查看结果
     setInterfaceMode('advanced')
   }, [])
 
@@ -325,7 +104,6 @@ function BuilderContent() {
     }
   }, [isDragging, handleMouseMove, handleMouseUp])
 
-  // Check if user is new and should see onboarding
   useEffect(() => {
     const tourCompleted = localStorage.getItem('prohelen-tour-completed')
     const hasTemplate = searchParams.get('template')
@@ -337,7 +115,6 @@ function BuilderContent() {
     }
   }, [searchParams])
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // F1 for help
@@ -378,16 +155,13 @@ function BuilderContent() {
     const instructionId = searchParams.get('instruction')
 
     if (templateId) {
-      // Fetch template from API
       fetch(`/api/templates/${templateId}`)
         .then(res => res.json())
         .then((template) => {
           if (template) {
-            // Update builder state
             setTitle(template.title)
             setDescription(template.description)
 
-            // Import flow data if available
             if (template.flowData) {
               importFlowData(template.flowData)
             }
@@ -396,7 +170,6 @@ function BuilderContent() {
         .catch(console.error)
     }
     else if (instructionId) {
-      // Fetch instruction from API
       fetch(`/api/instructions/${instructionId}`)
         .then(res => res.json())
         .then((data) => {
@@ -405,7 +178,6 @@ function BuilderContent() {
             setTitle(`Copy of ${instruction.title}`)
             setDescription(instruction.description || '')
 
-            // Import flow data if available
             if (instruction.flowData) {
               importFlowData(instruction.flowData)
             }
@@ -419,7 +191,7 @@ function BuilderContent() {
     }
   }, [searchParams, importFlowData, setTitle, setDescription, resetFlow])
 
-  // 分析模式显示prompt分析器
+  // analyze mode show prompt analyzer
   if (interfaceMode === 'analyze') {
     return (
       <div className="min-h-screen bg-background">
@@ -436,7 +208,6 @@ function BuilderContent() {
               <span className="font-semibold">ProHelen</span>
             </div>
             <div />
-            {/* spacer */}
           </div>
         </div>
         <div className="pt-20">
@@ -449,69 +220,6 @@ function BuilderContent() {
     )
   }
 
-  // 引导模式显示欢迎界面或引导流程
-  if (interfaceMode === 'guided') {
-    if (guidedState.step === 'welcome') {
-      return (
-        <GuidedWelcome
-          onNext={() => setGuidedState(prev => ({ ...prev, step: 'arrange' }))}
-          onBackToSimple={() => setInterfaceMode('analyze')}
-          onSkipToAdvanced={handleSwitchToAdvanced}
-        />
-      )
-    }
-
-    // 引导步骤界面
-    const handleNextStep = () => {
-      const steps = ['arrange', 'customize', 'test']
-      const currentIndex = steps.indexOf(guidedState.step as string)
-      if (currentIndex < steps.length - 1) {
-        setGuidedState(prev => ({ ...prev, step: steps[currentIndex + 1] as any }))
-      }
-      else {
-        // 完成引导，切换到高级模式
-        setInterfaceMode('advanced')
-      }
-    }
-
-    const handlePreviousStep = () => {
-      const steps = ['arrange', 'customize', 'test']
-      const currentIndex = steps.indexOf(guidedState.step as string)
-      if (currentIndex > 0) {
-        setGuidedState(prev => ({ ...prev, step: steps[currentIndex - 1] as any }))
-      }
-      else {
-        setGuidedState(prev => ({ ...prev, step: 'welcome' }))
-      }
-    }
-
-    const canProceed = true // TODO: Add step-specific validation
-
-    return (
-      <div className="flex flex-col h-screen bg-background">
-        <GuidedHeader
-          step={guidedState.step as any}
-          onNext={handleNextStep}
-          onPrevious={handlePreviousStep}
-          onAdvanced={handleSwitchToAdvanced}
-          canProceed={canProceed}
-        />
-
-        <div className="flex-1 relative">
-          <GuidedCanvas
-            step={guidedState.step as any}
-          />
-
-          {/* 简化的预览面板 */}
-          <div className="absolute right-4 top-4 bottom-4 w-80">
-            <PromptPreview className="h-full border rounded-lg shadow-sm" />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // 高级模式显示完整编辑器
   return (
     <div className="flex flex-col min-h-screen h-screen overflow-hidden bg-background">
       <div className="flex-none px-4 py-3 border-b border-border">
@@ -558,7 +266,6 @@ function BuilderContent() {
             </TooltipContent>
           </Tooltip>
 
-          {/* Help Button */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

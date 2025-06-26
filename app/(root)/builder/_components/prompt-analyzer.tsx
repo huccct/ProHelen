@@ -33,8 +33,6 @@ interface PromptAnalyzerProps {
   onSwitchToAdvanced: () => void
 }
 
-// 示例提示从翻译文件获取
-
 export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: PromptAnalyzerProps) {
   const { t } = useTranslation()
   const [userPrompt, setUserPrompt] = useState('')
@@ -43,9 +41,7 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
   const [selectedBlocks, setSelectedBlocks] = useState<Set<string>>(new Set())
   const [selectedEnhancements, setSelectedEnhancements] = useState<Set<string>>(new Set())
 
-  // 获取block type的翻译标签
   const getBlockTypeLabel = (blockType: string): string => {
-    // 转换为驼峰形式以匹配翻译键
     const camelCase = blockType.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
     return t(`builder.components.blockPicker.blocks.${camelCase}.label`, { defaultValue: blockType })
   }
@@ -81,7 +77,6 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
       }
 
       setAnalysis(data.analysis)
-      // 默认选中所有提取的blocks
       setSelectedBlocks(new Set(data.analysis.extractedBlocks.map((block: ExtractedBlock) => block.type)))
     }
     catch (error) {
