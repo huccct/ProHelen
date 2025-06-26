@@ -1,44 +1,21 @@
 'use client'
 
+import { AuthContainer, AuthFormContainer, AuthLegalText, AuthSocialButton, AuthSubtitle, AuthTitle } from '@/components/auth-animations'
 import { NavBar } from '@/components/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { motion } from 'framer-motion'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FaGithub, FaMicrosoft } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5'
 import { toast } from 'sonner'
 
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
-}
-
-const buttonVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: 'easeOut',
-    },
-  },
-  hover: {
-    scale: 1.02,
-    transition: {
-      duration: 0.2,
-      ease: 'easeInOut',
-    },
-  },
-}
-
 export default function SignUp() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: '',
@@ -58,29 +35,34 @@ export default function SignUp() {
     }))
   }
 
+  /**
+   * Handle form submission
+   * @param e - Form event
+   * @returns void
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     try {
       // form validation
       if (formData.password.length < 8) {
-        throw new Error('Password must be at least 8 characters long')
+        throw new Error(t('auth.passwordTooShort'))
       }
 
       if (!/[A-Z]/.test(formData.password)) {
-        throw new Error('Password must contain at least one uppercase letter')
+        throw new Error(t('auth.passwordNoUppercase'))
       }
 
       if (!/[a-z]/.test(formData.password)) {
-        throw new Error('Password must contain at least one lowercase letter')
+        throw new Error(t('auth.passwordNoLowercase'))
       }
 
       if (!/\d/.test(formData.password)) {
-        throw new Error('Password must contain at least one number')
+        throw new Error(t('auth.passwordNoNumber'))
       }
 
       if (formData.password !== formData.confirmPassword) {
-        throw new Error('Passwords do not match')
+        throw new Error(t('auth.passwordsDoNotMatch'))
       }
 
       const res = await fetch('/api/auth/register', {
@@ -98,10 +80,10 @@ export default function SignUp() {
       const data = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to register')
+        throw new Error(data.error || t('auth.failedToRegister'))
       }
 
-      toast.success('Account created successfully! Redirecting to login...')
+      toast.success(t('auth.accountCreated'))
 
       setTimeout(() => {
         router.push('/sign-in')
@@ -109,19 +91,24 @@ export default function SignUp() {
     }
     catch (error) {
       console.error('Registration error:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to register')
+      toast.error(error instanceof Error ? error.message : t('auth.failedToRegister'))
     }
     finally {
       setIsLoading(false)
     }
   }
 
+  /**
+   * Validate password
+   * @param password - Password to validate
+   * @returns Array of validation results
+   */
   const validatePassword = (password: string) => {
     const requirements = [
-      { regex: /.{8,}/, message: 'At least 8 characters' },
-      { regex: /[A-Z]/, message: 'One uppercase letter' },
-      { regex: /[a-z]/, message: 'One lowercase letter' },
-      { regex: /\d/, message: 'One number' },
+      { regex: /.{8,}/, message: t('auth.eightCharacters') },
+      { regex: /[A-Z]/, message: t('auth.uppercaseLetter') },
+      { regex: /[a-z]/, message: t('auth.lowercaseLetter') },
+      { regex: /\d/, message: t('auth.oneNumber') },
     ]
     return requirements.map(req => ({
       met: req.regex.test(password),
@@ -170,41 +157,25 @@ export default function SignUp() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20">
         <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
-          <motion.div
-            className="w-full max-w-md space-y-8"
-            variants={fadeIn}
-            initial="initial"
-            animate="animate"
-          >
+          <AuthContainer>
             <div className="text-center space-y-4">
-              <motion.h2
-                className="text-3xl sm:text-4xl font-bold tracking-tight"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-              >
-                Create your account
-              </motion.h2>
-              <motion.p
-                className="text-muted-foreground"
-                variants={fadeIn}
-              >
-                Start building your personalized AI assistant
-              </motion.p>
+              <AuthTitle>
+                {t('auth.signUp.title')}
+              </AuthTitle>
+              <AuthSubtitle>
+                {t('auth.signUp.subtitle')}
+              </AuthSubtitle>
             </div>
 
-            <motion.div
-              className="space-y-6"
-              variants={fadeIn}
-            >
+            <AuthFormContainer>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">{t('auth.fullName')}</Label>
                   <Input
                     id="name"
                     name="name"
                     type="text"
-                    placeholder="Enter your name"
+                    placeholder={t('auth.fullNamePlaceholder')}
                     value={formData.name}
                     onChange={handleChange}
                     className="bg-input border-border text-foreground h-12"
@@ -212,12 +183,12 @@ export default function SignUp() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email address</Label>
+                  <Label htmlFor="email">{t('auth.emailAddress')}</Label>
                   <Input
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder={t('auth.emailPlaceholder')}
                     value={formData.email}
                     onChange={handleChange}
                     className="bg-input border-border text-foreground h-12"
@@ -225,13 +196,13 @@ export default function SignUp() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{t('auth.password')}</Label>
                   <div className="relative">
                     <Input
                       id="password"
                       name="password"
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Create a password"
+                      placeholder={t('auth.passwordPlaceholder')}
                       value={formData.password}
                       onChange={handleChange}
                       className="bg-input border-border text-foreground pr-10 h-12"
@@ -248,13 +219,13 @@ export default function SignUp() {
                   <PasswordStrengthIndicator />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword">{t('auth.confirmPassword')}</Label>
                   <div className="relative">
                     <Input
                       id="confirmPassword"
                       name="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder="Confirm your password"
+                      placeholder={t('auth.confirmPasswordPlaceholder')}
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       className="bg-input border-border text-foreground pr-10 h-12"
@@ -269,7 +240,7 @@ export default function SignUp() {
                     </button>
                   </div>
                   {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                    <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
+                    <p className="text-red-500 text-sm mt-1">{t('auth.passwordsDoNotMatch')}</p>
                   )}
                 </div>
 
@@ -278,7 +249,7 @@ export default function SignUp() {
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Creating account...' : 'Create account'}
+                  {isLoading ? t('auth.signUp.creatingAccount') : t('auth.createAccount')}
                 </Button>
               </form>
 
@@ -287,12 +258,12 @@ export default function SignUp() {
                   <div className="w-full border-t border-border"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-background text-muted-foreground">Or continue with</span>
+                  <span className="px-2 bg-background text-muted-foreground">{t('auth.orContinueWith')}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <motion.div variants={buttonVariants} whileHover="hover">
+                <AuthSocialButton>
                   <Button
                     variant="outline"
                     className="w-full h-12 cursor-pointer"
@@ -300,8 +271,8 @@ export default function SignUp() {
                   >
                     <FcGoogle className="h-5 w-5" />
                   </Button>
-                </motion.div>
-                <motion.div variants={buttonVariants} whileHover="hover">
+                </AuthSocialButton>
+                <AuthSocialButton>
                   <Button
                     variant="outline"
                     className="w-full h-12 cursor-pointer"
@@ -309,8 +280,8 @@ export default function SignUp() {
                   >
                     <FaGithub className="h-5 w-5" />
                   </Button>
-                </motion.div>
-                <motion.div variants={buttonVariants} whileHover="hover">
+                </AuthSocialButton>
+                <AuthSocialButton>
                   <Button
                     variant="outline"
                     className="w-full h-12 cursor-pointer"
@@ -318,27 +289,24 @@ export default function SignUp() {
                   >
                     <FaMicrosoft className="h-5 w-5" />
                   </Button>
-                </motion.div>
+                </AuthSocialButton>
               </div>
 
               <div className="text-center text-sm text-muted-foreground">
-                Already have an account?
+                {t('auth.alreadyHaveAccount')}
                 {' '}
                 <button
                   type="button"
                   className="text-foreground hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-in')}
                 >
-                  Sign in
+                  {t('auth.signInButton')}
                 </button>
               </div>
-            </motion.div>
+            </AuthFormContainer>
 
-            <motion.p
-              className="text-center text-sm text-muted-foreground"
-              variants={fadeIn}
-            >
-              By continuing, you agree to our
+            <AuthLegalText>
+              {t('auth.byContinuing')}
               {' '}
               <a
                 href="/terms"
@@ -346,10 +314,10 @@ export default function SignUp() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Terms of Service
+                {t('auth.termsOfService')}
               </a>
               {' '}
-              and
+              {t('auth.and')}
               {' '}
               <a
                 href="/privacy"
@@ -357,10 +325,10 @@ export default function SignUp() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Privacy Policy
+                {t('auth.privacyPolicy')}
               </a>
-            </motion.p>
-          </motion.div>
+            </AuthLegalText>
+          </AuthContainer>
         </div>
       </div>
     </div>

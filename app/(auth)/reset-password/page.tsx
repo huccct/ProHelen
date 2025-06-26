@@ -1,22 +1,18 @@
 'use client'
 
+import { AuthContainer, AuthFormContainer, AuthSubtitle, AuthTitle } from '@/components/auth-animations'
 import { NavBar } from '@/components/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { motion } from 'framer-motion'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5'
 import { toast } from 'sonner'
 
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
-}
-
 function ResetPasswordForm() {
+  const { t } = useTranslation()
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
@@ -26,12 +22,17 @@ function ResetPasswordForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
+  /**
+   * Validate password
+   * @param password - Password to validate
+   * @returns Array of validation results
+   */
   const validatePassword = (password: string) => {
     const requirements = [
-      { regex: /.{8,}/, message: 'At least 8 characters' },
-      { regex: /[A-Z]/, message: 'One uppercase letter' },
-      { regex: /[a-z]/, message: 'One lowercase letter' },
-      { regex: /\d/, message: 'One number' },
+      { regex: /.{8,}/, message: t('auth.eightCharacters') },
+      { regex: /[A-Z]/, message: t('auth.uppercaseLetter') },
+      { regex: /[a-z]/, message: t('auth.lowercaseLetter') },
+      { regex: /\d/, message: t('auth.oneNumber') },
     ]
     return requirements.map(req => ({
       met: req.regex.test(password),
@@ -72,21 +73,26 @@ function ResetPasswordForm() {
     )
   }
 
+  /**
+   * Handle form submission
+   * @param e - Form event
+   * @returns void
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!token) {
-      toast.error('Invalid reset link')
+      toast.error(t('auth.resetPassword.invalidResetLinkError'))
       return
     }
 
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match')
+      toast.error(t('auth.passwordsDoNotMatch'))
       return
     }
 
     const validations = validatePassword(password)
     if (!validations.every(v => v.met)) {
-      toast.error('Password does not meet requirements')
+      toast.error(t('auth.resetPassword.passwordRequirementsNotMet'))
       return
     }
 
@@ -108,12 +114,12 @@ function ResetPasswordForm() {
       if (!res.ok)
         throw new Error(data.error)
 
-      toast.success('Password reset successfully')
+      toast.success(t('auth.resetPassword.passwordResetSuccessfully'))
       router.push('/sign-in')
     }
     catch (error) {
       console.error('Reset password error:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to reset password')
+      toast.error(error instanceof Error ? error.message : t('auth.resetPassword.failedToResetPassword'))
     }
     finally {
       setIsLoading(false)
@@ -129,13 +135,13 @@ function ResetPasswordForm() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20">
           <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold">Invalid Reset Link</h2>
-              <p className="text-muted-foreground">This password reset link is invalid or has expired.</p>
+              <h2 className="text-3xl font-bold">{t('auth.resetPassword.invalidResetLink')}</h2>
+              <p className="text-muted-foreground">{t('auth.resetPassword.invalidResetLinkMessage')}</p>
               <Button
                 onClick={() => router.push('/forgot-password')}
                 className="mt-4"
               >
-                Request New Reset Link
+                {t('auth.resetPassword.requestNewResetLink')}
               </Button>
             </div>
           </div>
@@ -152,41 +158,25 @@ function ResetPasswordForm() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20">
         <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
-          <motion.div
-            className="w-full max-w-md space-y-8"
-            variants={fadeIn}
-            initial="initial"
-            animate="animate"
-          >
+          <AuthContainer>
             <div className="text-center space-y-4">
-              <motion.h2
-                className="text-3xl sm:text-4xl font-bold tracking-tight"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-              >
-                Reset your password
-              </motion.h2>
-              <motion.p
-                className="text-muted-foreground"
-                variants={fadeIn}
-              >
-                Please enter your new password below.
-              </motion.p>
+              <AuthTitle>
+                {t('auth.resetPassword.title')}
+              </AuthTitle>
+              <AuthSubtitle>
+                {t('auth.resetPassword.subtitle')}
+              </AuthSubtitle>
             </div>
 
-            <motion.div
-              className="space-y-6"
-              variants={fadeIn}
-            >
+            <AuthFormContainer>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="password">New Password</Label>
+                  <Label htmlFor="password">{t('auth.resetPassword.newPassword')}</Label>
                   <div className="relative">
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter your new password"
+                      placeholder={t('auth.resetPassword.newPasswordPlaceholder')}
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       className="bg-input border-border text-foreground pr-10 h-12"
@@ -204,12 +194,12 @@ function ResetPasswordForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                  <Label htmlFor="confirmPassword">{t('auth.resetPassword.confirmNewPassword')}</Label>
                   <div className="relative">
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder="Confirm your new password"
+                      placeholder={t('auth.resetPassword.confirmNewPasswordPlaceholder')}
                       value={confirmPassword}
                       onChange={e => setConfirmPassword(e.target.value)}
                       className="bg-input border-border text-foreground pr-10 h-12"
@@ -224,7 +214,7 @@ function ResetPasswordForm() {
                     </button>
                   </div>
                   {confirmPassword && password !== confirmPassword && (
-                    <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
+                    <p className="text-red-500 text-sm mt-1">{t('auth.passwordsDoNotMatch')}</p>
                   )}
                 </div>
 
@@ -233,23 +223,23 @@ function ResetPasswordForm() {
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Resetting password...' : 'Reset password'}
+                  {isLoading ? t('auth.resetPassword.resettingPassword') : t('auth.resetPassword.resetPasswordButton')}
                 </Button>
               </form>
 
               <div className="text-center text-sm text-muted-foreground">
-                Remember your password?
+                {t('auth.forgotPassword.rememberPassword')}
                 {' '}
                 <button
                   type="button"
                   className="text-foreground hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-in')}
                 >
-                  Sign in
+                  {t('auth.signInButton')}
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
+            </AuthFormContainer>
+          </AuthContainer>
         </div>
       </div>
     </div>
@@ -257,12 +247,14 @@ function ResetPasswordForm() {
 }
 
 export default function ResetPassword() {
+  const { t } = useTranslation()
+
   return (
     <Suspense fallback={(
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">Loading...</h2>
-          <p className="text-muted-foreground">Please wait while we verify your reset link.</p>
+          <h2 className="text-2xl font-bold mb-2">{t('auth.resetPassword.loading')}</h2>
+          <p className="text-muted-foreground">{t('auth.resetPassword.verifyingResetLink')}</p>
         </div>
       </div>
     )}

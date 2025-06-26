@@ -108,7 +108,7 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
                     onClick={() => router.push('/sign-in')}
                     className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
                   >
-                    {t('auth.signIn')}
+                    {t('auth.signInButton')}
                   </Button>
                 )}
           </div>

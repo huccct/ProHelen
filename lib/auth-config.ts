@@ -58,30 +58,30 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      // 对于第三方登录（Google, GitHub, Azure），确保数据库中有用户记录
+      // For third-party login (Google, GitHub, Azure), ensure the user exists in the database
       if (account?.provider !== 'credentials' && user.email) {
         try {
-          // 检查用户是否已存在
+          // Check if the user already exists
           const existingUser = await prisma.user.findUnique({
             where: { email: user.email },
           })
 
           if (!existingUser) {
-            // 创建新用户
+            // Create a new user
             const newUser = await prisma.user.create({
               data: {
                 email: user.email,
                 name: user.name || user.email.split('@')[0],
                 image: user.image || null,
-                // 第三方登录用户不设置密码
+                // Third-party login users do not set a password
                 password: null,
               },
             })
-            // 更新user对象中的id，确保后续session回调能正确获取
+            // Update the user object's id to ensure the session callback can correctly get it
             user.id = newUser.id
           }
           else {
-            // 更新现有用户的信息（如头像、名称）
+            // Update the existing user's information (e.g. avatar, name)
             await prisma.user.update({
               where: { email: user.email },
               data: {

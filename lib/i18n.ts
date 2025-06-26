@@ -37,17 +37,109 @@ const resources = {
       },
       // 认证
       auth: {
-        signIn: 'Sign In',
-        signUp: 'Sign Up',
+        // 通用按钮和链接
+        signInButton: 'Sign In',
+        signUpButton: 'Sign Up',
         signOut: 'Sign Out',
-        email: 'Email',
-        password: 'Password',
-        confirmPassword: 'Confirm Password',
-        forgotPassword: 'Forgot Password',
-        resetPassword: 'Reset Password',
         createAccount: 'Create Account',
         alreadyHaveAccount: 'Already have an account?',
         dontHaveAccount: 'Don\'t have an account?',
+        forgotPasswordLink: 'Forgot Password',
+        resetPasswordLink: 'Reset Password',
+
+        // 表单字段
+        emailAddress: 'Email address',
+        password: 'Password',
+        confirmPassword: 'Confirm Password',
+        fullName: 'Full Name',
+
+        // 占位符
+        emailPlaceholder: 'Enter your email',
+        passwordPlaceholder: 'Enter your password',
+        fullNamePlaceholder: 'Enter your name',
+        confirmPasswordPlaceholder: 'Confirm your password',
+
+        // 加载状态
+        creatingAccount: 'Creating account...',
+
+        // 消息
+        accountCreated: 'Account created successfully! Redirecting to login...',
+
+        // 密码验证
+        passwordTooShort: 'Password must be at least 8 characters long',
+        passwordNoUppercase: 'Password must contain at least one uppercase letter',
+        passwordNoLowercase: 'Password must contain at least one lowercase letter',
+        passwordNoNumber: 'Password must contain at least one number',
+        passwordsDoNotMatch: 'Passwords do not match',
+        failedToRegister: 'Failed to register',
+
+        // 密码强度
+        eightCharacters: 'At least 8 characters',
+        uppercaseLetter: 'One uppercase letter',
+        lowercaseLetter: 'One lowercase letter',
+        oneNumber: 'One number',
+
+        // 社交登录和法律
+        orContinueWith: 'Or continue with',
+        byContinuing: 'By continuing, you agree to our',
+        and: 'and',
+        termsOfService: 'Terms of Service',
+        privacyPolicy: 'Privacy Policy',
+
+        // 忘记密码
+        forgotPassword: {
+          title: 'Reset your password',
+          subtitle: 'Enter your email address and we\'ll send you instructions to reset your password.',
+          subtitleSent: 'Check your email for a link to reset your password.',
+          sendingResetLink: 'Sending reset link...',
+          sendResetLink: 'Send reset link',
+          resetLinkSent: 'Reset link sent to your email',
+          failedToSendResetLink: 'Failed to send reset link',
+          sentTo: 'We\'ve sent a password reset link to',
+          tryAnotherEmail: 'Try another email',
+          rememberPassword: 'Remember your password?',
+        },
+
+        // 重置密码
+        resetPassword: {
+          title: 'Reset your password',
+          subtitle: 'Please enter your new password below.',
+          newPassword: 'New Password',
+          confirmNewPassword: 'Confirm New Password',
+          newPasswordPlaceholder: 'Enter your new password',
+          confirmNewPasswordPlaceholder: 'Confirm your new password',
+          resettingPassword: 'Resetting password...',
+          resetPasswordButton: 'Reset password',
+          invalidResetLink: 'Invalid Reset Link',
+          invalidResetLinkMessage: 'This password reset link is invalid or has expired.',
+          requestNewResetLink: 'Request New Reset Link',
+          passwordResetSuccessfully: 'Password reset successfully',
+          failedToResetPassword: 'Failed to reset password',
+          passwordRequirementsNotMet: 'Password does not meet requirements',
+          invalidResetLinkError: 'Invalid reset link',
+          loading: 'Loading...',
+          verifyingResetLink: 'Please wait while we verify your reset link.',
+        },
+
+        // 登录专用
+        signIn: {
+          title: 'Welcome Back',
+          subtitle: 'Sign in to continue building your AI assistant',
+          signingIn: 'Signing in...',
+          redirecting: 'Redirecting to login...',
+          success: 'Signed in successfully',
+          errors: {
+            invalidCredentials: 'Invalid email or password',
+            somethingWrong: 'Something went wrong',
+            failedToSignIn: 'Failed to sign in',
+          },
+        },
+
+        // 注册专用
+        signUp: {
+          title: 'Create your account',
+          subtitle: 'Start building your personalized AI assistant',
+        },
       },
       // 首页
       home: {
@@ -1155,17 +1247,109 @@ const resources = {
       },
       // 认证
       auth: {
-        signIn: '登录',
-        signUp: '注册',
+        // 通用按钮和链接
+        signInButton: '登录',
+        signUpButton: '注册',
         signOut: '退出登录',
-        email: '邮箱',
-        password: '密码',
-        confirmPassword: '确认密码',
-        forgotPassword: '忘记密码',
-        resetPassword: '重置密码',
         createAccount: '创建账户',
         alreadyHaveAccount: '已有账户？',
         dontHaveAccount: '还没有账户？',
+        forgotPasswordLink: '忘记密码',
+        resetPasswordLink: '重置密码',
+
+        // 表单字段
+        emailAddress: '邮箱地址',
+        password: '密码',
+        confirmPassword: '确认密码',
+        fullName: '全名',
+
+        // 占位符
+        emailPlaceholder: '请输入邮箱',
+        passwordPlaceholder: '请输入密码',
+        fullNamePlaceholder: '输入您的名字',
+        confirmPasswordPlaceholder: '确认密码',
+
+        // 加载状态
+        creatingAccount: '创建账户中...',
+
+        // 消息
+        accountCreated: '账户创建成功！正在跳转登录...',
+
+        // 密码验证
+        passwordTooShort: '密码必须至少8个字符长',
+        passwordNoUppercase: '密码必须包含至少一个大写字母',
+        passwordNoLowercase: '密码必须包含至少一个小写字母',
+        passwordNoNumber: '密码必须包含至少一个数字',
+        passwordsDoNotMatch: '密码不匹配',
+        failedToRegister: '注册失败',
+
+        // 密码强度
+        eightCharacters: '至少8个字符',
+        uppercaseLetter: '至少一个大写字母',
+        lowercaseLetter: '至少一个小写字母',
+        oneNumber: '至少一个数字',
+
+        // 社交登录和法律
+        orContinueWith: '或者使用以下方式继续',
+        byContinuing: '继续使用即表示您同意我们的',
+        and: '和',
+        termsOfService: '服务条款',
+        privacyPolicy: '隐私政策',
+
+        // 忘记密码
+        forgotPassword: {
+          title: '重置您的密码',
+          subtitle: '输入您的邮箱地址，我们将向您发送重置密码的说明。',
+          subtitleSent: '请检查您的邮箱以获取重置密码的链接。',
+          sendingResetLink: '发送重置链接中...',
+          sendResetLink: '发送重置链接',
+          resetLinkSent: '重置链接已发送到您的邮箱',
+          failedToSendResetLink: '发送重置链接失败',
+          sentTo: '我们已向以下邮箱发送密码重置链接：',
+          tryAnotherEmail: '尝试其他邮箱',
+          rememberPassword: '记起密码了？',
+        },
+
+        // 重置密码
+        resetPassword: {
+          title: '重置您的密码',
+          subtitle: '请输入您的新密码。',
+          newPassword: '新密码',
+          confirmNewPassword: '确认新密码',
+          newPasswordPlaceholder: '输入您的新密码',
+          confirmNewPasswordPlaceholder: '确认新密码',
+          resettingPassword: '重置密码中...',
+          resetPasswordButton: '重置密码',
+          invalidResetLink: '无效的重置链接',
+          invalidResetLinkMessage: '此重置链接无效或已过期。',
+          requestNewResetLink: '请求新的重置链接',
+          passwordResetSuccessfully: '密码重置成功',
+          failedToResetPassword: '重置密码失败',
+          passwordRequirementsNotMet: '密码不符合要求',
+          invalidResetLinkError: '无效的重置链接',
+          loading: '加载中...',
+          verifyingResetLink: '请稍候我们验证您的重置链接。',
+        },
+
+        // 登录专用
+        signIn: {
+          title: '欢迎回来',
+          subtitle: '登录以继续构建您的 AI 助手',
+          signingIn: '登录中...',
+          redirecting: '正在跳转登录...',
+          success: '登录成功',
+          errors: {
+            invalidCredentials: '邮箱或密码错误',
+            somethingWrong: '出现了问题',
+            failedToSignIn: '登录失败',
+          },
+        },
+
+        // 注册专用
+        signUp: {
+          title: '创建您的账户',
+          subtitle: '开始构建您的个性化 AI 助手',
+        },
       },
       // 首页
       home: {

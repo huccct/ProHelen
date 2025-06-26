@@ -1,50 +1,32 @@
 'use client'
 
+import { AuthContainer, AuthFormContainer, AuthLegalText, AuthSocialButton, AuthSubtitle, AuthTitle } from '@/components/auth-animations'
 import { NavBar } from '@/components/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { motion } from 'framer-motion'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FaGithub, FaMicrosoft } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5'
 import { toast } from 'sonner'
 
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
-}
-
-const buttonVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: 'easeOut',
-    },
-  },
-  hover: {
-    scale: 1.02,
-    transition: {
-      duration: 0.2,
-      ease: 'easeInOut',
-    },
-  },
-}
-
 export default function SignIn() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
+  /**
+   * Email sign in
+   * @param e - Form event
+   * @returns void
+   */
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -56,17 +38,17 @@ export default function SignIn() {
       })
       if (result?.error) {
         if (result.error === 'Invalid credentials')
-          toast.error('Invalid email or password')
+          toast.error(t('auth.signIn.errors.invalidCredentials'))
         else
-          toast.error('Something went wrong')
+          toast.error(t('auth.signIn.errors.somethingWrong'))
       }
       else {
-        toast.success('Signed in successfully')
+        toast.success(t('auth.signIn.success'))
         router.push('/')
       }
     }
     catch (error) {
-      toast.error('Failed to sign in')
+      toast.error(t('auth.signIn.errors.failedToSignIn'))
       console.error(error)
     }
     finally {
@@ -74,8 +56,13 @@ export default function SignIn() {
     }
   }
 
+  /**
+   * Social sign in
+   * @param provider - Provider name (google, github, azure-ad)
+   * @returns void
+   */
   const handleSocialSignIn = (provider: string) => {
-    toast.loading('Redirecting to provider...')
+    toast.loading(t('auth.signIn.redirecting'))
     signIn(provider, { callbackUrl: '/' })
   }
 
@@ -87,40 +74,24 @@ export default function SignIn() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20">
         <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
-          <motion.div
-            className="w-full max-w-md space-y-8"
-            variants={fadeIn}
-            initial="initial"
-            animate="animate"
-          >
+          <AuthContainer>
             <div className="text-center space-y-4">
-              <motion.h2
-                className="text-3xl sm:text-4xl font-bold tracking-tight"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-              >
-                Welcome Back
-              </motion.h2>
-              <motion.p
-                className="text-muted-foreground"
-                variants={fadeIn}
-              >
-                Sign in to continue building your AI assistant
-              </motion.p>
+              <AuthTitle>
+                {t('auth.signIn.title')}
+              </AuthTitle>
+              <AuthSubtitle>
+                {t('auth.signIn.subtitle')}
+              </AuthSubtitle>
             </div>
 
-            <motion.div
-              className="space-y-6"
-              variants={fadeIn}
-            >
+            <AuthFormContainer>
               <form onSubmit={handleEmailSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email address</Label>
+                  <Label htmlFor="email">{t('auth.emailAddress')}</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder={t('auth.emailPlaceholder')}
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     className="bg-input border-border text-foreground h-12"
@@ -129,7 +100,7 @@ export default function SignIn() {
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">{t('auth.password')}</Label>
                     <button
                       type="button"
                       className="text-sm text-foreground hover:underline cursor-pointer"
@@ -137,14 +108,15 @@ export default function SignIn() {
                         router.push('/forgot-password')
                       }}
                     >
-                      Forgot password?
+                      {t('auth.forgotPasswordLink')}
+                      ?
                     </button>
                   </div>
                   <div className="relative">
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter your password"
+                      placeholder={t('auth.passwordPlaceholder')}
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       className="bg-input border-border text-foreground pr-10 h-12"
@@ -165,7 +137,7 @@ export default function SignIn() {
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Signing in...' : 'Sign in'}
+                  {isLoading ? t('auth.signIn.signingIn') : t('auth.signInButton')}
                 </Button>
               </form>
 
@@ -174,12 +146,12 @@ export default function SignIn() {
                   <div className="w-full border-t border-border"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-background text-muted-foreground">Or continue with</span>
+                  <span className="px-2 bg-background text-muted-foreground">{t('auth.orContinueWith')}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <motion.div variants={buttonVariants} whileHover="hover">
+                <AuthSocialButton>
                   <Button
                     variant="outline"
                     className="w-full h-12 cursor-pointer"
@@ -187,8 +159,8 @@ export default function SignIn() {
                   >
                     <FcGoogle className="h-5 w-5" />
                   </Button>
-                </motion.div>
-                <motion.div variants={buttonVariants} whileHover="hover">
+                </AuthSocialButton>
+                <AuthSocialButton>
                   <Button
                     variant="outline"
                     className="w-full h-12 cursor-pointer"
@@ -196,8 +168,8 @@ export default function SignIn() {
                   >
                     <FaGithub className="h-5 w-5" />
                   </Button>
-                </motion.div>
-                <motion.div variants={buttonVariants} whileHover="hover">
+                </AuthSocialButton>
+                <AuthSocialButton>
                   <Button
                     variant="outline"
                     className="w-full h-12 cursor-pointer"
@@ -205,27 +177,24 @@ export default function SignIn() {
                   >
                     <FaMicrosoft className="h-5 w-5" />
                   </Button>
-                </motion.div>
+                </AuthSocialButton>
               </div>
 
               <div className="text-center text-sm text-muted-foreground">
-                Don't have an account?
+                {t('auth.dontHaveAccount')}
                 {' '}
                 <button
                   type="button"
                   className="text-foreground hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-up')}
                 >
-                  Sign up
+                  {t('auth.signUpButton')}
                 </button>
               </div>
-            </motion.div>
+            </AuthFormContainer>
 
-            <motion.p
-              className="text-center text-sm text-muted-foreground"
-              variants={fadeIn}
-            >
-              By continuing, you agree to our
+            <AuthLegalText>
+              {t('auth.byContinuing')}
               {' '}
               <a
                 href="/terms"
@@ -233,10 +202,10 @@ export default function SignIn() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Terms of Service
+                {t('auth.termsOfService')}
               </a>
               {' '}
-              and
+              {t('auth.and')}
               {' '}
               <a
                 href="/privacy"
@@ -244,10 +213,10 @@ export default function SignIn() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Privacy Policy
+                {t('auth.privacyPolicy')}
               </a>
-            </motion.p>
-          </motion.div>
+            </AuthLegalText>
+          </AuthContainer>
         </div>
       </div>
     </div>

@@ -1,26 +1,27 @@
 'use client'
 
+import { AuthContainer, AuthFormContainer, AuthLegalText, AuthSubtitle, AuthTitle } from '@/components/auth-animations'
 import { NavBar } from '@/components/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
-}
-
 export default function ForgotPassword() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSent, setIsSent] = useState(false)
 
+  /**
+   * Handle form submission
+   * @param e - Form event
+   * @returns void
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -39,11 +40,11 @@ export default function ForgotPassword() {
         throw new Error(data.error)
 
       setIsSent(true)
-      toast.success('Reset link sent to your email')
+      toast.success(t('auth.forgotPassword.resetLinkSent'))
     }
     catch (error) {
       console.error('Forgot password error:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to send reset link')
+      toast.error(error instanceof Error ? error.message : t('auth.forgotPassword.failedToSendResetLink'))
     }
     finally {
       setIsLoading(false)
@@ -58,45 +59,29 @@ export default function ForgotPassword() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20">
         <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
-          <motion.div
-            className="w-full max-w-md space-y-8"
-            variants={fadeIn}
-            initial="initial"
-            animate="animate"
-          >
+          <AuthContainer>
             <div className="text-center space-y-4">
-              <motion.h2
-                className="text-3xl sm:text-4xl font-bold tracking-tight"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-              >
-                Reset your password
-              </motion.h2>
-              <motion.p
-                className="text-muted-foreground"
-                variants={fadeIn}
-              >
+              <AuthTitle>
+                {t('auth.forgotPassword.title')}
+              </AuthTitle>
+              <AuthSubtitle>
                 {!isSent
-                  ? 'Enter your email address and we\'ll send you instructions to reset your password.'
-                  : 'Check your email for a link to reset your password.'}
-              </motion.p>
+                  ? t('auth.forgotPassword.subtitle')
+                  : t('auth.forgotPassword.subtitleSent')}
+              </AuthSubtitle>
             </div>
 
-            <motion.div
-              className="space-y-6"
-              variants={fadeIn}
-            >
+            <AuthFormContainer>
               {!isSent
                 ? (
                     <form onSubmit={handleSubmit} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email address</Label>
+                        <Label htmlFor="email">{t('auth.emailAddress')}</Label>
                         <Input
                           id="email"
                           name="email"
                           type="email"
-                          placeholder="Enter your email"
+                          placeholder={t('auth.emailPlaceholder')}
                           value={email}
                           onChange={e => setEmail(e.target.value)}
                           className="bg-input border-border text-foreground h-12"
@@ -109,14 +94,14 @@ export default function ForgotPassword() {
                         className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
                         disabled={isLoading}
                       >
-                        {isLoading ? 'Sending reset link...' : 'Send reset link'}
+                        {isLoading ? t('auth.forgotPassword.sendingResetLink') : t('auth.forgotPassword.sendResetLink')}
                       </Button>
                     </form>
                   )
                 : (
                     <div className="space-y-4">
                       <div className="bg-muted text-foreground p-4 rounded-lg text-sm">
-                        We've sent a password reset link to
+                        {t('auth.forgotPassword.sentTo')}
                         {' '}
                         <strong>{email}</strong>
                       </div>
@@ -129,29 +114,26 @@ export default function ForgotPassword() {
                           setEmail('')
                         }}
                       >
-                        Try another email
+                        {t('auth.forgotPassword.tryAnotherEmail')}
                       </Button>
                     </div>
                   )}
 
               <div className="text-center text-sm text-muted-foreground">
-                Remember your password?
+                {t('auth.forgotPassword.rememberPassword')}
                 {' '}
                 <button
                   type="button"
                   className="text-foreground hover:underline cursor-pointer"
                   onClick={() => router.push('/sign-in')}
                 >
-                  Sign in
+                  {t('auth.signInButton')}
                 </button>
               </div>
-            </motion.div>
+            </AuthFormContainer>
 
-            <motion.p
-              className="text-center text-sm text-muted-foreground"
-              variants={fadeIn}
-            >
-              By continuing, you agree to our
+            <AuthLegalText>
+              {t('auth.byContinuing')}
               {' '}
               <a
                 href="/terms"
@@ -159,10 +141,10 @@ export default function ForgotPassword() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Terms of Service
+                {t('auth.termsOfService')}
               </a>
               {' '}
-              and
+              {t('auth.and')}
               {' '}
               <a
                 href="/privacy"
@@ -170,10 +152,10 @@ export default function ForgotPassword() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Privacy Policy
+                {t('auth.privacyPolicy')}
               </a>
-            </motion.p>
-          </motion.div>
+            </AuthLegalText>
+          </AuthContainer>
         </div>
       </div>
     </div>
