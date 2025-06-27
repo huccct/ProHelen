@@ -5,7 +5,6 @@ import { NextResponse } from 'next/server'
 
 const prisma = new PrismaClient()
 
-// GET - 获取模板的评论列表
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -15,7 +14,6 @@ export async function GET(
     const userId = searchParams.get('userId')
     const { id: templateId } = await params
 
-    // 如果指定了userId，返回该用户的评论
     if (userId) {
       const userReview = await prisma.templateReview.findUnique({
         where: {
@@ -29,7 +27,6 @@ export async function GET(
       return NextResponse.json({ userReview })
     }
 
-    // 否则返回所有评论
     const reviews = await prisma.templateReview.findMany({
       where: { templateId },
       include: {
@@ -54,7 +51,6 @@ export async function GET(
   }
 }
 
-// POST - 创建或更新评论
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -72,7 +68,6 @@ export async function POST(
     const { rating, comment } = body
     const { id: templateId } = await params
 
-    // 验证评分范围
     if (!rating || rating < 1 || rating > 5) {
       return NextResponse.json(
         { error: 'Rating must be between 1 and 5' },
@@ -80,7 +75,6 @@ export async function POST(
       )
     }
 
-    // 获取用户信息
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     })
@@ -92,9 +86,7 @@ export async function POST(
       )
     }
 
-    // 使用事务来创建/更新评论并更新模板平均评分
     const result = await prisma.$transaction(async (tx) => {
-      // 创建或更新评论
       const review = await tx.templateReview.upsert({
         where: {
           templateId_userId: {
@@ -114,7 +106,6 @@ export async function POST(
         },
       })
 
-      // 重新计算模板的平均评分
       const allReviews = await tx.templateReview.findMany({
         where: { templateId },
         select: { rating: true },
@@ -123,7 +114,6 @@ export async function POST(
       const averageRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
       const ratingCount = allReviews.length
 
-      // 更新模板的评分信息
       await tx.template.update({
         where: { id: templateId },
         data: {

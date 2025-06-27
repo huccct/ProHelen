@@ -14,6 +14,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { getCategoryDisplayName } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { Clock, Heart, Star, TrendingUp, Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -57,6 +58,7 @@ interface PaginationInfo {
 export function TemplateList({ searchQuery, category }: TemplateListProps) {
   const { t } = useTranslation()
   const router = useRouter()
+
   const [templates, setTemplates] = useState<Template[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -179,7 +181,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                     variant="secondary"
                     className="bg-primary/10 text-primary border-primary/30 pointer-events-none"
                   >
-                    {template.category}
+                    {getCategoryDisplayName(template.category, t)}
                   </Badge>
                   {template.isPremium && (
                     <Badge className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/30 pointer-events-none">
@@ -197,65 +199,69 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                 </CardDescription>
 
                 {/* Statistics */}
-                <TooltipProvider>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mt-4">
-                    {template.rating && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-1 cursor-help">
-                            <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                            <span>{formatRating(template.rating)}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            {t('templates.stats.rating')}
-                            {' '}
-                            (
-                            {template.rating}
-                            /5.0)
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                    {template.usageCount && template.usageCount > 0 && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-1 cursor-help">
-                            <TrendingUp className="w-4 h-4" />
-                            <span>{formatUsageCount(template.usageCount)}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            {t('templates.stats.usage')}
-                            {' '}
-                            {template.usageCount}
-                            {' '}
-                            {t('templates.stats.times')}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                    {template._count?.favorites && template._count.favorites > 0 && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-1 cursor-help">
-                            <Heart className="w-4 h-4" />
-                            <span>{template._count.favorites}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            {template._count.favorites}
-                            {' '}
-                            {t('templates.stats.favorites')}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                  </div>
-                </TooltipProvider>
+                {(((template.rating || 0) > 0)
+                  || ((template.usageCount || 0) > 0)
+                  || ((template._count?.favorites || 0) > 0)) && (
+                  <TooltipProvider>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mt-4">
+                      {(template.rating || 0) > 0 && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center gap-1 cursor-help">
+                              <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                              <span>{formatRating(template.rating!)}</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              {t('templates.stats.rating')}
+                              {' '}
+                              (
+                              {template.rating}
+                              /5.0)
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                      {(template.usageCount || 0) > 0 && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center gap-1 cursor-help">
+                              <TrendingUp className="w-4 h-4" />
+                              <span>{formatUsageCount(template.usageCount!)}</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              {t('templates.stats.usage')}
+                              {' '}
+                              {template.usageCount}
+                              {' '}
+                              {t('templates.stats.times')}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                      {(template._count?.favorites || 0) > 0 && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center gap-1 cursor-help">
+                              <Heart className="w-4 h-4" />
+                              <span>{template._count?.favorites}</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              {template._count?.favorites}
+                              {' '}
+                              {t('templates.stats.favorites')}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </TooltipProvider>
+                )}
 
                 {/* Tags */}
                 {template.tags && template.tags.length > 0 && (

@@ -1,6 +1,7 @@
 'use client'
 
 import type { TemplateCategory } from '../page'
+import { getCategoryDisplayName } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -15,18 +16,6 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
   const [categories, setCategories] = useState<TemplateCategory[]>(['All'])
   const [loading, setLoading] = useState(true)
 
-  // 分类名称翻译映射
-  const getCategoryDisplayName = (category: string) => {
-    const categoryMap: Record<string, string> = {
-      'All': t('templates.categories.all'),
-      'Goal Setting': t('templates.categories.goalSetting'),
-      'Education': t('templates.categories.education'),
-      'Career': t('templates.categories.career'),
-      'Productivity': t('templates.categories.productivity'),
-    }
-    return categoryMap[category] || category
-  }
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -38,7 +27,6 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
       }
       catch (error) {
         console.error('Failed to fetch categories:', error)
-        // 如果API失败，使用默认分类
         setCategories(['All', 'Goal Setting', 'Education', 'Career', 'Productivity'])
       }
       finally {
@@ -52,7 +40,6 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
   if (loading) {
     return (
       <div className="flex flex-wrap gap-3">
-        {/* 加载状态的骨架屏 */}
         {[...Array.from({ length: 5 })].map((_, i) => (
           <div
             key={i}
@@ -80,7 +67,7 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
         >
-          {getCategoryDisplayName(category)}
+          {getCategoryDisplayName(category, t)}
         </motion.button>
       ))}
     </div>

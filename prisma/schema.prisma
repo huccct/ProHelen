@@ -121,6 +121,7 @@ model Template {
   // Analytics
   usageCount  Int      @default(0)
   rating      Float?   // Average rating from 1-5
+
   ratingCount Int      @default(0)
   
   // Ownership

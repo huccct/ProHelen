@@ -3,6 +3,7 @@
 import type { Template } from '../_components/template-list'
 import { NavBar } from '@/components/nav-bar'
 import { Button } from '@/components/ui/button'
+import { getCategoryDisplayName } from '@/lib/utils'
 import { ArrowLeft } from 'lucide-react'
 import { notFound, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -97,7 +98,7 @@ export default function TemplateDetailPage({ params }: { params: any }) {
                         {t('templateDetail.backToTemplates')}
                       </button>
                       <h1 className="text-3xl font-bold">{template.title}</h1>
-                      <p className="text-muted-foreground mt-2">{template.category}</p>
+                      <p className="text-muted-foreground mt-2">{getCategoryDisplayName(template.category, t)}</p>
                     </div>
 
                     <div className="flex space-x-3">
