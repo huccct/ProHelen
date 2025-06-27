@@ -188,6 +188,14 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
                   <Textarea
                     value={userPrompt}
                     onChange={e => setUserPrompt(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        if (userPrompt.trim() && !isAnalyzing) {
+                          handleAnalyze()
+                        }
+                      }
+                    }}
                     placeholder={t('builder.analyzer.input.placeholder')}
                     className="min-h-[120px] max-h-[300px] resize-none overflow-y-auto scrollbar"
                     disabled={isAnalyzing}

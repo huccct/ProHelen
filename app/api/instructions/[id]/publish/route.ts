@@ -74,7 +74,6 @@ export async function POST(
       },
     })
 
-    // 更新指令状态
     const updatedInstruction = await prisma.instruction.update({
       where: { id },
       data: {
@@ -129,12 +128,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Instruction is not published' }, { status: 400 })
     }
 
-    // 删除模板
     await prisma.template.delete({
       where: { id: instruction.publishedTemplate.id },
     })
 
-    // 更新指令状态
     const updatedInstruction = await prisma.instruction.update({
       where: { id },
       data: {

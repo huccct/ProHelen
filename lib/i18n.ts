@@ -2,18 +2,17 @@ import i18n from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import { initReactI18next } from 'react-i18next'
 
-// 语言资源
 const resources = {
   en: {
     translation: {
-      // 导航
+
       nav: {
         home: 'Home',
         templates: 'Templates',
         myInstructions: 'My Instructions',
         builder: 'Builder',
       },
-      // 通用
+
       common: {
         save: 'Save',
         cancel: 'Cancel',
@@ -35,9 +34,9 @@ const resources = {
         tags: 'Tags',
         reset: 'Reset',
       },
-      // 认证
+
       auth: {
-        // 通用按钮和链接
+
         signInButton: 'Sign In',
         signUpButton: 'Sign Up',
         signOut: 'Sign Out',
@@ -47,25 +46,20 @@ const resources = {
         forgotPasswordLink: 'Forgot Password',
         resetPasswordLink: 'Reset Password',
 
-        // 表单字段
         emailAddress: 'Email address',
         password: 'Password',
         confirmPassword: 'Confirm Password',
         fullName: 'Full Name',
 
-        // 占位符
         emailPlaceholder: 'Enter your email',
         passwordPlaceholder: 'Enter your password',
         fullNamePlaceholder: 'Enter your name',
         confirmPasswordPlaceholder: 'Confirm your password',
 
-        // 加载状态
         creatingAccount: 'Creating account...',
 
-        // 消息
         accountCreated: 'Account created successfully! Redirecting to login...',
 
-        // 密码验证
         passwordTooShort: 'Password must be at least 8 characters long',
         passwordNoUppercase: 'Password must contain at least one uppercase letter',
         passwordNoLowercase: 'Password must contain at least one lowercase letter',
@@ -73,20 +67,17 @@ const resources = {
         passwordsDoNotMatch: 'Passwords do not match',
         failedToRegister: 'Failed to register',
 
-        // 密码强度
         eightCharacters: 'At least 8 characters',
         uppercaseLetter: 'One uppercase letter',
         lowercaseLetter: 'One lowercase letter',
         oneNumber: 'One number',
 
-        // 社交登录和法律
         orContinueWith: 'Or continue with',
         byContinuing: 'By continuing, you agree to our',
         and: 'and',
         termsOfService: 'Terms of Service',
         privacyPolicy: 'Privacy Policy',
 
-        // 忘记密码
         forgotPassword: {
           title: 'Reset your password',
           subtitle: 'Enter your email address and we\'ll send you instructions to reset your password.',
@@ -100,7 +91,6 @@ const resources = {
           rememberPassword: 'Remember your password?',
         },
 
-        // 重置密码
         resetPassword: {
           title: 'Reset your password',
           subtitle: 'Please enter your new password below.',
@@ -121,7 +111,6 @@ const resources = {
           verifyingResetLink: 'Please wait while we verify your reset link.',
         },
 
-        // 登录专用
         signIn: {
           title: 'Welcome Back',
           subtitle: 'Sign in to continue building your AI assistant',
@@ -135,19 +124,18 @@ const resources = {
           },
         },
 
-        // 注册专用
         signUp: {
           title: 'Create your account',
           subtitle: 'Start building your personalized AI assistant',
         },
       },
-      // 首页
+
       home: {
         title: 'Welcome to ProHelen',
         subtitle: 'A Web-Based Tool for Customising LLM Behaviour Using Visual Instruction Generation',
         getStarted: 'Get Started',
         learnMore: 'Learn More',
-        // Hero Section
+
         hero: {
           badge: 'ProHelen v1.0',
           mainTitle: 'The Future of',
@@ -166,7 +154,7 @@ const resources = {
             freeStart: 'Free to start',
           },
         },
-        // Workflow
+
         workflow: {
           dragDrop: 'Drag & Drop',
           visualBlocks: 'Visual Blocks',
@@ -175,7 +163,7 @@ const resources = {
           deploy: 'Deploy',
           instantly: 'Instantly',
         },
-        // Features Section
+
         features: {
           title: 'Powerful Features',
           subtitle: 'Everything you need to build, manage, and deploy sophisticated AI instructions',
@@ -207,7 +195,7 @@ const resources = {
             description: 'Track usage patterns, performance metrics, and optimization suggestions. Data-driven insights to improve your AI instruction effectiveness.',
           },
         },
-        // Use Cases
+
         useCases: {
           title: 'Perfect For',
           subtitle: 'Whether you\'re an educator, developer, or AI enthusiast',
@@ -236,7 +224,7 @@ const resources = {
             description: 'Prompt engineering experiments, behavior analysis, and model comparison studies',
           },
         },
-        // Stats
+
         stats: {
           blockTypes: {
             value: '30+',
@@ -259,13 +247,13 @@ const resources = {
             description: 'Lightning fast',
           },
         },
-        // CTA Section
+
         cta: {
           title: 'Ready to start your <span class="text-primary font-medium">AI prompt design</span> journey?',
           startButton: 'Start Creating Now',
           subtitle: 'Create your account and start building intelligent AI prompts',
         },
-        // Playground Section
+
         playground: {
           title: 'Try it Live',
           subtitle: 'Experience the power of visual prompt building with our interactive playground',
@@ -302,7 +290,7 @@ const resources = {
             },
           },
         },
-        // Footer
+
         footer: {
           privacy: 'Privacy',
           terms: 'Terms',
@@ -312,7 +300,6 @@ const resources = {
         },
       },
 
-      // 模板页面
       templates: {
         title: 'Templates',
         subtitle: 'Choose from our pre-built templates to quickly create customized instructions for different educational and productivity needs.',
@@ -360,7 +347,7 @@ const resources = {
           of: 'of',
         },
       },
-      // 模板详情页面
+
       templateDetail: {
         loading: 'Loading template...',
         error: 'Failed to load template',
@@ -410,7 +397,7 @@ const resources = {
           years: 'years',
         },
       },
-      // 我的指令页面
+
       myInstructions: {
         title: 'My Instructions',
         createNewInstruction: 'Create New Instruction',
@@ -421,7 +408,7 @@ const resources = {
         noInstructionsYet: 'You haven\'t created any instructions yet',
         tryAgain: 'Try Again',
         failedToLoad: 'Failed to load instructions',
-        // 指令卡片
+
         published: 'Published',
         noDescription: 'No description',
         usedTimes: 'Used {{count}} times',
@@ -432,7 +419,7 @@ const resources = {
         publishToLibrary: 'Publish to template library',
         unpublishFromLibrary: 'Unpublish from library',
         delete: 'Delete',
-        // Toast 消息
+
         instructionDeleted: 'Instruction deleted successfully',
         deleteFailed: 'Failed to delete, please try again',
         addedToFavorites: 'Added to favorites',
@@ -444,7 +431,7 @@ const resources = {
         publishFailed: 'Failed to publish, please try again',
         instructionUnpublished: 'Instruction unpublished from template library',
         unpublishFailed: 'Failed to unpublish, please try again',
-        // 确认对话框
+
         deleteInstruction: {
           title: 'Delete Instruction',
           description: 'Are you sure you want to delete this instruction? This action cannot be undone.',
@@ -464,7 +451,7 @@ const resources = {
           cancel: 'Cancel',
         },
       },
-      // 构建器页面
+
       builder: {
         title: 'Instruction Builder',
         untitledInstruction: 'Untitled Instruction',
@@ -474,7 +461,7 @@ const resources = {
         simpleModeTip: 'Question-based instruction creation',
         getHelp: 'Get help and shortcuts',
         helpTip: 'Press F1 or click for help',
-        // 简单向导
+
         quickSetup: {
           title: 'Quick Setup',
           subtitle: 'Answer a few simple questions to get started',
@@ -546,26 +533,25 @@ const resources = {
             createInstructions: 'Create Instructions',
           },
         },
-        // Prompt分析器
         analyzer: {
           title: 'AI Assistant Smart Analysis',
           subtitle: 'Tell me your needs, I\'ll help you automatically create AI instructions',
           switchToAdvanced: 'Advanced Mode',
-          // 步骤指示器
+
           steps: {
             describe: 'Describe Needs',
             confirm: 'Confirm Plan',
           },
-          // 输入阶段
+
           input: {
             title: 'Tell me what kind of AI assistant you want',
             description: 'Describe your needs in natural language, such as purpose, style, professional domain, etc.',
-            placeholder: 'For example: I want an AI assistant to help me prepare for technical interviews, focusing on JavaScript and React, should be friendly and patient...',
+            placeholder: 'For example: I want an AI assistant to help me prepare for technical interviews, focusing on JavaScript and React, should be friendly and patient... (Press Enter to analyze, Shift+Enter for new line)',
             analyzing: 'Analyzing...',
             analyze: 'Start Analysis',
             characterLimit: '{{count}}/500',
           },
-          // 示例
+
           examples: {
             title: 'Don\'t know how to describe? Try these examples',
             learning: {
@@ -585,7 +571,7 @@ const resources = {
               text: 'Help me create an English learning tutor who can correct grammar errors and explain usage',
             },
           },
-          // 分析结果
+
           results: {
             intent: 'I understand your needs',
             extracted: 'Extracted the following functional modules for you',
@@ -602,19 +588,18 @@ const resources = {
             reanalyze: 'Re-analyze',
             confirm: 'Confirm and Create',
           },
-          // 错误处理
+
           errors: {
             emptyPrompt: 'Please enter your needs description',
             analysisFailed: 'Analysis failed, please try again later',
           },
-          // 生成的默认文本
+
           defaults: {
             generatedByAnalysis: 'Created through AI analysis',
             defaultAssistantTitle: 'AI Assistant',
           },
         },
 
-        // 引导模式
         guided: {
           welcome: {
             title: 'Guided Setup',
@@ -635,7 +620,7 @@ const resources = {
             switchToAdvanced: 'Switch to Advanced',
           },
           canvas: {
-            // 旧的翻译保留兼容性
+
             arrangeCards: 'Arrange Your Cards',
             arrangeMessage: 'Drag the instruction cards to organize them visually. The connections are automatically created based on logical flow.',
             arrangeTip: 'Arrange cards in a clear visual layout for better readability - the connections are smart and automatic.',
@@ -648,7 +633,6 @@ const resources = {
             arrangeComplete: 'Great! Your cards are automatically connected in a logical flow. Try moving them around to see how the layout affects readability.',
             customizeComplete: 'Perfect! You\'ve customized {{count}} card{{s}}. Your AI assistant is getting smarter!',
 
-            // 新的主动引导翻译
             noBlocks: 'No Blocks Yet',
             noBlocksMessage: 'First, you need to add some instruction blocks from the left panel.',
             noBlocksAction: 'Click a block type on the left to add it',
@@ -671,7 +655,7 @@ const resources = {
             allDone: 'All Done!',
           },
         },
-        // 组件相关
+
         components: {
           blockPicker: {
             title: 'Add Instruction Block',
@@ -709,7 +693,7 @@ const resources = {
               },
             },
             blocks: {
-              // Core blocks
+
               roleDefinition: {
                 label: 'Role Definition',
                 description: 'Define AI assistant role and expertise',
@@ -722,7 +706,7 @@ const resources = {
                 label: 'Output Format',
                 description: 'Specify response format and structure',
               },
-              // Education blocks
+
               goalSetting: {
                 label: 'Goal Setting',
                 description: 'Set SMART learning goals',
@@ -739,7 +723,7 @@ const resources = {
                 label: 'Difficulty Level',
                 description: 'Set appropriate complexity level',
               },
-              // Behavior blocks
+
               communicationStyle: {
                 label: 'Communication Style',
                 description: 'Set tone and communication approach',
@@ -752,7 +736,7 @@ const resources = {
                 label: 'Personality',
                 description: 'Add personality characteristics',
               },
-              // Workflow blocks
+
               stepByStep: {
                 label: 'Step-by-Step',
                 description: 'Break down into sequential steps',
@@ -765,7 +749,7 @@ const resources = {
                 label: 'Prioritization',
                 description: 'Set priorities and importance levels',
               },
-              // Advanced blocks
+
               conditionalLogic: {
                 label: 'Conditional Logic',
                 description: 'Add if-then conditional responses',
@@ -778,7 +762,7 @@ const resources = {
                 label: 'Error Handling',
                 description: 'Handle mistakes and corrections',
               },
-              // Planning blocks
+
               careerPlanning: {
                 label: 'Career Planning',
                 description: 'Career development guidance',
@@ -1292,14 +1276,14 @@ const resources = {
   },
   zh: {
     translation: {
-      // 导航
+
       nav: {
         home: '首页',
         templates: '模板',
         myInstructions: '我的指令',
         builder: '构建器',
       },
-      // 通用
+
       common: {
         save: '保存',
         cancel: '取消',
@@ -1321,9 +1305,9 @@ const resources = {
         tags: '标签',
         reset: '重置',
       },
-      // 认证
+
       auth: {
-        // 通用按钮和链接
+
         signInButton: '登录',
         signUpButton: '注册',
         signOut: '退出登录',
@@ -1333,25 +1317,20 @@ const resources = {
         forgotPasswordLink: '忘记密码',
         resetPasswordLink: '重置密码',
 
-        // 表单字段
         emailAddress: '邮箱地址',
         password: '密码',
         confirmPassword: '确认密码',
         fullName: '全名',
 
-        // 占位符
         emailPlaceholder: '请输入邮箱',
         passwordPlaceholder: '请输入密码',
         fullNamePlaceholder: '输入您的名字',
         confirmPasswordPlaceholder: '确认密码',
 
-        // 加载状态
         creatingAccount: '创建账户中...',
 
-        // 消息
         accountCreated: '账户创建成功！正在跳转登录...',
 
-        // 密码验证
         passwordTooShort: '密码必须至少8个字符长',
         passwordNoUppercase: '密码必须包含至少一个大写字母',
         passwordNoLowercase: '密码必须包含至少一个小写字母',
@@ -1359,20 +1338,17 @@ const resources = {
         passwordsDoNotMatch: '密码不匹配',
         failedToRegister: '注册失败',
 
-        // 密码强度
         eightCharacters: '至少8个字符',
         uppercaseLetter: '至少一个大写字母',
         lowercaseLetter: '至少一个小写字母',
         oneNumber: '至少一个数字',
 
-        // 社交登录和法律
         orContinueWith: '或者使用以下方式继续',
         byContinuing: '继续使用即表示您同意我们的',
         and: '和',
         termsOfService: '服务条款',
         privacyPolicy: '隐私政策',
 
-        // 忘记密码
         forgotPassword: {
           title: '重置您的密码',
           subtitle: '输入您的邮箱地址，我们将向您发送重置密码的说明。',
@@ -1386,7 +1362,6 @@ const resources = {
           rememberPassword: '记起密码了？',
         },
 
-        // 重置密码
         resetPassword: {
           title: '重置您的密码',
           subtitle: '请输入您的新密码。',
@@ -1407,7 +1382,6 @@ const resources = {
           verifyingResetLink: '请稍候我们验证您的重置链接。',
         },
 
-        // 登录专用
         signIn: {
           title: '欢迎回来',
           subtitle: '登录以继续构建您的 AI 助手',
@@ -1421,19 +1395,18 @@ const resources = {
           },
         },
 
-        // 注册专用
         signUp: {
           title: '创建您的账户',
           subtitle: '开始构建您的个性化 AI 助手',
         },
       },
-      // 首页
+
       home: {
         title: '欢迎来到 ProHelen',
         subtitle: '基于可视化指令生成定制大语言模型行为的网络工具',
         getStarted: '开始使用',
         learnMore: '了解更多',
-        // Hero Section
+
         hero: {
           badge: 'ProHelen v1.0',
           mainTitle: '未来的',
@@ -1452,7 +1425,7 @@ const resources = {
             freeStart: '免费开始',
           },
         },
-        // Workflow
+
         workflow: {
           dragDrop: '拖拽',
           visualBlocks: '可视化模块',
@@ -1461,7 +1434,7 @@ const resources = {
           deploy: '部署',
           instantly: '即时',
         },
-        // Features Section
+
         features: {
           title: '强大功能',
           subtitle: '构建、管理和部署复杂 AI 指令所需的一切',
@@ -1493,7 +1466,7 @@ const resources = {
             description: '跟踪使用模式、性能指标和优化建议。数据驱动的洞察来提高您的 AI 指令效果。',
           },
         },
-        // Use Cases
+
         useCases: {
           title: '完美适用于',
           subtitle: '无论您是教育工作者、开发者还是 AI 爱好者',
@@ -1522,7 +1495,7 @@ const resources = {
             description: '提示工程实验、行为分析和模型比较研究',
           },
         },
-        // Stats
+
         stats: {
           blockTypes: {
             value: '30+',
@@ -1545,13 +1518,13 @@ const resources = {
             description: '闪电般快速',
           },
         },
-        // CTA Section
+
         cta: {
           title: '准备好开始你的<span class="text-primary font-medium"> AI 提示设计</span>之旅了吗？',
           startButton: '立即开始创建',
           subtitle: '创建账户，开始构建智能 AI 提示词',
         },
-        // Playground Section
+
         playground: {
           title: '立即体验',
           subtitle: '通过交互式演示体验可视化提示词构建的强大功能',
@@ -1588,7 +1561,7 @@ const resources = {
             },
           },
         },
-        // Footer
+
         footer: {
           privacy: '隐私政策',
           terms: '服务条款',
@@ -1598,7 +1571,6 @@ const resources = {
         },
       },
 
-      // 模板页面
       templates: {
         title: '模板',
         subtitle: '从我们预建的模板中选择，快速创建适用于不同教育和生产力需求的自定义指令。',
@@ -1646,7 +1618,7 @@ const resources = {
           of: '页，共',
         },
       },
-      // 模板详情页面
+
       templateDetail: {
         loading: '加载模板中...',
         error: '加载模板失败',
@@ -1696,7 +1668,7 @@ const resources = {
           years: '年',
         },
       },
-      // 我的指令页面
+
       myInstructions: {
         title: '我的指令',
         createNewInstruction: '创建新指令',
@@ -1707,7 +1679,7 @@ const resources = {
         noInstructionsYet: '您还没有创建任何指令',
         tryAgain: '重试',
         failedToLoad: '加载指令失败',
-        // 指令卡片
+
         published: '已发布',
         noDescription: '无描述',
         usedTimes: '使用了 {{count}} 次',
@@ -1718,7 +1690,7 @@ const resources = {
         publishToLibrary: '发布到模板库',
         unpublishFromLibrary: '取消发布',
         delete: '删除',
-        // Toast 消息
+
         instructionDeleted: '指令删除成功',
         deleteFailed: '删除失败，请重试',
         addedToFavorites: '已添加到收藏',
@@ -1730,7 +1702,7 @@ const resources = {
         publishFailed: '发布失败，请重试',
         instructionUnpublished: '指令已从模板库取消发布',
         unpublishFailed: '取消发布失败，请重试',
-        // 确认对话框
+
         deleteInstruction: {
           title: '删除指令',
           description: '您确定要删除这个指令吗？此操作无法撤销。',
@@ -1750,7 +1722,7 @@ const resources = {
           cancel: '取消',
         },
       },
-      // 构建器页面
+
       builder: {
         title: '指令构建器',
         untitledInstruction: '未命名指令',
@@ -1760,7 +1732,7 @@ const resources = {
         simpleModeTip: '基于问题的指令创建',
         getHelp: '获取帮助和快捷键',
         helpTip: '按 F1 或点击获取帮助',
-        // 简单向导
+
         quickSetup: {
           title: '快速设置',
           subtitle: '回答几个简单问题即可开始',
@@ -1832,26 +1804,26 @@ const resources = {
             createInstructions: '创建指令',
           },
         },
-        // Prompt分析器
+
         analyzer: {
           title: 'AI助手智能分析',
           subtitle: '告诉我您的需求，我来帮您自动创建AI指令',
           switchToAdvanced: '高级模式',
-          // 步骤指示器
+
           steps: {
             describe: '描述需求',
             confirm: '确认方案',
           },
-          // 输入阶段
+
           input: {
             title: '告诉我您想要什么样的AI助手',
             description: '用自然语言描述您的需求，比如用途、风格、专业领域等',
-            placeholder: '例如：我想要一个帮我准备技术面试的AI助手，重点是JavaScript和React，要友好耐心...',
+            placeholder: '例如：我想要一个帮我准备技术面试的AI助手，重点是JavaScript和React，要友好耐心...（按回车键分析，Shift+回车换行）',
             analyzing: '正在分析...',
             analyze: '开始分析',
             characterLimit: '{{count}}/500',
           },
-          // 示例
+
           examples: {
             title: '不知道怎么描述？试试这些示例',
             learning: {
@@ -1871,7 +1843,7 @@ const resources = {
               text: '帮我创建一个英语学习导师，能够纠正语法错误并解释用法',
             },
           },
-          // 分析结果
+
           results: {
             intent: '我理解了您的需求',
             extracted: '为您提取出以下功能模块',
@@ -1888,18 +1860,18 @@ const resources = {
             reanalyze: '重新分析',
             confirm: '确认并创建',
           },
-          // 错误处理
+
           errors: {
             emptyPrompt: '请输入您的需求描述',
             analysisFailed: '分析失败，请稍后重试',
           },
-          // 生成的默认文本
+
           defaults: {
             generatedByAnalysis: '通过AI分析创建的指令',
             defaultAssistantTitle: 'AI助手',
           },
         },
-        // 简化的预览面板
+
         promptPreview: {
           title: 'AI指令预览',
           blocksConfigured: '{{count}} 个模块已配置',
@@ -1911,7 +1883,7 @@ const resources = {
             save: '保存',
           },
         },
-        // 引导模式
+
         guided: {
           welcome: {
             title: '引导设置',
@@ -1932,7 +1904,7 @@ const resources = {
             switchToAdvanced: '切换到高级模式',
           },
           canvas: {
-            // 旧的翻译保留兼容性
+
             arrangeCards: '排列您的卡片',
             arrangeMessage: '拖拽指令卡片来可视化组织它们。连接会根据逻辑流程自动创建。',
             arrangeTip: '将卡片排列成清晰的可视化布局以提高可读性 - 连接是智能和自动的。',
@@ -1945,7 +1917,6 @@ const resources = {
             arrangeComplete: '太好了！您的卡片已自动连接成逻辑流程。试着移动它们看看布局如何影响可读性。',
             customizeComplete: '完美！您已自定义了 {{count}} 张卡片{{s}}。您的AI助手正在变得更聪明！',
 
-            // 新的主动引导翻译
             noBlocks: '还没有模块',
             noBlocksMessage: '首先，您需要从左侧面板添加一些指令模块。',
             noBlocksAction: '点击左侧的模块类型来添加',
@@ -1968,7 +1939,7 @@ const resources = {
             allDone: '全部完成！',
           },
         },
-        // 组件相关
+
         components: {
           blockPicker: {
             title: '添加指令模块',
@@ -2006,7 +1977,7 @@ const resources = {
               },
             },
             blocks: {
-              // Core blocks
+
               roleDefinition: {
                 label: '角色定义',
                 description: '定义AI助手角色和专业知识',
@@ -2019,7 +1990,7 @@ const resources = {
                 label: '输出格式',
                 description: '指定响应格式和结构',
               },
-              // Education blocks
+
               goalSetting: {
                 label: '目标设定',
                 description: '设置SMART学习目标',
@@ -2036,7 +2007,7 @@ const resources = {
                 label: '难度级别',
                 description: '设置适当的复杂度级别',
               },
-              // Behavior blocks
+
               communicationStyle: {
                 label: '沟通风格',
                 description: '设置语调和沟通方式',
@@ -2049,7 +2020,7 @@ const resources = {
                 label: '个性特征',
                 description: '添加个性特征',
               },
-              // Workflow blocks
+
               stepByStep: {
                 label: '逐步指导',
                 description: '分解为顺序步骤',
@@ -2062,7 +2033,7 @@ const resources = {
                 label: '优先级排序',
                 description: '设置优先级和重要性级别',
               },
-              // Advanced blocks
+
               conditionalLogic: {
                 label: '条件逻辑',
                 description: '添加if-then条件响应',
@@ -2075,7 +2046,7 @@ const resources = {
                 label: '错误处理',
                 description: '处理错误和纠正',
               },
-              // Planning blocks
+
               careerPlanning: {
                 label: '职业规划',
                 description: '职业发展指导',
@@ -2591,24 +2562,22 @@ const resources = {
 }
 
 i18n
-  .use(LanguageDetector) // 自动检测用户语言
-  .use(initReactI18next) // 绑定 react-i18next
+  .use(LanguageDetector)
+  .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'en', // 默认语言
-    lng: 'en', // 初始语言
+    fallbackLng: 'en',
+    lng: 'en',
 
-    // 语言检测配置
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
     },
 
     interpolation: {
-      escapeValue: false, // React 已经默认转义
+      escapeValue: false,
     },
 
-    // 调试模式 (开发环境)
     debug: typeof window !== 'undefined' && window.location.hostname === 'localhost',
   })
 
