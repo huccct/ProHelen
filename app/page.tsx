@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { IoArrowForward, IoSparkles } from 'react-icons/io5'
 
-// 丝滑的缓动函数
 const easeInOutQuint = [0.86, 0, 0.07, 1]
 
 function TypewriterEffect() {
@@ -69,7 +68,6 @@ function TypewriterEffect() {
       }
     }
 
-    // 重置并开始动画
     currentPhrase = 0
     currentIndex = 0
     isDeleting = false
@@ -103,7 +101,6 @@ function TypewriterEffect() {
   )
 }
 
-// 线条连接背景
 function ConnectedLinesBackground() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -156,21 +153,18 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-16">
-        {/* Hero Section - 极简版 */}
         <motion.section
           className="min-h-screen flex flex-col justify-center py-20 relative"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, ease: easeInOutQuint }}
         >
-          {/* 交叉网格线条背景 */}
           <motion.div
             className="absolute inset-0 overflow-hidden pointer-events-none opacity-30"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.3 }}
             transition={{ duration: 2, delay: 0.5 }}
           >
-            {/* 水平虚线 */}
             <div
               className="absolute top-[20%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"
               style={{ backgroundImage: 'repeating-linear-gradient(to right, transparent, transparent 8px, currentColor 8px, currentColor 16px)' }}
@@ -180,7 +174,6 @@ export default function Home() {
               className="absolute top-[80%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"
               style={{ backgroundImage: 'repeating-linear-gradient(to right, transparent, transparent 8px, currentColor 8px, currentColor 16px)' }}
             />
-            {/* 垂直虚线 */}
             <div
               className="absolute left-[15%] top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-primary/30 to-transparent"
               style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 8px, currentColor 8px, currentColor 16px)' }}
@@ -203,12 +196,10 @@ export default function Home() {
                 {t('home.hero.mainTitle')}
               </div>
               <div className="text-2xl sm:text-3xl md:text-4xl text-muted-foreground font-light tracking-wide relative">
-                {/* 装饰方括号 - 参考 VoidZero */}
                 <span className="text-border/60 mr-2">[</span>
                 <TypewriterEffect />
                 <span className="text-border/60 ml-2">]</span>
 
-                {/* 装饰线条 - 参考 Kree8 */}
                 <div className="absolute -inset-4 border border-primary/20 rounded-lg pointer-events-none" />
               </div>
             </motion.h1>
@@ -221,18 +212,15 @@ export default function Home() {
               dangerouslySetInnerHTML={{ __html: t('home.hero.description') }}
             />
 
-            {/* 单一明确的CTA */}
             <motion.div
               className="pt-8 relative"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6, ease: easeInOutQuint }}
             >
-              {/* 装饰线条 - 参考网站设计 */}
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-24 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
               <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
-              {/* 侧边装饰 */}
               <div className="absolute top-1/2 -left-8 transform -translate-y-1/2 w-4 h-[1px] bg-primary/40" />
               <div className="absolute top-1/2 -right-8 transform -translate-y-1/2 w-4 h-[1px] bg-primary/40" />
 
@@ -241,14 +229,11 @@ export default function Home() {
                 className="bg-primary text-primary-foreground hover:bg-primary/90 px-12 py-6 text-xl rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden group hover:scale-105 hover:shadow-2xl hover:shadow-primary/25 active:scale-95"
                 onClick={() => router.push('/builder')}
               >
-                {/* 动态光泽扫过效果 */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
 
-                {/* 按钮内部装饰线条 */}
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-                {/* 脉动边框效果 */}
                 <div className="absolute inset-0 rounded-xl border border-white/20 opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
 
                 <IoSparkles className="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform duration-300" />
@@ -259,7 +244,6 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* Interactive Playground - 核心体验 */}
         <motion.section
           className="py-24"
           initial={{ opacity: 0, y: 60 }}
@@ -301,7 +285,6 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* Features Section - 核心价值 */}
         <motion.section
           className="py-24 border-t border-border/30"
           initial={{ opacity: 0, y: 60 }}
@@ -379,7 +362,6 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* CTA Section - 最终转化 */}
         <motion.section
           className="py-24"
           initial={{ opacity: 0, y: 60 }}
@@ -415,14 +397,11 @@ export default function Home() {
                 className="bg-primary text-primary-foreground hover:bg-primary/90 px-12 py-6 text-xl rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden group hover:scale-105 hover:shadow-2xl hover:shadow-primary/25 active:scale-95"
                 onClick={() => router.push('/builder')}
               >
-                {/* 动态光泽扫过效果 */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
 
-                {/* 按钮内部装饰线条 */}
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-                {/* 脉动边框效果 */}
                 <div className="absolute inset-0 rounded-xl border border-white/20 opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
 
                 <IoSparkles className="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform duration-300" />
@@ -442,7 +421,6 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* 简洁页脚 */}
         <motion.footer
           className="py-16 text-center border-t border-border/30"
           initial={{ opacity: 0 }}

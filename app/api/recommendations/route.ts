@@ -16,7 +16,6 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: 'Invalid currentBlocks' }, { status: 400 })
     }
 
-    // 获取推荐
     const recommendations = await engine.getRecommendations({
       currentBlocks,
       selectedBlockType,
@@ -31,7 +30,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// 记录用户行为
 export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)

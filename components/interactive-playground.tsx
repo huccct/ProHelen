@@ -15,7 +15,6 @@ const nodeTypes = {
   custom: CustomNode,
 }
 
-// 简单的 prompt 模板
 function getInitialNodes(t: any) {
   return [
     {
@@ -108,7 +107,6 @@ export function InteractivePlayground() {
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 h-[600px]">
-      {/* Canvas 区域 */}
       <div className="xl:col-span-2">
         <Card className="h-full overflow-hidden border border-border/50 bg-background/50 backdrop-blur-sm">
           <div className="h-full relative">
@@ -138,7 +136,6 @@ export function InteractivePlayground() {
               </ReactFlow>
             </ReactFlowProvider>
 
-            {/* 操作提示 */}
             <div className="absolute top-4 left-4 right-4 z-10">
               <motion.div
                 className="bg-card/90 backdrop-blur-sm border border-border/50 rounded-lg p-4"
@@ -156,7 +153,6 @@ export function InteractivePlayground() {
               </motion.div>
             </div>
 
-            {/* 操作按钮 */}
             <div className="absolute bottom-4 left-4 right-4 z-10">
               <motion.div
                 className="flex gap-2"
@@ -187,9 +183,7 @@ export function InteractivePlayground() {
         </Card>
       </div>
 
-      {/* 预览区域 */}
       <div className="space-y-4">
-        {/* 说明 */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -219,7 +213,6 @@ export function InteractivePlayground() {
           </Card>
         </motion.div>
 
-        {/* 生成的 Prompt 预览 */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -261,7 +254,6 @@ export function InteractivePlayground() {
           </Card>
         </motion.div>
 
-        {/* CTA */}
         <motion.div
           className="text-center"
           initial={{ opacity: 0, y: 20 }}

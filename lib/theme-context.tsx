@@ -23,7 +23,6 @@ export function ThemeProvider({ children, defaultTheme = 'dark' }: ThemeProvider
 
   useEffect(() => {
     setMounted(true)
-    // 从localStorage读取保存的主题或使用系统偏好
     const savedTheme = localStorage.getItem('theme') as Theme
     const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 
@@ -50,7 +49,6 @@ export function ThemeProvider({ children, defaultTheme = 'dark' }: ThemeProvider
     setTheme(prev => prev === 'light' ? 'dark' : 'light')
   }
 
-  // 避免服务端渲染不匹配
   if (!mounted) {
     return null
   }

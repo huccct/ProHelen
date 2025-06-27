@@ -209,7 +209,7 @@ const quickStartTemplates = [
     labelKey: 'builder.components.blockPicker.quickStart.tutor.label',
     descriptionKey: 'builder.components.blockPicker.quickStart.tutor.description',
     icon: <Brain className="h-5 w-5" />,
-    blocks: ['role_definition', 'learning_style', 'communication_style'],
+    blocks: ['role_definition', 'context_setting', 'learning_style', 'goal_setting', 'step_by_step'],
     color: 'from-blue-500 to-purple-500',
   },
   {
@@ -217,7 +217,7 @@ const quickStartTemplates = [
     labelKey: 'builder.components.blockPicker.quickStart.businessConsultant.label',
     descriptionKey: 'builder.components.blockPicker.quickStart.businessConsultant.description',
     icon: <Target className="h-5 w-5" />,
-    blocks: ['role_definition', 'communication_style', 'output_format'],
+    blocks: ['role_definition', 'context_setting', 'communication_style', 'output_format', 'prioritization'],
     color: 'from-green-500 to-teal-500',
   },
   {
@@ -225,7 +225,7 @@ const quickStartTemplates = [
     labelKey: 'builder.components.blockPicker.quickStart.creativeAssistant.label',
     descriptionKey: 'builder.components.blockPicker.quickStart.creativeAssistant.description',
     icon: <Lightbulb className="h-5 w-5" />,
-    blocks: ['role_definition', 'creative_thinking', 'personality_traits'],
+    blocks: ['role_definition', 'personality_traits', 'creative_thinking', 'output_format', 'feedback_style'],
     color: 'from-orange-500 to-pink-500',
   },
   {
@@ -233,7 +233,7 @@ const quickStartTemplates = [
     labelKey: 'builder.components.blockPicker.quickStart.stepByStepGuide.label',
     descriptionKey: 'builder.components.blockPicker.quickStart.stepByStepGuide.description',
     icon: <Workflow className="h-5 w-5" />,
-    blocks: ['role_definition', 'step_by_step', 'output_format'],
+    blocks: ['role_definition', 'context_setting', 'step_by_step', 'output_format', 'error_handling'],
     color: 'from-purple-500 to-indigo-500',
   },
 ]

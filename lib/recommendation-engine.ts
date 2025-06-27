@@ -15,11 +15,9 @@ export interface RecommendationContext {
 }
 
 export class RecommendationEngine {
-  // 基于规则的推荐（立即可用）
   private getRuleBasedRecommendations(context: RecommendationContext): RecommendationResult[] {
     const { selectedBlockType, currentBlocks } = context
 
-    // 定义块之间的关联规则
     const rules: Record<string, string[]> = {
       role_definition: ['context_setting', 'communication_style', 'personality_traits'],
       context_setting: ['output_format', 'goal_setting', 'subject_focus'],
@@ -54,7 +52,6 @@ export class RecommendationEngine {
       }))
   }
 
-  // 基于协同过滤的推荐
   private async getCollaborativeRecommendations(context: RecommendationContext): Promise<RecommendationResult[]> {
     const { currentBlocks } = context
 
@@ -63,16 +60,14 @@ export class RecommendationEngine {
     }
 
     try {
-      // 获取所有用户会话
       const sessions = await prisma.userSession.findMany({
         select: {
           blockSequence: true,
           userId: true,
         },
-        take: 1000, // 限制数据量
+        take: 1000,
       })
 
-      // 计算块之间的共现频率
       const cooccurrence = new Map<string, Map<string, number>>()
 
       sessions.forEach((session) => {
@@ -83,14 +78,12 @@ export class RecommendationEngine {
             const blockA = blocks[i]
             const blockB = blocks[j]
 
-            // 更新 A -> B 的共现
             if (!cooccurrence.has(blockA)) {
               cooccurrence.set(blockA, new Map())
             }
             const blockAMap = cooccurrence.get(blockA)!
             blockAMap.set(blockB, (blockAMap.get(blockB) || 0) + 1)
 
-            // 更新 B -> A 的共现
             if (!cooccurrence.has(blockB)) {
               cooccurrence.set(blockB, new Map())
             }
@@ -100,7 +93,6 @@ export class RecommendationEngine {
         }
       })
 
-      // 基于当前块计算推荐
       const recommendations = new Map<string, number>()
 
       currentBlocks.forEach((block) => {
@@ -114,13 +106,12 @@ export class RecommendationEngine {
         }
       })
 
-      // 转换为结果格式并排序
       const results = Array.from(recommendations.entries())
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5)
         .map(([blockType, count]) => ({
           blockType,
-          score: Math.min(count / 10, 1), // 归一化得分
+          score: Math.min(count / 10, 1),
           reason: `Used together in ${count} other flows`,
         }))
 
@@ -132,7 +123,6 @@ export class RecommendationEngine {
     }
   }
 
-  // 基于用户历史的推荐
   private async getPersonalizedRecommendations(context: RecommendationContext): Promise<RecommendationResult[]> {
     const { userId, currentBlocks } = context
 
@@ -141,7 +131,6 @@ export class RecommendationEngine {
     }
 
     try {
-      // 获取用户的块使用历史
       const userUsages = await prisma.userBlockUsage.findMany({
         where: { userId },
         orderBy: { usageCount: 'desc' },
@@ -163,14 +152,12 @@ export class RecommendationEngine {
     }
   }
 
-  // 合并和排序推荐结果
   private mergeAndRankRecommendations(recommendations: RecommendationResult[][]): RecommendationResult[] {
     const merged = new Map<string, RecommendationResult>()
 
     recommendations.flat().forEach((rec) => {
       const existing = merged.get(rec.blockType)
       if (existing) {
-        // 如果已存在，取最高分数和最好的理由
         if (rec.score > existing.score) {
           merged.set(rec.blockType, rec)
         }
@@ -185,7 +172,6 @@ export class RecommendationEngine {
       .slice(0, 6)
   }
 
-  // 主推荐方法
   async getRecommendations(context: RecommendationContext): Promise<RecommendationResult[]> {
     const [ruleBased, collaborative, personalized] = await Promise.all([
       Promise.resolve(this.getRuleBasedRecommendations(context)),
@@ -196,7 +182,6 @@ export class RecommendationEngine {
     return this.mergeAndRankRecommendations([ruleBased, collaborative, personalized])
   }
 
-  // 记录用户行为
   async recordBlockUsage(userId: string, blockType: string) {
     try {
       await prisma.userBlockUsage.upsert({
@@ -219,10 +204,9 @@ export class RecommendationEngine {
     }
   }
 
-  // 记录用户会话
   async recordUserSession(userId: string, blockSequence: string[]) {
     if (blockSequence.length < 2)
-      return // 至少需要2个块才有意义
+      return
 
     try {
       const sessionId = `${userId}-${Date.now()}`

@@ -19,7 +19,6 @@ interface RecommendationPanelProps {
   onClose: () => void
 }
 
-// 块类型的颜色映射
 const blockTypeColors: Record<string, string> = {
   role_definition: 'from-blue-500 to-blue-600',
   context_setting: 'from-purple-500 to-purple-600',
@@ -51,17 +50,14 @@ export function RecommendationPanel({
   const [recommendations, setRecommendations] = useState<RecommendationResult[]>([])
   const [loading, setLoading] = useState(false)
 
-  // 添加引用来跟踪最后的块列表和选中块
   const lastBlocksRef = useRef<string>('')
   const lastSelectedBlockRef = useRef<string>('')
   const debounceTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
-  // 检查是否有实质性变化的函数
   const hasSignificantChange = useCallback((newBlocks: string[], newSelectedBlock?: string) => {
     const blocksKey = newBlocks.sort().join(',')
     const selectedKey = newSelectedBlock || ''
 
-    // 如果块列表或选中块有变化，则认为是有意义的变化
     const hasChange = blocksKey !== lastBlocksRef.current || selectedKey !== lastSelectedBlockRef.current
 
     if (hasChange) {
@@ -73,13 +69,11 @@ export function RecommendationPanel({
   }, [])
 
   const fetchRecommendations = useCallback(async () => {
-    // 如果没有块，直接返回
     if (currentBlocks.length === 0) {
       setRecommendations([])
       return
     }
 
-    // 检查是否有实质性变化
     if (!hasSignificantChange(currentBlocks, selectedBlock)) {
       return
     }
@@ -108,24 +102,19 @@ export function RecommendationPanel({
     }
   }, [selectedBlock, currentBlocks, hasSignificantChange])
 
-  // 使用防抖来避免频繁请求
   const debouncedFetchRecommendations = useCallback(() => {
-    // 清除之前的定时器
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current)
     }
 
-    // 设置新的定时器
     debounceTimeoutRef.current = setTimeout(() => {
       void fetchRecommendations()
-    }, 300) // 300ms 防抖延迟
+    }, 300)
   }, [fetchRecommendations])
 
   useEffect(() => {
-    // 立即检查，如果没有变化就不会触发请求
     debouncedFetchRecommendations()
 
-    // 清理定时器
     return () => {
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current)
@@ -160,7 +149,6 @@ export function RecommendationPanel({
       transition={{ type: 'spring', damping: 20, stiffness: 300 }}
       className="w-80 border-l border-border bg-card/95 backdrop-blur-sm p-4 relative"
     >
-      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-500/20">
@@ -178,7 +166,6 @@ export function RecommendationPanel({
         </Button>
       </div>
 
-      {/* Content */}
       {loading
         ? (
             <div className="space-y-3">
@@ -208,7 +195,6 @@ export function RecommendationPanel({
                       className="p-4 border border-border/50 rounded-lg bg-muted/30 hover:border-border hover:bg-muted/50 cursor-pointer transition-all duration-200 relative overflow-hidden"
                       onClick={() => handleBlockSelect(rec.blockType)}
                     >
-                      {/* Background gradient */}
                       <div className={`absolute inset-0 bg-gradient-to-r ${blockTypeColors[rec.blockType] || 'from-gray-500 to-gray-600'} opacity-0 group-hover:opacity-5 transition-opacity duration-200`} />
 
                       <div className="relative">
@@ -230,7 +216,6 @@ export function RecommendationPanel({
                           </div>
                         </div>
 
-                        {/* Progress bar */}
                         <div className="w-full bg-muted/30 rounded-full h-1 mt-2">
                           <motion.div
                             initial={{ width: 0 }}
@@ -254,7 +239,6 @@ export function RecommendationPanel({
               </div>
             )}
 
-      {/* Footer tip */}
       {recommendations.length > 0 && (
         <motion.div
           initial={{ opacity: 0 }}

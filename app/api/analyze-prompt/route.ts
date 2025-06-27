@@ -46,58 +46,98 @@ export async function POST(request: NextRequest) {
     }
 
     const analysisPrompt = `
-You are an expert in prompt engineering and AI instruction design. Analyze the following user request and extract relevant instruction blocks.
+You are an expert in prompt engineering following the structured 5-category system. Analyze the user request and extract relevant instruction blocks based on our proven framework.
 
-Available block types:
-- role_definition: Defines the AI's role and expertise
-- context_setting: Sets the background and working environment
-- communication_style: Defines how the AI should communicate
-- learning_style: Specifies educational approach (for learning scenarios)
-- personality_traits: Defines AI personality characteristics
-- subject_focus: Specifies the main subject or domain
-- output_format: Defines the expected response format
-- goal_setting: Sets specific objectives or targets
-- difficulty_level: Specifies complexity level
-- creative_thinking: Enables creative problem-solving
-- step_by_step: Provides structured step-by-step guidance
-- time_management: Includes time-related considerations
-- prioritization: Helps with task prioritization
-- conditional_logic: Adds conditional responses
-- error_handling: Defines error handling approaches
-- feedback_style: Specifies how to give feedback
-- career_planning: For career-related guidance
-- skill_assessment: For evaluating skills and abilities
+## IMPORTANT: Language Consistency
+- Detect the primary language of the user's request
+- Generate ALL content in the same language as the user's input
+- If user writes in Chinese, respond entirely in Chinese
+- If user writes in English, respond entirely in English
+- Maintain professional terminology appropriate for the detected language
+
+## 5-Category Framework:
+1. **Role & Context** - AI identity, background, work environment
+   - role_definition, context_setting, personality_traits, subject_focus
+
+2. **Interaction Style** - Communication patterns and feedback approaches  
+   - communication_style, feedback_style, learning_style
+
+3. **Task Control** - Goal setting, output formatting, task management
+   - goal_setting, output_format, difficulty_level, time_management, prioritization
+
+4. **Thinking & Logic** - Cognitive processes and reasoning patterns
+   - creative_thinking, step_by_step, conditional_logic, error_handling
+
+5. **Skills & Development** - Professional growth and skill assessment
+   - career_planning, skill_assessment
+
+## Analysis Guidelines:
+- Extract 3-6 blocks maximum (quality over quantity)
+- Focus on blocks that are clearly indicated by the user's request
+- Prioritize core blocks: role_definition, context_setting, goal_setting
+- Consider the user's expertise level and domain
+- Suggest enhancements that create a complete, logical flow
 
 User request: "${userPrompt}"
 
-Analyze this request and return a JSON object with the following structure:
+## Language Detection:
+First, identify the primary language of the user's request. Then ensure ALL generated content uses that same language consistently.
+
+## Deep Analysis Questions:
+1. What specific role should the AI play? (role_definition)
+2. What's the context/environment? (context_setting) 
+3. What are the clear objectives? (goal_setting)
+4. How should the AI communicate? (communication_style)
+5. What output format is implied? (output_format)
+6. What thinking approach is needed? (step_by_step, creative_thinking)
+
+Return JSON with this structure (content language must match user's input language):
 {
+  "detectedLanguage": "zh-CN" | "en-US",
   "extractedBlocks": [
     {
       "type": "role_definition",
-      "content": "Detailed content for this block based on user's request",
+      "content": "Specific, actionable content in user's language based on their domain and needs",
       "confidence": 0.95,
-      "reasoning": "Why this block was identified"
+      "reasoning": "Clear indicators in user request suggest this role"
     }
   ],
   "suggestedEnhancements": [
     {
-      "type": "output_format",
-      "reason": "Adding output format would improve response quality",
+      "type": "output_format", 
+      "reason": "Adding structured output format would improve response quality and usability",
       "impact": "high"
     }
   ],
-  "missingEssentials": ["communication_style", "goal_setting"],
-  "detectedIntent": "Brief description of what the user wants to achieve"
+  "missingEssentials": ["communication_style"],
+  "detectedIntent": "User wants to create [specific type] AI for [specific purpose] with [key characteristics]"
 }
 
-Rules:
-1. Only suggest blocks that are clearly indicated by the user's request
-2. Confidence should be between 0.1 and 1.0
-3. Content should be specific and actionable
-4. Suggest 2-4 enhancements maximum
-5. Mark missing essentials that would significantly improve the prompt
-6. Be conservative but helpful
+## Content Quality Standards:
+- Be specific to the user's domain (education, business, creative, technical)
+- Include actionable instructions, not generic descriptions
+- Use professional language appropriate for the context AND user's language
+- Focus on practical implementation details
+- Consider the complete user experience flow
+- Ensure cultural and linguistic appropriateness
+
+## Enhancement Logic:
+- If role_definition exists, suggest context_setting or communication_style
+- If educational content, suggest learning_style and step_by_step
+- If business content, suggest prioritization and output_format
+- If creative content, suggest creative_thinking and feedback_style
+- Always consider if output_format would improve clarity
+
+## Language-Specific Guidelines:
+**For Chinese users:**
+- Use professional Chinese business/technical terminology
+- Follow Chinese communication patterns and cultural norms
+- Provide examples relevant to Chinese business context
+
+**For English users:**
+- Use professional English business/technical terminology
+- Follow Western communication patterns and practices
+- Provide examples relevant to international business context
 `
 
     // Call OpenAI API
