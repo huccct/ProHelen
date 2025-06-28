@@ -1387,23 +1387,16 @@ Actionable recommendations or follow-up suggestions`
   },
 
   addQuickStartTemplate: (templateId: string) => {
-    get().saveToHistory()
-
-    // Detect language from user's original query first, fallback to browser language
-    const { originalUserQuery } = get()
-    const detectLanguageFromContent = (text: string): string => {
-      if (!text)
-        return 'en'
-      // Simple Chinese character detection
-      const chineseRegex = /[\u4E00-\u9FFF]/
-      return chineseRegex.test(text) ? 'zh' : 'en'
+    // Check if canvas has existing content, if so, clear it first
+    const { nodes } = get()
+    if (nodes.length > 0) {
+      get().resetFlow()
     }
 
-    const currentLanguage = originalUserQuery
-      ? detectLanguageFromContent(originalUserQuery)
-      : (typeof window !== 'undefined'
-          ? (window.navigator.language.startsWith('zh') ? 'zh' : 'en')
-          : 'en')
+    get().saveToHistory()
+
+    // Use i18n current language instead of browser detection
+    const currentLanguage = i18n.language || 'en'
 
     const templateContent = currentLanguage === 'zh'
       ? QUICK_START_CONTENT_ZH[templateId] || QUICK_START_CONTENT[templateId]
