@@ -1,5 +1,6 @@
 'use client'
 
+import { CornerGrids } from '@/components/corner-grid'
 import { InteractivePlayground } from '@/components/interactive-playground'
 import { NavBar } from '@/components/nav-bar'
 import { Button } from '@/components/ui/button'
@@ -183,6 +184,8 @@ export default function Home() {
               className="absolute right-[15%] top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-primary/30 to-transparent"
               style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 8px, currentColor 8px, currentColor 16px)' }}
             />
+
+            <CornerGrids />
           </motion.div>
 
           <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10">
