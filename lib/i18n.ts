@@ -534,50 +534,82 @@ const resources = {
           },
         },
         analyzer: {
-          title: 'AI Assistant Smart Analysis',
-          subtitle: 'Tell me your needs, I\'ll help you automatically create AI instructions',
+          title: 'Smart Prompt Analysis',
+          subtitle: 'Describe your goals and I\'ll help you build optimized prompts',
           switchToAdvanced: 'Advanced Mode',
 
           steps: {
-            describe: 'Describe Needs',
+            describe: 'Describe Goals',
             confirm: 'Confirm Plan',
           },
 
           input: {
-            title: 'Tell me what kind of AI assistant you want',
-            description: 'Describe your needs in natural language, such as purpose, style, professional domain, etc.',
-            placeholder: 'For example: I want an AI assistant to help me prepare for technical interviews, focusing on JavaScript and React, should be friendly and patient... (Press Enter to analyze, Shift+Enter for new line)',
+            title: 'What do you want to achieve with AI?',
+            description: 'Describe your task or use case in natural language - purpose, style, domain, output requirements, etc.',
+            placeholder: 'For example: I need help preparing for technical interviews, with focus on JavaScript and React concepts, using a friendly teaching approach... (Press Enter to analyze, Shift+Enter for new line)',
             analyzing: 'Analyzing...',
             analyze: 'Start Analysis',
             characterLimit: '{{count}}/500',
           },
 
           examples: {
-            title: 'Don\'t know how to describe? Try these examples',
+            title: 'Need inspiration? Try these examples',
             learning: {
-              title: '🎓 Learning Assistant',
-              text: 'I want an AI assistant to help me prepare for technical interviews, focusing on JavaScript and React, being friendly and patient',
+              title: '🎓 Learning & Education',
+              text: 'Help me prepare for technical interviews with JavaScript and React focus, using a patient teaching approach with clear explanations',
             },
             work: {
-              title: '💼 Work Assistant',
-              text: 'Create a code review assistant that can analyze code quality and provide improvement suggestions',
+              title: '💼 Code & Development',
+              text: 'Analyze code quality and provide detailed improvement suggestions with best practices and examples',
             },
             writing: {
-              title: '✍️ Writing Assistant',
-              text: 'I need a writing partner to improve my articles and make them more persuasive',
+              title: '✍️ Writing & Content',
+              text: 'Improve my articles by making them more persuasive, engaging, and well-structured for my target audience',
             },
             personal: {
-              title: '🏠 Personal Assistant',
-              text: 'Help me create an English learning tutor who can correct grammar errors and explain usage',
+              title: '🏠 Language Learning',
+              text: 'Correct my English grammar errors and explain the rules with examples and usage patterns',
+            },
+            research: {
+              title: '🔬 Research & Analysis',
+              text: 'Conduct thorough research on emerging AI technologies and summarize key findings with cited sources',
+            },
+            business: {
+              title: '💰 Business Strategy',
+              text: 'Create a comprehensive market analysis for my startup idea with competitive landscape and growth opportunities',
+            },
+            creative: {
+              title: '🎨 Creative Projects',
+              text: 'Generate innovative design concepts for a mobile app interface with detailed user experience considerations',
+            },
+            data: {
+              title: '📊 Data Science',
+              text: 'Explain complex machine learning algorithms in simple terms with practical implementation examples',
+            },
+            marketing: {
+              title: '📢 Marketing & Content',
+              text: 'Develop engaging social media campaigns with compelling copy that drives user engagement and conversions',
+            },
+            legal: {
+              title: '⚖️ Legal & Compliance',
+              text: 'Review and explain contract terms in plain language while highlighting potential risks and benefits',
+            },
+            health: {
+              title: '🏥 Health & Wellness',
+              text: 'Create personalized fitness routines based on individual goals with proper form instructions and safety tips',
+            },
+            finance: {
+              title: '💳 Finance & Investment',
+              text: 'Analyze investment portfolios and provide diversification strategies with risk assessment and recommendations',
             },
           },
 
           results: {
-            intent: 'I understand your needs',
-            extracted: 'Extracted the following functional modules for you',
-            extractedDescription: 'I automatically identified these modules based on your description, you can adjust the selection',
-            suggested: 'Suggested additional functional modules',
-            suggestedDescription: 'These modules can make your AI assistant work better',
+            intent: 'I understand your goal',
+            extracted: 'Identified these prompt components for your use case',
+            extractedDescription: 'Based on your description, I recommend these components - adjust the selection as needed',
+            suggested: 'Additional components to enhance your prompt',
+            suggestedDescription: 'These optional components can improve your prompt\'s effectiveness',
             confidence: '{{percent}}% match',
             reasoning: 'Identification reason: {{reason}}',
             impact: {
@@ -595,8 +627,8 @@ const resources = {
           },
 
           defaults: {
-            generatedByAnalysis: 'Created through AI analysis',
-            defaultAssistantTitle: 'AI Assistant',
+            generatedByAnalysis: 'Created through smart analysis',
+            defaultAssistantTitle: 'Custom Prompt',
           },
         },
 
@@ -631,7 +663,7 @@ const resources = {
             readyMessage: 'Your instruction flow is complete! Time to see how it works.',
             readyTip: 'Test early and often to refine your instructions.',
             arrangeComplete: 'Great! Your cards are automatically connected in a logical flow. Try moving them around to see how the layout affects readability.',
-            customizeComplete: 'Perfect! You\'ve customized {{count}} card{{s}}. Your AI assistant is getting smarter!',
+            customizeComplete: 'Perfect! You\'ve customized {{count}} card{{s}}. Your prompt is getting better!',
 
             noBlocks: 'No Blocks Yet',
             noBlocksMessage: 'First, you need to add some instruction blocks from the left panel.',
@@ -673,7 +705,7 @@ const resources = {
             },
             quickStart: {
               title: 'Get Started Quickly',
-              subtitle: 'Choose a pre-built template with 2-3 essential blocks to jump-start your AI assistant',
+              subtitle: 'Choose a pre-built template with 2-3 essential blocks to jump-start your prompt',
               addAll: 'Add All Blocks',
               tutor: {
                 label: 'AI Tutor',
@@ -696,7 +728,7 @@ const resources = {
 
               roleDefinition: {
                 label: 'Role Definition',
-                description: 'Define AI assistant role and expertise',
+                description: 'Define the AI\'s role and expertise',
               },
               contextSetting: {
                 label: 'Context Setting',
@@ -1806,50 +1838,82 @@ const resources = {
         },
 
         analyzer: {
-          title: 'AI助手智能分析',
-          subtitle: '告诉我您的需求，我来帮您自动创建AI指令',
+          title: '智能Prompt分析',
+          subtitle: '描述您的目标，我来帮您构建优化的提示词',
           switchToAdvanced: '高级模式',
 
           steps: {
-            describe: '描述需求',
+            describe: '描述目标',
             confirm: '确认方案',
           },
 
           input: {
-            title: '告诉我您想要什么样的AI助手',
-            description: '用自然语言描述您的需求，比如用途、风格、专业领域等',
-            placeholder: '例如：我想要一个帮我准备技术面试的AI助手，重点是JavaScript和React，要友好耐心...（按回车键分析，Shift+回车换行）',
+            title: '您希望AI帮您完成什么任务？',
+            description: '用自然语言描述您的任务或使用场景，比如目标、风格、领域、输出要求等',
+            placeholder: '例如：帮我准备技术面试，重点是JavaScript和React概念，使用友好的教学方式...（按回车键分析，Shift+回车换行）',
             analyzing: '正在分析...',
             analyze: '开始分析',
             characterLimit: '{{count}}/500',
           },
 
           examples: {
-            title: '不知道怎么描述？试试这些示例',
+            title: '需要灵感？试试这些示例',
             learning: {
-              title: '🎓 学习助手',
-              text: '我想要一个帮我准备技术面试的AI助手，重点是JavaScript和React，要友好耐心',
+              title: '🎓 学习教育',
+              text: '帮我准备技术面试，重点是JavaScript和React，使用耐心的教学方式并提供清晰解释',
             },
             work: {
-              title: '💼 工作助手',
-              text: '创建一个代码审查助手，能够分析代码质量并给出改进建议',
+              title: '💼 代码开发',
+              text: '分析代码质量并提供详细的改进建议，包含最佳实践和示例',
             },
             writing: {
-              title: '✍️ 写作助手',
-              text: '我需要一个写作伙伴来改进我的文章，让文章更有说服力',
+              title: '✍️ 写作内容',
+              text: '改进我的文章，让它们更有说服力、吸引力，并针对目标读者进行优化',
             },
             personal: {
-              title: '🏠 个人助手',
-              text: '帮我创建一个英语学习导师，能够纠正语法错误并解释用法',
+              title: '🏠 语言学习',
+              text: '纠正我的英语语法错误，并通过示例和用法模式解释语法规则',
+            },
+            research: {
+              title: '🔬 研究分析',
+              text: '对新兴AI技术进行深入研究，总结关键发现并提供引用来源',
+            },
+            business: {
+              title: '💰 商业策略',
+              text: '为我的创业想法创建全面的市场分析，包括竞争格局和增长机会',
+            },
+            creative: {
+              title: '🎨 创意项目',
+              text: '为移动应用界面生成创新设计概念，包含详细的用户体验考量',
+            },
+            data: {
+              title: '📊 数据科学',
+              text: '用简单易懂的方式解释复杂的机器学习算法，并提供实际实现示例',
+            },
+            marketing: {
+              title: '📢 营销推广',
+              text: '开发引人入胜的社交媒体活动，创造促进用户参与和转化的吸引力文案',
+            },
+            legal: {
+              title: '⚖️ 法律合规',
+              text: '用通俗易懂的语言审查和解释合同条款，同时突出潜在风险和收益',
+            },
+            health: {
+              title: '🏥 健康保健',
+              text: '根据个人目标制定个性化健身方案，包含正确动作指导和安全提示',
+            },
+            finance: {
+              title: '💳 金融投资',
+              text: '分析投资组合并提供多元化策略，包含风险评估和推荐建议',
             },
           },
 
           results: {
-            intent: '我理解了您的需求',
-            extracted: '为您提取出以下功能模块',
-            extractedDescription: '我根据您的描述自动识别出这些模块，您可以调整选择',
-            suggested: '建议添加的功能模块',
-            suggestedDescription: '这些模块可以让您的AI助手效果更好',
+            intent: '我理解了您的目标',
+            extracted: '为您的使用场景识别出这些提示词组件',
+            extractedDescription: '基于您的描述，我推荐这些组件，您可以根据需要调整选择',
+            suggested: '建议添加的增强组件',
+            suggestedDescription: '这些可选组件可以提升您的提示词效果',
             confidence: '{{percent}}% 匹配',
             reasoning: '识别原因：{{reason}}',
             impact: {
@@ -1867,8 +1931,8 @@ const resources = {
           },
 
           defaults: {
-            generatedByAnalysis: '通过AI分析创建的指令',
-            defaultAssistantTitle: 'AI助手',
+            generatedByAnalysis: '通过智能分析创建的提示词',
+            defaultAssistantTitle: '自定义提示词',
           },
         },
 
@@ -1915,7 +1979,7 @@ const resources = {
             readyMessage: '您的指令流程已完成！现在该看看它如何工作了。',
             readyTip: '经常测试以完善您的指令。',
             arrangeComplete: '太好了！您的卡片已自动连接成逻辑流程。试着移动它们看看布局如何影响可读性。',
-            customizeComplete: '完美！您已自定义了 {{count}} 张卡片{{s}}。您的AI助手正在变得更聪明！',
+            customizeComplete: '完美！您已自定义了 {{count}} 张卡片{{s}}。您的提示词正在变得更好！',
 
             noBlocks: '还没有模块',
             noBlocksMessage: '首先，您需要从左侧面板添加一些指令模块。',
@@ -1957,7 +2021,7 @@ const resources = {
             },
             quickStart: {
               title: '快速开始',
-              subtitle: '选择预设模板，包含2-3个核心模块，快速启动您的AI助手',
+              subtitle: '选择预设模板，包含2-3个核心模块，快速启动您的提示词',
               addAll: '添加所有模块',
               tutor: {
                 label: 'AI导师',
@@ -1980,7 +2044,7 @@ const resources = {
 
               roleDefinition: {
                 label: '角色定义',
-                description: '定义AI助手角色和专业知识',
+                description: '定义AI的角色和专业知识',
               },
               contextSetting: {
                 label: '上下文设置',

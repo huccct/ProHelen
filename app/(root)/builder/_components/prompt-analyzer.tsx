@@ -3,8 +3,8 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { ArrowRight, Brain, CheckCircle, Lightbulb, Loader2, MessageSquare, Sparkles, Wand2 } from 'lucide-react'
-import { useState } from 'react'
+import { ArrowRight, Brain, CheckCircle, ChevronLeft, ChevronRight, Lightbulb, Loader2, MessageSquare, Sparkles, Wand2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -41,9 +41,39 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
   const [selectedBlocks, setSelectedBlocks] = useState<Set<string>>(new Set())
   const [selectedEnhancements, setSelectedEnhancements] = useState<Set<string>>(new Set())
 
+  // Carousel state
+  const [currentExampleIndex, setCurrentExampleIndex] = useState(0)
+  const allExamples = ['learning', 'work', 'writing', 'personal', 'research', 'business', 'creative', 'data', 'marketing', 'legal', 'health', 'finance']
+  const itemsToShow = 3
+  const totalSlides = Math.ceil(allExamples.length / itemsToShow)
+
+  // Auto carousel effect
+  useEffect(() => {
+    if (!analysis) {
+      const interval = setInterval(() => {
+        setCurrentExampleIndex(prev => (prev + 1) % totalSlides)
+      }, 4000) // Change every 4 seconds
+
+      return () => clearInterval(interval)
+    }
+  }, [analysis, totalSlides])
+
   const getBlockTypeLabel = (blockType: string): string => {
     const camelCase = blockType.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
     return t(`builder.components.blockPicker.blocks.${camelCase}.label`, { defaultValue: blockType })
+  }
+
+  const getCurrentExamples = () => {
+    const startIndex = currentExampleIndex * itemsToShow
+    return allExamples.slice(startIndex, startIndex + itemsToShow)
+  }
+
+  const handlePrevious = () => {
+    setCurrentExampleIndex(prev => (prev - 1 + totalSlides) % totalSlides)
+  }
+
+  const handleNext = () => {
+    setCurrentExampleIndex(prev => (prev + 1) % totalSlides)
   }
 
   const handleExampleClick = (exampleText: string) => {
@@ -126,7 +156,6 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
       selectedEnhancements.has(enhancement.type),
     )
 
-    // 传递用户的原始问题
     onAnalysisComplete(selectedBlocksData, selectedEnhancementsData, userPrompt)
   }
 
@@ -221,30 +250,75 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
               {/* Examples */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Lightbulb className="h-5 w-5" />
-                    {t('builder.analyzer.examples.title')}
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Lightbulb className="h-5 w-5" />
+                      {t('builder.analyzer.examples.title')}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handlePrevious}
+                        disabled={isAnalyzing}
+                        className="h-8 w-8 p-0 cursor-pointer"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <span className="text-sm text-muted-foreground">
+                        {currentExampleIndex + 1}
+                        {' '}
+                        /
+                        {totalSlides}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleNext}
+                        disabled={isAnalyzing}
+                        className="h-8 w-8 p-0 cursor-pointer"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {['learning', 'work', 'writing', 'personal'].map(category => (
-                      <Button
-                        key={category}
-                        variant="outline"
-                        onClick={() => handleExampleClick(t(`builder.analyzer.examples.${category}.text`))}
-                        className="h-auto p-4 text-left justify-start cursor-pointer"
+                  <div className="overflow-visible py-2">
+                    <div
+                      className="grid grid-cols-1 md:grid-cols-3 gap-3 transition-all duration-500 ease-in-out"
+                      style={{ transform: `translateX(0%)` }}
+                    >
+                      {getCurrentExamples().map((category, _index) => (
+                        <Button
+                          key={`${category}-${currentExampleIndex}`}
+                          variant="outline"
+                          onClick={() => handleExampleClick(t(`builder.analyzer.examples.${category}.text`))}
+                          className="h-auto p-4 text-left justify-start cursor-pointer transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:shadow-lg hover:-translate-y-1 hover:z-10 relative"
+                          disabled={isAnalyzing}
+                        >
+                          <div>
+                            <div className="font-medium text-sm mb-1">
+                              {t(`builder.analyzer.examples.${category}.title`)}
+                            </div>
+                            <div className="text-xs text-muted-foreground overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
+                              {t(`builder.analyzer.examples.${category}.text`)}
+                            </div>
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-center mt-4 gap-2">
+                    {Array.from({ length: totalSlides }).map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentExampleIndex(index)}
+                        className={`w-2 h-2 rounded-full transition-colors duration-200 cursor-pointer ${
+                          index === currentExampleIndex ? 'bg-primary' : 'bg-muted-foreground/30'
+                        }`}
                         disabled={isAnalyzing}
-                      >
-                        <div>
-                          <div className="font-medium text-sm mb-1">
-                            {t(`builder.analyzer.examples.${category}.title`)}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {t(`builder.analyzer.examples.${category}.text`)}
-                          </div>
-                        </div>
-                      </Button>
+                      />
                     ))}
                   </div>
                 </CardContent>
