@@ -38,6 +38,7 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
   const [userPrompt, setUserPrompt] = useState('')
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [analysisProgress, setAnalysisProgress] = useState(0)
   const [selectedBlocks, setSelectedBlocks] = useState<Set<string>>(new Set())
   const [selectedEnhancements, setSelectedEnhancements] = useState<Set<string>>(new Set())
 
@@ -81,6 +82,24 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
     setAnalysis(null)
   }
 
+  // Simulate analysis progress
+  const simulateAnalysisProgress = () => {
+    setAnalysisProgress(0)
+    const progressSteps = [
+      { progress: 15, delay: 200 },
+      { progress: 35, delay: 500 },
+      { progress: 60, delay: 800 },
+      { progress: 85, delay: 1200 },
+      { progress: 99, delay: 1500 }, // Stop at 99% and wait for API
+    ]
+
+    progressSteps.forEach(({ progress, delay }) => {
+      setTimeout(() => {
+        setAnalysisProgress(progress)
+      }, delay)
+    })
+  }
+
   const handleAnalyze = async () => {
     if (!userPrompt.trim()) {
       toast.error(t('builder.analyzer.errors.emptyPrompt'))
@@ -88,6 +107,8 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
     }
 
     setIsAnalyzing(true)
+    simulateAnalysisProgress()
+
     try {
       const response = await fetch('/api/analyze-prompt', {
         method: 'POST',
@@ -106,15 +127,20 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
         throw new Error(data.error || t('builder.analyzer.errors.analysisFailed'))
       }
 
-      setAnalysis(data.analysis)
-      setSelectedBlocks(new Set(data.analysis.extractedBlocks.map((block: ExtractedBlock) => block.type)))
+      // API completed, quickly go to 100% and show results
+      setAnalysisProgress(100)
+      setTimeout(() => {
+        setAnalysis(data.analysis)
+        setSelectedBlocks(new Set(data.analysis.extractedBlocks.map((block: ExtractedBlock) => block.type)))
+        setIsAnalyzing(false)
+        setAnalysisProgress(0)
+      }, 300) // Quick transition from 100% to results
     }
     catch (error) {
       console.error('Error analyzing prompt:', error)
       toast.error(error instanceof Error ? error.message : t('builder.analyzer.errors.analysisFailed'))
-    }
-    finally {
       setIsAnalyzing(false)
+      setAnalysisProgress(0)
     }
   }
 
@@ -229,6 +255,25 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
                     className="min-h-[120px] max-h-[300px] resize-none overflow-y-auto scrollbar"
                     disabled={isAnalyzing}
                   />
+                  {/* Progress bar when analyzing */}
+                  {isAnalyzing && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">{t('builder.analyzer.input.analyzing')}</span>
+                        <span className="text-primary font-medium">
+                          {analysisProgress}
+                          %
+                        </span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
+                          style={{ width: `${analysisProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">
                       {t('builder.analyzer.input.characterLimit', { count: userPrompt.length })}
@@ -240,7 +285,9 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
                       className="cursor-pointer"
                     >
                       {isAnalyzing && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                      {isAnalyzing ? t('builder.analyzer.input.analyzing') : t('builder.analyzer.input.analyze')}
+                      {isAnalyzing
+                        ? `${t('builder.analyzer.input.analyzing')} ${analysisProgress}%`
+                        : t('builder.analyzer.input.analyze')}
                       {!isAnalyzing && <ArrowRight className="h-4 w-4 ml-2" />}
                     </Button>
                   </div>
@@ -480,7 +527,7 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
                   variant="outline"
                   onClick={handleAcceptBlocks}
                   disabled={!canProceed}
-                  className="cursor-pointer"
+                  className="cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground hover:text-primary-foreground"
                 >
                   {t('builder.analyzer.results.confirm')}
                   <ArrowRight className="h-4 w-4 ml-2" />
