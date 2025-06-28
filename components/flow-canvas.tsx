@@ -185,8 +185,14 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
               <RecommendationPanel
                 selectedBlock={selectedNode || undefined}
                 currentBlocks={currentBlocks}
-                onBlockSelect={(blockType) => {
-                  addNode(blockType)
+                onBlockSelect={(blockType, suggestedContent) => {
+                  if (suggestedContent) {
+                    const { addNodeWithContent } = useBuilderStore.getState()
+                    addNodeWithContent(blockType, suggestedContent)
+                  }
+                  else {
+                    addNode(blockType)
+                  }
                   setShowRecommendations(false)
                 }}
                 onClose={() => setShowRecommendations(false)}

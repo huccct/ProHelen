@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
-import { Lightbulb, Plus, Sparkles, X } from 'lucide-react'
+import { AlertCircle, CheckCircle, Lightbulb, Plus, Sparkles, X, Zap } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -10,13 +10,19 @@ interface RecommendationResult {
   blockType: string
   score: number
   reason: string
+  problem?: string
+  solution?: string
+  suggestedContent?: string
+  impact?: string
+  priority?: 'high' | 'medium' | 'low'
 }
 
 interface RecommendationPanelProps {
   selectedBlock?: string
   currentBlocks: string[]
-  onBlockSelect: (blockType: string) => void
+  onBlockSelect: (blockType: string, suggestedContent?: string) => void
   onClose: () => void
+  blockContents?: Record<string, string>
 }
 
 const blockTypeColors: Record<string, string> = {
@@ -45,6 +51,7 @@ export function RecommendationPanel({
   currentBlocks,
   onBlockSelect,
   onClose,
+  blockContents = {},
 }: RecommendationPanelProps) {
   const { t } = useTranslation()
   const [recommendations, setRecommendations] = useState<RecommendationResult[]>([])
@@ -86,6 +93,7 @@ export function RecommendationPanel({
         body: JSON.stringify({
           selectedBlockType: selectedBlock,
           currentBlocks,
+          blockContents,
         }),
       })
 
@@ -123,8 +131,8 @@ export function RecommendationPanel({
     }
   }, [debouncedFetchRecommendations])
 
-  const handleBlockSelect = async (blockType: string) => {
-    onBlockSelect(blockType)
+  const handleBlockSelect = async (blockType: string, suggestedContent?: string) => {
+    onBlockSelect(blockType, suggestedContent)
 
     try {
       await fetch('/api/recommendations', {
@@ -147,9 +155,10 @@ export function RecommendationPanel({
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 300, opacity: 0 }}
       transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-      className="w-80 border-l border-border bg-card/95 backdrop-blur-sm p-4 relative"
+      className="w-80 border-l border-border bg-card/95 backdrop-blur-sm relative flex flex-col"
+      style={{ height: 'calc(100vh - 9rem)' }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 p-4 pb-0 flex-shrink-0">
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-500/20">
             <Sparkles className="h-4 w-4 text-purple-400" />
@@ -166,91 +175,174 @@ export function RecommendationPanel({
         </Button>
       </div>
 
-      {loading
-        ? (
-            <div className="space-y-3">
-              {[...Array.from({ length: 4 })].map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="h-20 bg-muted/50 rounded-lg animate-pulse"
-                />
-              ))}
-            </div>
-          )
-        : recommendations.length > 0
+      <div className="flex-1 overflow-y-auto scrollbar px-4 pb-4">
+        {loading
           ? (
               <div className="space-y-3">
-                {recommendations.map((rec, index) => (
+                {[...Array.from({ length: 4 })].map((_, i) => (
                   <motion.div
-                    key={rec.blockType}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="group"
-                  >
-                    <div
-                      className="p-4 border border-border/50 rounded-lg bg-muted/30 hover:border-border hover:bg-muted/50 cursor-pointer transition-all duration-200 relative overflow-hidden"
-                      onClick={() => handleBlockSelect(rec.blockType)}
-                    >
-                      <div className={`absolute inset-0 bg-gradient-to-r ${blockTypeColors[rec.blockType] || 'from-gray-500 to-gray-600'} opacity-0 group-hover:opacity-5 transition-opacity duration-200`} />
-
-                      <div className="relative">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <h4 className="text-sm font-medium text-foreground group-hover:text-purple-300 transition-colors">
-                              {t(`builder.components.blockPicker.blocks.${rec.blockType}.label`, rec.blockType)}
-                            </h4>
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                              {rec.reason}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2 ml-3">
-                            <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
-                              {Math.round(rec.score * 100)}
-                              %
-                            </div>
-                            <Plus className="h-4 w-4 text-muted-foreground group-hover:text-purple-400 transition-colors" />
-                          </div>
-                        </div>
-
-                        <div className="w-full bg-muted/30 rounded-full h-1 mt-2">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${rec.score * 100}%` }}
-                            transition={{ delay: index * 0.1 + 0.3, duration: 0.5 }}
-                            className={`h-1 rounded-full bg-gradient-to-r ${blockTypeColors[rec.blockType] || 'from-muted to-muted-foreground'}`}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="h-20 bg-muted/50 rounded-lg animate-pulse"
+                  />
                 ))}
               </div>
             )
-          : (
-              <div className="text-center py-8">
-                <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground text-sm">
-                  {t('builder.components.recommendationPanel.emptyState')}
-                </p>
-              </div>
-            )}
+          : recommendations.length > 0
+            ? (
+                <div className="space-y-3">
+                  {recommendations.map((rec, index) => (
+                    <motion.div
+                      key={rec.blockType}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="group"
+                    >
+                      {rec.problem && rec.solution
+                        ? (
+                            <div className="p-4 border border-border/50 rounded-lg bg-muted/30 hover:border-border hover:bg-muted/50 hover:shadow-sm transition-all duration-200 relative overflow-hidden">
+                              <div className={`absolute inset-0 bg-gradient-to-r ${blockTypeColors[rec.blockType] || 'from-gray-500 to-gray-600'} opacity-0 group-hover:opacity-5 transition-opacity duration-200`} />
 
-      {recommendations.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-6 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg"
-        >
-          <p className="text-xs text-purple-300">
-            {t('builder.components.recommendationPanel.tip')}
-          </p>
-        </motion.div>
-      )}
+                              <div className="relative space-y-3">
+                                {rec.priority && (
+                                  <div className="flex items-center gap-2">
+                                    <Zap className={`h-3 w-3 ${rec.priority === 'high' ? 'text-orange-500' : rec.priority === 'medium' ? 'text-amber-500' : 'text-emerald-500'}`} />
+                                    <span className="text-xs font-medium text-muted-foreground">
+                                      {t(`builder.components.recommendationPanel.priority.${rec.priority}`)}
+                                    </span>
+                                  </div>
+                                )}
+
+                                <div className="flex items-start gap-2">
+                                  <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                                  <div className="flex-1">
+                                    <h4 className="text-sm font-medium text-foreground mb-1">
+                                      {t('builder.components.recommendationPanel.problem')}
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground">
+                                      {rec.problem}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-start gap-2">
+                                  <Lightbulb className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                                  <div className="flex-1">
+                                    <h4 className="text-sm font-medium text-foreground mb-1">
+                                      {t('builder.components.recommendationPanel.solution')}
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground">
+                                      {rec.solution}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {rec.impact && (
+                                  <div className="flex items-start gap-2">
+                                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                    <div className="flex-1">
+                                      <h4 className="text-sm font-medium text-foreground mb-1">
+                                        {t('builder.components.recommendationPanel.impact')}
+                                      </h4>
+                                      <p className="text-xs text-green-600">
+                                        {rec.impact}
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {rec.suggestedContent && (
+                                  <div className="mt-2 p-2 bg-muted/40 border border-muted/60 rounded text-xs hover:bg-muted/50 transition-colors duration-200">
+                                    <span className="text-muted-foreground font-medium">
+                                      {t('builder.components.recommendationPanel.quickFix')}
+                                      :
+                                    </span>
+                                    <div className="mt-1 text-foreground font-mono line-clamp-2 leading-relaxed">
+                                      "
+                                      {rec.suggestedContent.slice(0, 80)}
+                                      ..."
+                                    </div>
+                                  </div>
+                                )}
+
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="w-full transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20 hover:shadow-sm cursor-pointer"
+                                  onClick={() => handleBlockSelect(rec.blockType, rec.suggestedContent)}
+                                >
+                                  <Plus className="h-3 w-3 mr-1.5" />
+                                  {t('builder.components.recommendationPanel.addSolution')}
+                                </Button>
+                              </div>
+                            </div>
+                          )
+                        : (
+                            <div
+                              className="p-4 border border-border/50 rounded-lg bg-muted/30 hover:border-border hover:bg-muted/50 cursor-pointer transition-all duration-200 relative overflow-hidden"
+                              onClick={() => handleBlockSelect(rec.blockType)}
+                            >
+                              <div className={`absolute inset-0 bg-gradient-to-r ${blockTypeColors[rec.blockType] || 'from-gray-500 to-gray-600'} opacity-0 group-hover:opacity-5 transition-opacity duration-200`} />
+
+                              <div className="relative">
+                                <div className="flex items-start justify-between mb-2">
+                                  <div className="flex-1">
+                                    <h4 className="text-sm font-medium text-foreground group-hover:text-purple-300 transition-colors">
+                                      {t(`builder.components.blockPicker.blocks.${rec.blockType}.label`, rec.blockType)}
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                      {rec.reason}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-2 ml-3">
+                                    <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                                      {Math.round(rec.score * 100)}
+                                      %
+                                    </div>
+                                    <Plus className="h-4 w-4 text-muted-foreground group-hover:text-purple-400 transition-colors" />
+                                  </div>
+                                </div>
+
+                                <div className="w-full bg-muted/30 rounded-full h-1 mt-2">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${rec.score * 100}%` }}
+                                    transition={{ delay: index * 0.1 + 0.3, duration: 0.5 }}
+                                    className={`h-1 rounded-full bg-gradient-to-r ${blockTypeColors[rec.blockType] || 'from-muted to-muted-foreground'}`}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                    </motion.div>
+                  ))}
+                </div>
+              )
+            : (
+                <div className="text-center py-8">
+                  <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-muted-foreground text-sm">
+                    {t('builder.components.recommendationPanel.emptyState')}
+                  </p>
+                </div>
+              )}
+
+        {recommendations.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-6 p-3 bg-accent/20 border border-accent/30 rounded-lg hover:bg-accent/30 transition-colors duration-200"
+          >
+            <p className="text-xs text-muted-foreground">
+              {t('builder.components.recommendationPanel.tip')}
+            </p>
+          </motion.div>
+        )}
+      </div>
     </motion.div>
   )
 }

@@ -1192,6 +1192,16 @@ const resources = {
             title: 'Smart Suggestions',
             emptyState: 'Add some blocks to get\npersonalized suggestions',
             tip: '💡 Suggestions improve as you use the app more',
+            problem: 'Current Issue',
+            solution: 'Suggested Fix',
+            impact: 'Expected Result',
+            addSolution: 'Add Solution',
+            priority: {
+              high: 'High Priority',
+              medium: 'Medium Priority',
+              low: 'Low Priority',
+            },
+            quickFix: 'Quick Fix Available',
           },
           progressIndicator: {
             completeness: 'Completeness',
@@ -2509,6 +2519,16 @@ const resources = {
             title: '智能建议',
             emptyState: '添加一些块以获得\n个性化建议',
             tip: '💡 随着您更多使用应用，建议会不断改进',
+            problem: '当前问题',
+            solution: '建议解决方案',
+            impact: '预期效果',
+            addSolution: '应用解决方案',
+            priority: {
+              high: '高优先级',
+              medium: '中优先级',
+              low: '低优先级',
+            },
+            quickFix: '快速修复',
           },
           progressIndicator: {
             completeness: '完整度',

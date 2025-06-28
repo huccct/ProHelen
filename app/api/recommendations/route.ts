@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions)
     const body = await request.json()
 
-    const { selectedBlockType, currentBlocks } = body
+    const { selectedBlockType, currentBlocks, blockContents } = body
 
     if (!currentBlocks || !Array.isArray(currentBlocks)) {
       return Response.json({ error: 'Invalid currentBlocks' }, { status: 400 })
@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
       currentBlocks,
       selectedBlockType,
       userId: session?.user?.id,
+      blockContents: blockContents || {},
     })
 
     return Response.json({ recommendations })

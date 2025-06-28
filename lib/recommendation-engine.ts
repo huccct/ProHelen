@@ -6,15 +6,95 @@ export interface RecommendationResult {
   blockType: string
   score: number
   reason: string
+  problem?: string
+  solution?: string
+  suggestedContent?: string
+  impact?: string
+  priority?: 'high' | 'medium' | 'low'
 }
 
 export interface RecommendationContext {
   currentBlocks: string[]
   selectedBlockType?: string
   userId?: string
+  blockContents?: Record<string, string>
 }
 
 export class RecommendationEngine {
+  private getPracticalRecommendations(context: RecommendationContext): RecommendationResult[] {
+    const { currentBlocks, blockContents = {} } = context
+    const recommendations: RecommendationResult[] = []
+
+    if (!currentBlocks.includes('role_definition')) {
+      recommendations.push({
+        blockType: 'role_definition',
+        score: 0.95,
+        reason: 'Essential foundation block',
+        problem: 'AI doesn\'t know what role to play, responses may be generic',
+        solution: 'Define a specific role for your AI assistant',
+        suggestedContent: 'You are an experienced professional assistant who specializes in providing clear, helpful, and actionable guidance.',
+        impact: 'Your AI will have a consistent professional identity and provide more targeted responses',
+        priority: 'high',
+      })
+    }
+
+    if (currentBlocks.includes('role_definition')
+      && blockContents.role_definition
+      && blockContents.role_definition.length < 50) {
+      recommendations.push({
+        blockType: 'context_setting',
+        score: 0.85,
+        reason: 'Role needs more context',
+        problem: 'AI role is too vague, needs more specific background',
+        solution: 'Add context to make the role more professional and specific',
+        suggestedContent: 'You work in a professional environment where clear communication and detailed explanations are valued. Your responses should be thorough yet easy to understand.',
+        impact: 'More professional and contextually appropriate responses',
+        priority: 'high',
+      })
+    }
+
+    if (!currentBlocks.includes('output_format') && currentBlocks.length >= 2) {
+      recommendations.push({
+        blockType: 'output_format',
+        score: 0.8,
+        reason: 'Improves response structure',
+        problem: 'AI responses lack consistent structure, making them hard to follow',
+        solution: 'Set a clear format for all responses',
+        suggestedContent: 'Please structure your responses as follows:\n## Quick Answer\n## Detailed Explanation\n## Next Steps\n\nThis makes information easier to understand and act upon.',
+        impact: 'Responses will be well-organized and easier to understand',
+        priority: 'medium',
+      })
+    }
+
+    if (currentBlocks.includes('role_definition') && !currentBlocks.includes('communication_style')) {
+      recommendations.push({
+        blockType: 'communication_style',
+        score: 0.75,
+        reason: 'Complements role definition',
+        problem: 'AI has a role but communication style is unclear, may sound too formal or casual',
+        solution: 'Define how the AI should communicate with users',
+        suggestedContent: 'Communicate in a friendly, professional tone. Use clear, simple language and avoid jargon. Be encouraging and patient in your explanations.',
+        impact: 'More natural and appropriate conversation style',
+        priority: 'medium',
+      })
+    }
+
+    if (currentBlocks.length >= 3 && !currentBlocks.includes('goal_setting')) {
+      recommendations.push({
+        blockType: 'goal_setting',
+        score: 0.7,
+        reason: 'Provides clear direction',
+        problem: 'Conversations lack clear objectives, may become unfocused',
+        solution: 'Set clear goals for what the AI should help users achieve',
+        suggestedContent: 'Your goal is to help users achieve their objectives efficiently by providing actionable advice, clear explanations, and practical next steps.',
+        impact: 'More focused and goal-oriented assistance',
+        priority: 'low',
+      })
+    }
+
+    return recommendations.sort((a, b) => b.score - a.score)
+  }
+
   private getRuleBasedRecommendations(context: RecommendationContext): RecommendationResult[] {
     const { selectedBlockType, currentBlocks } = context
 
@@ -173,6 +253,15 @@ export class RecommendationEngine {
   }
 
   async getRecommendations(context: RecommendationContext): Promise<RecommendationResult[]> {
+    // 优先使用实用性推荐
+    const practical = this.getPracticalRecommendations(context)
+
+    // 如果有实用性推荐，主要返回这些
+    if (practical.length > 0) {
+      return practical.slice(0, 4) // 限制为4个最重要的建议
+    }
+
+    // 否则回退到原有逻辑
     const [ruleBased, collaborative, personalized] = await Promise.all([
       Promise.resolve(this.getRuleBasedRecommendations(context)),
       this.getCollaborativeRecommendations(context),
