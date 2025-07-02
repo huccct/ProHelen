@@ -8,7 +8,7 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { IoArrowForward, IoSparkles } from 'react-icons/io5'
+import { IoArrowForward, IoArrowUp, IoSparkles } from 'react-icons/io5'
 
 const easeInOutQuint = [0.86, 0, 0.07, 1]
 
@@ -144,6 +144,30 @@ function ConnectedLinesBackground() {
 export default function Home() {
   const { t } = useTranslation()
   const router = useRouter()
+  const [showScrollTop, setShowScrollTop] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY
+      const windowHeight = window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+
+      const showButton = scrollPosition > windowHeight * 0.5
+        || (documentHeight - scrollPosition - windowHeight) < 300
+
+      setShowScrollTop(showButton)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
@@ -436,6 +460,24 @@ export default function Home() {
           </div>
         </motion.footer>
       </div>
+
+      <motion.button
+        onClick={scrollToTop}
+        className="cursor-pointer fixed bottom-8 right-8 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group hover:scale-110 active:scale-95 z-50"
+        initial={{ opacity: 0, y: 100 }}
+        animate={{
+          opacity: showScrollTop ? 1 : 0,
+          y: showScrollTop ? 0 : 100,
+          pointerEvents: showScrollTop ? 'auto' : 'none',
+        }}
+        transition={{ duration: 0.3, ease: easeInOutQuint }}
+        whileHover={{
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        }}
+      >
+        <IoArrowUp className="w-6 h-6 group-hover:-translate-y-1 transition-transform duration-300" />
+        <div className="absolute inset-0 rounded-full border-2 border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </motion.button>
     </div>
   )
 }
