@@ -19,13 +19,22 @@ export interface CustomNodeData extends Record<string, unknown> {
 
 export type CustomNodeType = Node<CustomNodeData>
 
-export function CustomNode({ data, id }: NodeProps<CustomNodeType>) {
+interface CustomNodeProps extends NodeProps<CustomNodeType> {
+  onUpdateNodeData?: (nodeId: string, data: Partial<CustomNodeData>) => void
+  onDeleteNode?: (nodeId: string) => void
+}
+
+export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomNodeProps) {
   const { t } = useTranslation()
   const [isEditing, setIsEditing] = useState(data.isEditing || false)
   const [editContent, setEditContent] = useState(data.content || '')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const updateNodeData = useBuilderStore(state => state.updateNodeData)
-  const deleteNode = useBuilderStore(state => state.deleteNode)
+
+  const storeUpdateNodeData = useBuilderStore(state => state.updateNodeData)
+  const storeDeleteNode = useBuilderStore(state => state.deleteNode)
+
+  const updateNodeData = onUpdateNodeData || storeUpdateNodeData
+  const deleteNode = onDeleteNode || storeDeleteNode
 
   useEffect(() => {
     setIsEditing(data.isEditing || false)

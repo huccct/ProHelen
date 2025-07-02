@@ -1,19 +1,16 @@
 'use client'
 
+import type { CustomNodeData } from '@/app/(root)/builder/_components/custom-node'
 import { CustomNode } from '@/app/(root)/builder/_components/custom-node'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { applyEdgeChanges, applyNodeChanges, Background, ReactFlow, ReactFlowProvider } from '@xyflow/react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Copy, Play, RefreshCw } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import '@xyflow/react/dist/style.css'
-
-const nodeTypes = {
-  custom: CustomNode,
-}
 
 function getInitialNodes(t: any) {
   return [
@@ -69,6 +66,33 @@ export function InteractivePlayground() {
   const [edges, setEdges] = useState(initialEdges)
   const [generatedPrompt, setGeneratedPrompt] = useState('')
   const [showPrompt, setShowPrompt] = useState(false)
+
+  const updateNodeData = useCallback((nodeId: string, data: Partial<CustomNodeData>) => {
+    setNodes(currentNodes =>
+      currentNodes.map(node =>
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, ...data } }
+          : node,
+      ),
+    )
+  }, [])
+
+  const deleteNodeLocal = useCallback((nodeId: string) => {
+    setNodes(currentNodes => currentNodes.filter(node => node.id !== nodeId))
+    setEdges(currentEdges => currentEdges.filter(edge =>
+      edge.source !== nodeId && edge.target !== nodeId,
+    ))
+  }, [])
+
+  const nodeTypes = useMemo(() => ({
+    custom: (props: any) => (
+      <CustomNode
+        {...props}
+        onUpdateNodeData={updateNodeData}
+        onDeleteNode={deleteNodeLocal}
+      />
+    ),
+  }), [updateNodeData, deleteNodeLocal])
 
   const onNodesChange = useCallback((changes: any) => {
     setNodes(nds => applyNodeChanges(changes, nds))
