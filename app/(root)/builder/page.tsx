@@ -175,7 +175,7 @@ function BuilderContent() {
         .then((data) => {
           if (data.instruction) {
             const instruction = data.instruction
-            setTitle(`Copy of ${instruction.title}`)
+            setTitle(`${instruction.title}`)
             setDescription(instruction.description || '')
 
             if (instruction.flowData) {

@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { useBuilderStore } from '@/store/builder'
 import { ArrowRight, Brain, CheckCircle, ChevronLeft, ChevronRight, Lightbulb, Loader2, MessageSquare, Sparkles, Wand2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -35,6 +36,7 @@ interface PromptAnalyzerProps {
 
 export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: PromptAnalyzerProps) {
   const { t } = useTranslation()
+  const originalUserQuery = useBuilderStore(state => state.originalUserQuery)
   const [userPrompt, setUserPrompt] = useState('')
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -58,6 +60,16 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
       return () => clearInterval(interval)
     }
   }, [analysis, totalSlides])
+
+  // Reset prompt when originalUserQuery is cleared (e.g., when navigating from my-instructions)
+  useEffect(() => {
+    if (originalUserQuery === '') {
+      setUserPrompt('')
+      setAnalysis(null)
+      setSelectedBlocks(new Set())
+      setSelectedEnhancements(new Set())
+    }
+  }, [originalUserQuery])
 
   const getBlockTypeLabel = (blockType: string): string => {
     const camelCase = blockType.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())

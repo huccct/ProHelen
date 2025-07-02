@@ -5,6 +5,7 @@ import { NavBar } from '@/components/nav-bar'
 import { Button } from '@/components/ui/button'
 import { getCategoryDisplayName } from '@/lib/utils'
 import { ArrowLeft } from 'lucide-react'
+import Head from 'next/head'
 import { notFound, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -74,6 +75,33 @@ export default function TemplateDetailPage({ params }: { params: any }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {template && (
+        <Head>
+          <title>
+            {template.title}
+            {' '}
+            - ProHelen
+          </title>
+          <meta name="description" content={template.description} />
+
+          {/* Open Graph */}
+          <meta property="og:title" content={`${template.title} - ProHelen`} />
+          <meta property="og:description" content={template.description} />
+          <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : `https://prohelen.dev/templates/${id}`} />
+          <meta property="og:type" content="article" />
+          <meta property="og:site_name" content="ProHelen" />
+          <meta property="og:image" content="/assets/icons/logo.png" />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+
+          {/* Twitter Card */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={`${template.title} - ProHelen`} />
+          <meta name="twitter:description" content={template.description} />
+          <meta name="twitter:image" content="/assets/icons/logo.png" />
+        </Head>
+      )}
+
       <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
         <NavBar />
       </div>
@@ -105,7 +133,11 @@ export default function TemplateDetailPage({ params }: { params: any }) {
                       <Button
                         variant="outline"
                         className="cursor-pointer"
-                        onClick={() => window.open(`mailto:?subject=Check out this template&body=I found this great template on ProHelen: ${template.title}`)}
+                        onClick={() => {
+                          const tweetText = `Check out this awesome template: ${template.title} on ProHelen!`
+                          const url = window.location.href
+                          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}`)
+                        }}
                       >
                         {t('templateDetail.share')}
                       </Button>
