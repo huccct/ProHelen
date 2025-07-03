@@ -11,6 +11,8 @@ import { RelatedTemplates } from './_components/related-templates'
 import { TemplateDetails } from './_components/template-details'
 import { TemplatePreview } from './_components/template-preview'
 import { TemplateRating } from './_components/template-rating'
+// 如果需要客户端动态修改头部，可以使用：
+// import { useEffect } from 'react'
 
 interface TemplateDetailClientProps {
   template: Template
@@ -19,6 +21,17 @@ interface TemplateDetailClientProps {
 export function TemplateDetailClient({ template }: TemplateDetailClientProps) {
   const { t } = useTranslation()
   const router = useRouter()
+
+  // 客户端动态修改头部的例子（不推荐用于SEO关键的metadata）
+  // useEffect(() => {
+  //   document.title = `${template.title} - ProHelen`
+  //
+  //   // 动态添加meta标签
+  //   const metaDescription = document.querySelector('meta[name="description"]')
+  //   if (metaDescription) {
+  //     metaDescription.setAttribute('content', template.description)
+  //   }
+  // }, [template])
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -46,9 +59,10 @@ export function TemplateDetailClient({ template }: TemplateDetailClientProps) {
                 variant="outline"
                 className="cursor-pointer"
                 onClick={() => {
-                  const tweetText = `Check out this awesome template: ${template.title} on ProHelen!`
+                  const tweetText = `🚀 ${template.title}\n\n${template.description}\n\n#ProHelen #AI #PromptEngineering`
                   const url = window.location.href
-                  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}`)
+                  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}&via=ProHelen`
+                  window.open(twitterUrl, '_blank', 'width=550,height=420,scrollbars=yes,resizable=yes')
                 }}
               >
                 {t('templateDetail.share')}
