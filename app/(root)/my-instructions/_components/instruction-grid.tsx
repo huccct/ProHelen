@@ -42,6 +42,7 @@ export interface Instruction {
   isFavorite: boolean
   createdAt: string
   updatedAt: string
+  isDraft: boolean
 }
 
 interface InstructionGridProps {
@@ -144,7 +145,6 @@ export function InstructionGrid({
     try {
       setLoading(true)
       const params = new URLSearchParams()
-
       if (searchQuery)
         params.set('search', searchQuery)
       if (filter !== 'all')
@@ -158,7 +158,8 @@ export function InstructionGrid({
       const response = await fetch(`/api/instructions?${params}`)
 
       if (!response.ok) {
-        throw new Error(t('myInstructions.failedToLoad'))
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || t('myInstructions.failedToLoad'))
       }
 
       const data = await response.json()
@@ -399,6 +400,11 @@ export function InstructionGrid({
                       )}
                       {instruction.isFavorite && (
                         <Heart className="w-5 h-5 text-red-400 fill-current flex-shrink-0" />
+                      )}
+                      {instruction.isDraft && (
+                        <Badge variant="secondary" className="text-xs">
+                          {t('common.draft')}
+                        </Badge>
                       )}
                     </div>
                     {instruction.category && (

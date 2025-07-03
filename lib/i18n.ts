@@ -33,6 +33,7 @@ const resources = {
         description: 'Description',
         tags: 'Tags',
         reset: 'Reset',
+        draft: 'Draft',
       },
 
       auth: {
@@ -1313,6 +1314,12 @@ const resources = {
             newConversation: 'New Conversation',
           },
         },
+        saveDialog: {
+          title: 'Save Changes',
+          description: 'Do you want to save your changes as a draft before leaving?',
+          save: 'Save as Draft',
+          discard: 'Discard Changes',
+        },
       },
     },
   },
@@ -1346,6 +1353,7 @@ const resources = {
         description: '描述',
         tags: '标签',
         reset: '重置',
+        draft: '草稿',
       },
 
       auth: {
@@ -2639,6 +2647,12 @@ const resources = {
             copied: '已复制到剪贴板',
             newConversation: '新对话',
           },
+        },
+        saveDialog: {
+          title: '保存更改',
+          description: '您确定要保存更改吗？',
+          save: '保存为草稿',
+          discard: '放弃更改',
         },
       },
     },

@@ -4,11 +4,12 @@ import { FlowCanvas } from '@/components/flow-canvas'
 import { HelpPanel } from '@/components/help-panel'
 import { OnboardingTour } from '@/components/onboarding-tour'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useBuilderStore } from '@/store/builder'
 import { ArrowLeft, HelpCircle, Zap } from 'lucide-react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -20,7 +21,10 @@ type InterfaceMode = 'advanced' | 'analyze'
 
 function BuilderContent() {
   const { t } = useTranslation()
+  const router = useRouter()
   const searchParams = useSearchParams()
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [isExistingContent, setIsExistingContent] = useState(false)
   const importFlowData = useBuilderStore(state => state.importFlowData)
   const title = useBuilderStore(state => state.title)
   const description = useBuilderStore(state => state.description)
@@ -31,6 +35,8 @@ function BuilderContent() {
   const redo = useBuilderStore(state => state.redo)
   const canUndo = useBuilderStore(state => state.canUndo)
   const canRedo = useBuilderStore(state => state.canRedo)
+  const saveDraft = useBuilderStore(state => state.saveDraft)
+  const hasPendingChanges = useBuilderStore(state => state.hasPendingChanges)
   const [previewWidth, setPreviewWidth] = useState(320)
   const [isDragging, setIsDragging] = useState(false)
   const [showHelpPanel, setShowHelpPanel] = useState(false)
@@ -154,6 +160,9 @@ function BuilderContent() {
     const templateId = searchParams.get('template')
     const instructionId = searchParams.get('instruction')
 
+    // Set isExistingContent based on whether we're editing an instruction or using a template
+    setIsExistingContent(!!templateId || !!instructionId)
+
     if (templateId) {
       fetch(`/api/templates/${templateId}`)
         .then(res => res.json())
@@ -191,6 +200,52 @@ function BuilderContent() {
     }
   }, [searchParams, importFlowData, setTitle, setDescription, resetFlow])
 
+  // Auto-save when user leaves the page
+  useEffect(() => {
+    const handleBeforeUnload = async (_e: BeforeUnloadEvent) => {
+      if (hasPendingChanges() && !isExistingContent) {
+        await saveDraft()
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [hasPendingChanges, saveDraft, isExistingContent])
+
+  // Auto-save when navigating away
+  useEffect(() => {
+    if (hasPendingChanges() && !isExistingContent) {
+      window.onbeforeunload = () => ''
+    }
+    else {
+      window.onbeforeunload = null
+    }
+  }, [hasPendingChanges, isExistingContent])
+
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (hasPendingChanges() && !isExistingContent) {
+      setShowSaveDialog(true)
+    }
+    else {
+      router.back()
+    }
+  }
+
+  const handleSaveAndExit = async () => {
+    await saveDraft()
+    setShowSaveDialog(false)
+    router.back()
+  }
+
+  const handleDiscardAndExit = () => {
+    setShowSaveDialog(false)
+    router.back()
+  }
+
   // analyze mode show prompt analyzer
   if (interfaceMode === 'analyze') {
     return (
@@ -200,6 +255,7 @@ function BuilderContent() {
             <Link
               href="/"
               className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted cursor-pointer"
+              onClick={handleBackClick}
             >
               <ArrowLeft size={18} />
             </Link>
@@ -227,6 +283,7 @@ function BuilderContent() {
           <Link
             href="/"
             className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted cursor-pointer"
+            onClick={handleBackClick}
           >
             <ArrowLeft size={18} />
           </Link>
@@ -320,6 +377,37 @@ function BuilderContent() {
           localStorage.setItem('prohelen-tour-completed', 'true')
         }}
       />
+
+      {showSaveDialog && (
+        <Dialog open onOpenChange={() => setShowSaveDialog(false)}>
+          <DialogContent className="bg-card border-border sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-semibold">
+                {t('builder.saveDialog.title')}
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground">
+                {t('builder.saveDialog.description')}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button
+                variant="ghost"
+                onClick={handleDiscardAndExit}
+                className="w-full sm:w-auto cursor-pointer"
+              >
+                {t('builder.saveDialog.discard')}
+              </Button>
+              <Button
+                variant="default"
+                onClick={handleSaveAndExit}
+                className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+              >
+                {t('builder.saveDialog.save')}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
     </div>
   )

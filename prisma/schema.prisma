@@ -70,31 +70,35 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// 用户私人指令模型
+// user private instruction model
 model Instruction {
   id          String   @id @default(cuid())
   title       String
   description String?
-  content     String   @db.Text // 实际的 prompt 内容
-  tags        String[] // 搜索标签
-  flowData    Json?    // React Flow 节点和边数据
+  content     String   @db.Text // actual prompt content
+  tags        String[] // search tags
+  flowData    Json?    // React Flow nodes and edges data
   
-  // 用户关联
+  // user relation
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  // 使用统计
+  // usage statistics
   usageCount  Int      @default(0)
   lastUsedAt  DateTime?
   
-  // 发布状态
-  isPublished       Boolean  @default(false) // 是否已发布到模板库
-  publishedTemplate Template? @relation("InstructionToTemplate") // 发布后的模板
-  publishedAt       DateTime? // 发布时间
+  // publish status
+  isPublished       Boolean  @default(false) // whether published to template library
+  publishedTemplate Template? @relation("InstructionToTemplate") // published template
+  publishedAt       DateTime? // publish time
   
-  // 分类和标记
-  category    String?  // 分类
-  isFavorite  Boolean  @default(false) // 用户是否收藏
+  // category and tags
+  category    String?  // category
+  isFavorite  Boolean  @default(false) // whether user has favorited
+  
+  // draft status
+  isDraft     Boolean  @default(false) // whether is draft
+  sourceId    String?  // if from template, record source template ID
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -102,6 +106,7 @@ model Instruction {
   @@index([userId])
   @@index([category])
   @@index([isPublished])
+  @@index([isDraft])
 }
 
 model Template {
@@ -128,7 +133,7 @@ model Template {
   createdBy   String?  // User ID, null for system templates
   creator     User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
   
-  // 与 Instruction 的关联（如果是从指令发布而来）
+  // relation to Instruction (if from instruction)
   sourceInstructionId String?     @unique
   sourceInstruction   Instruction? @relation("InstructionToTemplate", fields: [sourceInstructionId], references: [id], onDelete: SetNull)
   
@@ -180,7 +185,7 @@ model UserFavoriteTemplate {
   @@unique([userId, templateId])
 }
 
-// 用户块使用统计
+// user block usage statistics
 model UserBlockUsage {
   id         String   @id @default(cuid())
   userId     String
@@ -194,7 +199,7 @@ model UserBlockUsage {
   @@index([blockType])
 }
 
-// 用户会话记录（用于协同过滤）
+// user session record (for collaborative filtering)
 model UserSession {
   id            String   @id @default(cuid())
   userId        String

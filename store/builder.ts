@@ -70,6 +70,8 @@ interface BuilderActions {
   applyAnalysisResults: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[], userQuery?: string) => void
   createEnhancementBlocks: (enhancements: SuggestedEnhancement[]) => void
   addQuickStartTemplate: (templateId: string) => void
+  saveDraft: () => Promise<void>
+  hasPendingChanges: () => boolean
 }
 
 // block priority based on 5-category system (lower number = higher priority)
@@ -1435,5 +1437,53 @@ Actionable recommendations or follow-up suggestions`
         get().addNodeWithContent(blockType, content, position, true)
       }, index * 100)
     })
+  },
+
+  saveDraft: async () => {
+    const state = get()
+    const flowData = state.exportFlowData()
+
+    // Update preview to get the latest prompt
+    state.updatePreview()
+
+    // Use the preview prompt as content
+    const content = [
+      state.preview.system,
+      state.preview.human,
+      state.preview.assistant,
+    ].filter(Boolean).join('\n\n')
+
+    try {
+      const response = await fetch('/api/instructions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: state.title || i18n.t('builder.untitledInstruction'),
+          description: state.description,
+          content,
+          tags: state.tags,
+          flowData,
+          isDraft: true,
+          sourceId: state.sourceId,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save draft')
+      }
+
+      return response.json()
+    }
+    catch (error) {
+      console.error('Error saving draft:', error)
+      throw error
+    }
+  },
+
+  hasPendingChanges: () => {
+    const state = get()
+    return state.nodes.length > 0 || state.edges.length > 0 || state.title !== '' || state.description !== ''
   },
 }))
