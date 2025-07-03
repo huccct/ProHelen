@@ -44,18 +44,22 @@ export async function generateMetadata(
   const title = `${template.title} - ProHelen`
   const description = template.description
 
+  const imageUrl = new URL('/assets/icons/logo.png', process.env.NEXT_PUBLIC_APP_URL || 'https://prohelen.dev').toString()
+  const pageUrl = new URL(`/templates/${id}`, process.env.NEXT_PUBLIC_APP_URL || 'https://prohelen.dev').toString()
+
   return {
     title,
     description,
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://prohelen.dev'),
     openGraph: {
       title,
       description,
-      url: `/templates/${id}`,
+      url: pageUrl,
       type: 'article',
       siteName: 'ProHelen',
       images: [
         {
-          url: '/assets/icons/logo.png',
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: template.title,
@@ -66,10 +70,12 @@ export async function generateMetadata(
       card: 'summary_large_image',
       title,
       description,
-      images: ['/assets/icons/logo.png'],
+      images: [imageUrl],
+      creator: '@ProHelen',
+      site: '@ProHelen',
     },
     alternates: {
-      canonical: `/templates/${id}`,
+      canonical: pageUrl,
     },
   }
 }
