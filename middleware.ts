@@ -10,7 +10,9 @@ export async function middleware(request: NextRequest) {
     || request.nextUrl.pathname.startsWith('/forgot-password')
     || request.nextUrl.pathname.startsWith('/reset-password')
 
-  if (!token && !isAuthPage) {
+  const isPublicPage = request.nextUrl.pathname.startsWith('/templates')
+
+  if (!token && !isAuthPage && !isPublicPage) {
     const signInUrl = new URL('/sign-in', request.url)
     signInUrl.searchParams.set('callbackUrl', request.nextUrl.pathname)
     return NextResponse.redirect(signInUrl)
