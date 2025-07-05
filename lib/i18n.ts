@@ -462,6 +462,9 @@ const resources = {
         simpleModeTip: 'Question-based instruction creation',
         getHelp: 'Get help and shortcuts',
         helpTip: 'Press F1 or click for help',
+        draftSaved: 'Draft saved successfully!',
+        draftTip: '💡 Draft Tips',
+        draftTipDescription: 'You can find your draft in My Instructions. Click on it to continue editing or save it as a permanent instruction.',
 
         quickSetup: {
           title: 'Quick Setup',
@@ -1782,6 +1785,9 @@ const resources = {
         simpleModeTip: '基于问题的指令创建',
         getHelp: '获取帮助和快捷键',
         helpTip: '按 F1 或点击获取帮助',
+        draftSaved: '草稿保存成功！',
+        draftTip: '💡 草稿提示',
+        draftTipDescription: '您可以在我的指令中找到草稿。点击它继续编辑或保存为永久指令。',
 
         quickSetup: {
           title: '快速设置',

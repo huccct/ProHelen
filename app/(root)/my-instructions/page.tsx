@@ -12,7 +12,7 @@ export default function MyInstructionsPage() {
   const { t } = useTranslation()
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortBy, setSortBy] = useState<'created' | 'updated' | 'usage'>('updated')
+  const [sortBy, setSortBy] = useState<'created' | 'updated' | 'usage'>('created')
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)

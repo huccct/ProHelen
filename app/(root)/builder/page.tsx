@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 import { PromptAnalyzer } from './_components/prompt-analyzer'
 import { PromptPreview } from './_components/prompt-preview'
@@ -237,6 +238,7 @@ function BuilderContent() {
 
   const handleSaveAndExit = async () => {
     await saveDraft()
+    toast.success(t('builder.draftTipDescription'))
     setShowSaveDialog(false)
     router.back()
   }

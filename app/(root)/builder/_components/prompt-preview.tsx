@@ -4,6 +4,7 @@ import type { InstructionFormData } from './save-instruction-modal'
 import { Button } from '@/components/ui/button'
 import { useBuilderStore } from '@/store/builder'
 import { Copy, Download, Play, Save } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -26,6 +27,7 @@ function selector(state: any) {
 
 export function PromptPreview({ className, style }: PromptPreviewProps) {
   const { t } = useTranslation()
+  const router = useRouter()
   const { preview, nodes, exportFlowData } = useBuilderStore(useShallow(selector))
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [showTestModal, setShowTestModal] = useState(false)
@@ -122,15 +124,30 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     setShowSaveModal(true)
   }
 
+  const checkIfDraft = async (id: string) => {
+    try {
+      const response = await fetch(`/api/instructions/${id}`)
+      const data = await response.json()
+      return data.instruction?.isDraft || false
+    }
+    catch (error) {
+      console.error('Error checking draft status:', error)
+      return false
+    }
+  }
+
   const handleSaveInstructionSubmit = async (instructionData: InstructionFormData) => {
     try {
       setIsSaving(true)
 
       const flowData = exportFlowData()
       const systemPrompt = generateSystemPrompt()
+      const searchParams = new URLSearchParams(window.location.search)
+      const instructionId = searchParams.get('instruction')
+      const isDraft = instructionId && await checkIfDraft(instructionId)
 
-      const response = await fetch('/api/instructions', {
-        method: 'POST',
+      const response = await fetch(isDraft ? `/api/instructions/${instructionId}` : '/api/instructions', {
+        method: isDraft ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -141,6 +158,7 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
           content: systemPrompt,
           tags: instructionData.tags,
           flowData,
+          isDraft: false, // Convert from draft to regular instruction
         }),
       })
 
@@ -151,6 +169,9 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
       await response.json()
       toast.success('Instruction saved successfully!')
       setShowSaveModal(false)
+
+      // Redirect to instructions page
+      router.push('/my-instructions')
     }
     catch (error) {
       console.error('Error saving instruction:', error)
