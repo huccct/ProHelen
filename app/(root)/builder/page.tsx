@@ -25,6 +25,7 @@ function BuilderContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [saveDialogAction, setSaveDialogAction] = useState<'back' | 'analyze'>('back')
   const [isExistingContent, setIsExistingContent] = useState(false)
   const importFlowData = useBuilderStore(state => state.importFlowData)
   const title = useBuilderStore(state => state.title)
@@ -229,6 +230,7 @@ function BuilderContent() {
   const handleBackClick = (e: React.MouseEvent) => {
     e.preventDefault()
     if (hasPendingChanges() && !isExistingContent) {
+      setSaveDialogAction('back')
       setShowSaveDialog(true)
     }
     else {
@@ -240,12 +242,35 @@ function BuilderContent() {
     await saveDraft()
     toast.success(t('builder.draftTipDescription'))
     setShowSaveDialog(false)
-    router.back()
+
+    if (saveDialogAction === 'back') {
+      router.back()
+    }
+    else {
+      setInterfaceMode('analyze')
+    }
   }
 
   const handleDiscardAndExit = () => {
     setShowSaveDialog(false)
-    router.back()
+
+    if (saveDialogAction === 'back') {
+      router.back()
+    }
+    else {
+      setInterfaceMode('analyze')
+    }
+  }
+
+  const handleSmartAnalysisClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (hasPendingChanges() && !isExistingContent) {
+      setSaveDialogAction('analyze')
+      setShowSaveDialog(true)
+    }
+    else {
+      setInterfaceMode('analyze')
+    }
   }
 
   // analyze mode show prompt analyzer
@@ -313,7 +338,7 @@ function BuilderContent() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setInterfaceMode('analyze')}
+                onClick={handleSmartAnalysisClick}
                 className="h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 <Zap className="h-4 w-4 mr-1" />
