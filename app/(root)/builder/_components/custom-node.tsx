@@ -7,7 +7,7 @@ import { useBuilderStore } from '@/store/builder'
 
 import { Handle, NodeResizer, Position } from '@xyflow/react'
 import { AlertTriangle, BarChart3, Book, Brain, CheckCircle, Clock, Compass, Edit3, FileText, Filter, Globe, Heart, Lightbulb, MessageCircle, MessageSquare, Save, Star, Target, Trash2, Users, Workflow, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export interface CustomNodeData extends Record<string, unknown> {
@@ -29,6 +29,7 @@ export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomN
   const [isEditing, setIsEditing] = useState(data.isEditing || false)
   const [editContent, setEditContent] = useState(data.content || '')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const storeUpdateNodeData = useBuilderStore(state => state.updateNodeData)
   const storeDeleteNode = useBuilderStore(state => state.deleteNode)
@@ -39,6 +40,55 @@ export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomN
   useEffect(() => {
     setIsEditing(data.isEditing || false)
   }, [data.isEditing])
+
+  useEffect(() => {
+    const textarea = textareaRef.current
+    if (!textarea || !isEditing)
+      return
+
+    const handleWheel = (e: WheelEvent) => {
+      e.stopPropagation()
+    }
+
+    const handleMouseDown = (e: MouseEvent) => {
+      e.stopPropagation()
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      e.stopPropagation()
+    }
+
+    const handleMouseUp = (e: MouseEvent) => {
+      e.stopPropagation()
+    }
+
+    const handleDragStart = (e: DragEvent) => {
+      e.stopPropagation()
+    }
+
+    const handleSelect = (e: Event) => {
+      e.stopPropagation()
+    }
+
+    // 添加所有需要阻止冒泡的事件
+    textarea.addEventListener('wheel', handleWheel, { passive: false })
+    textarea.addEventListener('mousedown', handleMouseDown, { passive: false })
+    textarea.addEventListener('mousemove', handleMouseMove, { passive: false })
+    textarea.addEventListener('mouseup', handleMouseUp, { passive: false })
+    textarea.addEventListener('dragstart', handleDragStart, { passive: false })
+    textarea.addEventListener('select', handleSelect, { passive: false })
+    textarea.addEventListener('selectstart', handleSelect, { passive: false })
+
+    return () => {
+      textarea.removeEventListener('wheel', handleWheel)
+      textarea.removeEventListener('mousedown', handleMouseDown)
+      textarea.removeEventListener('mousemove', handleMouseMove)
+      textarea.removeEventListener('mouseup', handleMouseUp)
+      textarea.removeEventListener('dragstart', handleDragStart)
+      textarea.removeEventListener('select', handleSelect)
+      textarea.removeEventListener('selectstart', handleSelect)
+    }
+  }, [isEditing])
 
   const handleSave = () => {
     updateNodeData(id, { content: editContent, isEditing: false })
@@ -57,6 +107,15 @@ export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomN
     setEditContent(data.content || '')
     updateNodeData(id, { isEditing: true })
     setIsEditing(true)
+    // Focus the textarea after a short delay to ensure it's rendered
+    setTimeout(() => {
+      const textarea = document.querySelector(`[data-node-id="${id}"] textarea`) as HTMLTextAreaElement
+      if (textarea) {
+        textarea.focus()
+        // Set cursor to end of content
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length)
+      }
+    }, 100)
   }
 
   const handleDoubleClick = (e: React.MouseEvent) => {
@@ -87,7 +146,11 @@ export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomN
   const colors = getNodeColors(data.type)
 
   return (
-    <div className={`group relative ${isEditing ? '' : 'min-w-[240px] max-w-[320px]'}`}>
+    <div
+      className={`group relative ${isEditing ? '' : 'min-w-[240px] max-w-[320px]'}`}
+      data-editing={isEditing}
+      data-node-id={id}
+    >
       {/* NodeResizer - Only show when editing */}
       {isEditing && (
         <NodeResizer
@@ -127,7 +190,19 @@ export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomN
             ? 'border-foreground bg-card'
             : 'border-border bg-card/80 hover:border-border/80 hover:bg-card/90'
         } backdrop-blur-sm`}
-        onDoubleClick={handleDoubleClick}
+        onDoubleClick={isEditing ? undefined : handleDoubleClick}
+        onMouseDown={isEditing ? e => e.stopPropagation() : undefined}
+        onMouseMove={isEditing ? e => e.stopPropagation() : undefined}
+        onMouseUp={isEditing ? e => e.stopPropagation() : undefined}
+        onDragStart={isEditing ? e => e.stopPropagation() : undefined}
+        style={isEditing
+          ? {
+              userSelect: 'text',
+              WebkitUserSelect: 'text',
+              MozUserSelect: 'text',
+              msUserSelect: 'text',
+            }
+          : undefined}
       >
 
         {/* Header */}
@@ -179,11 +254,22 @@ export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomN
             ? (
                 <div className="space-y-3">
                   <textarea
+                    ref={textareaRef}
                     value={editContent}
                     onChange={e => setEditContent(e.target.value)}
                     placeholder={t('builder.components.customNode.enterInstructions', { label: data.label.toLowerCase() })}
-                    className="w-full min-h-[80px] max-h-[200px] p-2 text-sm bg-background border border-border rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-primary/50 scrollbar overflow-y-auto"
+                    className="w-full min-h-[120px] max-h-[300px] p-3 text-sm bg-background border border-border rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-primary/50 overflow-y-auto select-text cursor-text scrollbar"
+                    style={{
+                      userSelect: 'text',
+                      WebkitUserSelect: 'text',
+                      MozUserSelect: 'text',
+                      msUserSelect: 'text',
+                      pointerEvents: 'auto',
+                      touchAction: 'manipulation',
+                    }}
                     autoFocus
+                    onKeyDown={e => e.stopPropagation()}
+                    spellCheck={true}
                   />
                   <div className="flex justify-end gap-2">
                     <Button
