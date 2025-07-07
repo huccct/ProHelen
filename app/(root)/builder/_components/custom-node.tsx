@@ -2,7 +2,6 @@
 
 import type { Node, NodeProps } from '@xyflow/react'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useBuilderStore } from '@/store/builder'
 
 import { Handle, NodeResizer, Position } from '@xyflow/react'
@@ -21,21 +20,19 @@ export type CustomNodeType = Node<CustomNodeData>
 
 interface CustomNodeProps extends NodeProps<CustomNodeType> {
   onUpdateNodeData?: (nodeId: string, data: Partial<CustomNodeData>) => void
-  onDeleteNode?: (nodeId: string) => void
+  onShowDeleteConfirm?: (nodeId: string) => void
 }
 
-export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomNodeProps) {
+export function CustomNode({ data, id, onUpdateNodeData, onShowDeleteConfirm, selected = false }: CustomNodeProps) {
   const { t } = useTranslation()
   const [isEditing, setIsEditing] = useState(data.isEditing || false)
   const [editContent, setEditContent] = useState(data.content || '')
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const storeUpdateNodeData = useBuilderStore(state => state.updateNodeData)
-  const storeDeleteNode = useBuilderStore(state => state.deleteNode)
-
+  const setSelectedNode = useBuilderStore(state => state.setSelectedNode)
+  const setShowRecommendations = useBuilderStore(state => state.setShowRecommendations)
   const updateNodeData = onUpdateNodeData || storeUpdateNodeData
-  const deleteNode = onDeleteNode || storeDeleteNode
 
   useEffect(() => {
     setIsEditing(data.isEditing || false)
@@ -93,6 +90,9 @@ export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomN
   const handleSave = () => {
     updateNodeData(id, { content: editContent, isEditing: false })
     setIsEditing(false)
+    // After saving, trigger smart suggestions
+    setSelectedNode(data.type)
+    setShowRecommendations(true)
   }
 
   const handleCancel = (e: React.MouseEvent) => {
@@ -127,18 +127,9 @@ export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomN
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
-    setShowDeleteConfirm(true)
-  }
-
-  const confirmDelete = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    deleteNode(id)
-    setShowDeleteConfirm(false)
-  }
-
-  const handleCancelDelete = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setShowDeleteConfirm(false)
+    if (onShowDeleteConfirm) {
+      onShowDeleteConfirm(id)
+    }
   }
 
   const icon = getNodeIcon(data.type)
@@ -147,7 +138,9 @@ export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomN
 
   return (
     <div
-      className={`group relative ${isEditing ? '' : 'min-w-[240px] max-w-[320px]'}`}
+      className={`group relative ${isEditing ? '' : 'min-w-[240px] max-w-[320px]'} ${
+        selected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
+      }`}
       data-editing={isEditing}
       data-node-id={id}
     >
@@ -318,34 +311,6 @@ export function CustomNode({ data, id, onUpdateNodeData, onDeleteNode }: CustomN
         className="!bg-muted !border-border !w-3 !h-3 !opacity-60 !pointer-events-none !z-10"
         isConnectable={false}
       />
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <DialogContent className="bg-card border-border [&>button]:text-muted-foreground [&>button]:hover:text-foreground">
-          <DialogHeader>
-            <DialogTitle className="text-foreground">{t('builder.components.customNode.confirmDelete.title')}</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              {t('builder.components.customNode.confirmDelete.description')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="ghost"
-              onClick={handleCancelDelete}
-              className="text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
-            >
-              {t('builder.components.customNode.confirmDelete.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDelete}
-              className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
-            >
-              {t('builder.components.customNode.confirmDelete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

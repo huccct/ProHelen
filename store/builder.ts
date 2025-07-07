@@ -19,6 +19,8 @@ interface BuilderState {
   isTemplate: boolean
   sourceId: string | null
   originalUserQuery: string
+  selectedNode: string | null
+  showRecommendations: boolean
   preview: {
     system: string
     human: string
@@ -58,6 +60,8 @@ interface BuilderActions {
   setIsTemplate: (isTemplate: boolean) => void
   setSourceId: (sourceId: string | null) => void
   setOriginalUserQuery: (query: string) => void
+  setSelectedNode: (nodeType: string | null) => void
+  setShowRecommendations: (show: boolean) => void
   updatePreview: () => void
   exportFlowData: () => { nodes: Node<CustomNodeData>[], edges: Edge[] }
   importFlowData: (flowData: { nodes: Node<CustomNodeData>[], edges: Edge[] }) => void
@@ -569,6 +573,8 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   isTemplate: false,
   sourceId: null,
   originalUserQuery: '',
+  selectedNode: null,
+  showRecommendations: false,
   preview: {
     system: '',
     human: '',
@@ -809,6 +815,8 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
   setIsTemplate: isTemplate => set({ isTemplate }),
   setSourceId: sourceId => set({ sourceId }),
   setOriginalUserQuery: query => set({ originalUserQuery: query }),
+  setSelectedNode: nodeType => set({ selectedNode: nodeType }),
+  setShowRecommendations: show => set({ showRecommendations: show }),
 
   updatePreview: () => {
     const state = get()
@@ -1160,6 +1168,8 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       isTemplate: false,
       sourceId: null,
       originalUserQuery: '',
+      selectedNode: null,
+      showRecommendations: false,
       history: [],
       historyIndex: -1,
     })
