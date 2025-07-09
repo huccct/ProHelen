@@ -901,7 +901,6 @@ const resources = {
           valueDemonstration: {
             title: 'Your Blocks in Action',
             subtitle: 'See how each building block improves your AI\'s responses',
-            showImpact: 'See Impact',
             beforeTitle: 'Basic AI Response',
             afterTitle: 'Enhanced Response',
             beforeResponse: 'Hello! I\'m an AI assistant. How can I help you today? I\'ll do my best to provide useful information.',
@@ -2237,7 +2236,6 @@ const resources = {
           valueDemonstration: {
             title: '构建块效果展示',
             subtitle: '看看你添加的每个构建块如何改进AI的回答质量',
-            showImpact: '查看效果',
             beforeTitle: '基础AI回答',
             afterTitle: '优化后的AI回答',
             beforeResponse: '你好！我是AI助手，有什么可以帮助你的吗？我会尽力为你提供有用的信息和建议。',

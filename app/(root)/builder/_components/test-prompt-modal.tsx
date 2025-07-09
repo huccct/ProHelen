@@ -224,7 +224,7 @@ export function TestPromptModal({ open, onOpenChange }: TestPromptModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-background border-border text-foreground max-w-4xl h-[85vh] flex flex-col p-0">
+      <DialogContent className="!bg-background !border-border !text-foreground !w-[60vw] !max-w-[95vw] !h-[90vh] !flex !flex-col !p-0">
         {/* Header */}
         <DialogHeader className="p-8 pb-4 border-b border-border/50">
           <div className="flex items-center justify-between">

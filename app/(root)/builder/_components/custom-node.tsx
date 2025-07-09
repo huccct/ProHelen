@@ -172,7 +172,15 @@ export function CustomNode({ data, id, onUpdateNodeData, onShowDeleteConfirm, se
       {/* Target Handle - for receiving connections, but not interactive */}
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
+        className="!bg-muted !border-border !w-3 !h-3 !opacity-60 !pointer-events-none !z-10"
+        isConnectable={false}
+      />
+
+      {/* Source Handle - for making connections */}
+      <Handle
+        type="source"
+        position={Position.Right}
         className="!bg-muted !border-border !w-3 !h-3 !opacity-60 !pointer-events-none !z-10"
         isConnectable={false}
       />
@@ -303,14 +311,6 @@ export function CustomNode({ data, id, onUpdateNodeData, onShowDeleteConfirm, se
           </div>
         )}
       </div>
-
-      {/* Source Handle - for emitting connections, but not interactive */}
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="!bg-muted !border-border !w-3 !h-3 !opacity-60 !pointer-events-none !z-10"
-        isConnectable={false}
-      />
     </div>
   )
 }
