@@ -38,6 +38,10 @@ export function HelpPanel({ isOpen, onClose, onStartTour }: HelpPanelProps) {
 
   const faqs = [
     {
+      question: t('builder.components.helpPanel.faqs.connections.question'),
+      answer: t('builder.components.helpPanel.faqs.connections.answer'),
+    },
+    {
       question: t('builder.components.helpPanel.faqs.autoConnect.question'),
       answer: t('builder.components.helpPanel.faqs.autoConnect.answer'),
     },

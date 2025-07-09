@@ -286,10 +286,7 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
                     </div>
                   )}
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">
-                      {t('builder.analyzer.input.characterLimit', { count: userPrompt.length })}
-                    </span>
+                  <div className="flex justify-end items-center">
                     <Button
                       variant="outline"
                       onClick={handleAnalyze}

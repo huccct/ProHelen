@@ -553,7 +553,6 @@ const resources = {
             placeholder: 'For example: I need help preparing for technical interviews, with focus on JavaScript and React concepts, using a friendly teaching approach... (Press Enter to analyze, Shift+Enter for new line)',
             analyzing: 'Analyzing...',
             analyze: 'Start Analysis',
-            characterLimit: '{{count}}/500',
           },
 
           examples: {
@@ -849,7 +848,7 @@ const resources = {
             actions: {
               copy: 'Copy',
               export: 'Export',
-              test: 'Try it',
+              test: 'Run Prompt',
               save: 'Save',
             },
             placeholder: 'Start building your custom instructions by adding blocks to the canvas...',
@@ -1136,6 +1135,10 @@ const resources = {
               improvePrompts: {
                 question: 'How do I improve my prompts?',
                 answer: 'Add specific content to each block, test your prompts regularly, and use the Smart Suggestions feature to discover relevant blocks you might have missed.',
+              },
+              connections: {
+                question: 'Why do we need to connect building blocks?',
+                answer: 'The connections between building blocks create the logical flow of prompts. When blocks are connected, they work as a coherent instruction - the previous block provides context for the subsequent block. For example, when you connect the role block to the context block, AI understands the context from the perspective of that specific role. Without connections, each block would be seen as an independent instruction, reducing the effectiveness of the prompt.',
               },
             },
             faq: {
@@ -1876,7 +1879,6 @@ const resources = {
             placeholder: '例如：帮我准备技术面试，重点是JavaScript和React概念，使用友好的教学方式...（按回车键分析，Shift+回车换行）',
             analyzing: '正在分析...',
             analyze: '开始分析',
-            characterLimit: '{{count}}/500',
           },
 
           examples: {
@@ -2184,7 +2186,7 @@ const resources = {
             actions: {
               copy: '复制',
               export: '导出',
-              test: '开始',
+              test: '运行提示词',
               save: '保存',
             },
             placeholder: '通过在画布上添加模块来开始构建您的自定义指令...',
@@ -2472,6 +2474,10 @@ const resources = {
               improvePrompts: {
                 question: '如何改进我的提示词？',
                 answer: '为每个块添加具体内容，定期测试您的提示词，并使用智能建议功能发现您可能遗漏的相关块。',
+              },
+              connections: {
+                question: '为什么需要连接积木块？',
+                answer: '积木块之间的连接创建了提示词的逻辑流程。当积木块连接在一起时，它们会作为一个连贯的指令协同工作 - 前面的积木块为后面的积木块提供上下文。例如，当你将角色积木块连接到上下文积木块时，AI会从该特定角色的视角理解上下文。如果没有连接，每个积木块都会被视为独立的指令，使提示词效果降低。',
               },
             },
             faq: {

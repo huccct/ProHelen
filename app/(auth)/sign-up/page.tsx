@@ -249,7 +249,7 @@ export default function SignUp() {
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
                   disabled={isLoading}
                 >
-                  {isLoading ? t('auth.signUp.creatingAccount') : t('auth.createAccount')}
+                  {isLoading ? t('auth.creatingAccount') : t('auth.createAccount')}
                 </Button>
               </form>
 
