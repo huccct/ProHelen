@@ -50,3 +50,6 @@ node_modules/.prisma/
 
 # generated files
 /lib/generated/
+
+# Sentry Config File
+.env.sentry-build-plugin
