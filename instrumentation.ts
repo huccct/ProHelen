@@ -1,4 +1,4 @@
-import process from 'node:process'
+/* eslint-disable node/prefer-global/process */
 import * as Sentry from '@sentry/nextjs'
 
 export async function register() {
