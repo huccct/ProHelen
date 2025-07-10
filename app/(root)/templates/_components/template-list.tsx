@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/pagination'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { getCategoryDisplayName } from '@/lib/utils'
+import * as Sentry from '@sentry/nextjs'
 import { motion } from 'framer-motion'
 import { Clock, Heart, Star, TrendingUp, Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -69,7 +70,9 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
     hasMore: false,
   })
   const [currentPage, setCurrentPage] = useState(1)
+
   const fetchTemplates = async (page = 1) => {
+    const startTime = performance.now()
     try {
       setLoading(true)
       const params = new URLSearchParams()
@@ -80,6 +83,17 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
 
       params.set('limit', '6')
       params.set('offset', ((page - 1) * 6).toString())
+
+      Sentry.addBreadcrumb({
+        category: 'user-action',
+        message: 'Template search',
+        level: 'info',
+        data: {
+          category,
+          searchQuery,
+          page,
+        },
+      })
 
       const response = await fetch(`/api/templates?${params}`)
       if (!response.ok)
@@ -94,9 +108,30 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
         hasMore: false,
       })
       setCurrentPage(page)
+
+      const endTime = performance.now()
+      Sentry.captureMessage('Template API Performance', {
+        level: 'info',
+        extra: {
+          responseTime: endTime - startTime,
+          resultsCount: data.templates?.length || 0,
+          totalResults: data.pagination?.total || 0,
+          category,
+          searchQuery,
+        },
+      })
     }
     catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load templates')
+
+      // 记录错误
+      Sentry.captureException(err, {
+        extra: {
+          category,
+          searchQuery,
+          page,
+        },
+      })
     }
     finally {
       setLoading(false)
@@ -123,6 +158,23 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
 
   const formatRating = (rating: number) => {
     return rating.toFixed(1)
+  }
+
+  const handleTemplateClick = (template: Template) => {
+    // 记录模板点击
+    Sentry.addBreadcrumb({
+      category: 'user-action',
+      message: 'Template clicked',
+      level: 'info',
+      data: {
+        templateId: template.id,
+        templateTitle: template.title,
+        templateCategory: template.category,
+        isPremium: template.isPremium,
+      },
+    })
+
+    router.push(`/templates/${template.id}`)
   }
 
   if (loading) {
@@ -173,6 +225,7 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
+            onClick={() => handleTemplateClick(template)}
           >
             <Card className="border-border bg-card/50 hover:bg-card/70 transition-all duration-300 hover:border-border/50 group cursor-pointer h-full flex flex-col">
               <CardHeader className="p-6 flex-1">
@@ -318,8 +371,19 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault()
-                  if (canGoPrevious)
+                  if (canGoPrevious) {
+                    // 记录分页操作
+                    Sentry.addBreadcrumb({
+                      category: 'user-action',
+                      message: 'Pagination previous',
+                      level: 'info',
+                      data: {
+                        fromPage: currentPage,
+                        toPage: currentPage - 1,
+                      },
+                    })
                     handlePageChange(currentPage - 1)
+                  }
                 }}
                 className={!canGoPrevious ? 'pointer-events-none opacity-50' : ''}
               />

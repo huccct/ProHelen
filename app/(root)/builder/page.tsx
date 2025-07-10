@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useBuilderStore } from '@/store/builder'
+import * as Sentry from '@sentry/nextjs'
 import { ArrowLeft, HelpCircle, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -57,7 +58,26 @@ function BuilderContent() {
     }
   }, [searchParams])
 
+  // 记录用户会话开始
+  useEffect(() => {
+    Sentry.addBreadcrumb({
+      category: 'session',
+      message: 'Builder session started',
+      level: 'info',
+      data: {
+        mode: interfaceMode,
+        hasTemplate: !!searchParams.get('template'),
+        hasInstruction: !!searchParams.get('instruction'),
+      },
+    })
+  }, [])
+
   const handleSwitchToAdvanced = () => {
+    Sentry.addBreadcrumb({
+      category: 'user-action',
+      message: 'Switched to advanced mode',
+      level: 'info',
+    })
     setInterfaceMode('advanced')
   }
 
@@ -69,6 +89,7 @@ function BuilderContent() {
    * @returns void
    */
   const handleAnalysisComplete = useCallback((blocks: any[], enhancements: any[], userQuery?: string) => {
+    const startTime = performance.now()
     const { applyAnalysisResults } = useBuilderStore.getState()
 
     applyAnalysisResults(blocks, enhancements, userQuery)
@@ -82,8 +103,19 @@ function BuilderContent() {
     }
 
     setDescription(t('builder.analyzer.defaults.generatedByAnalysis'))
-
     setInterfaceMode('advanced')
+
+    // 记录分析完成
+    const endTime = performance.now()
+    Sentry.captureMessage('Analysis Complete', {
+      level: 'info',
+      extra: {
+        processingTime: endTime - startTime,
+        blocksCount: blocks.length,
+        enhancementsCount: enhancements.length,
+        hasUserQuery: !!userQuery,
+      },
+    })
   }, [])
 
   const handleMouseDown = useCallback(() => {
@@ -158,6 +190,22 @@ function BuilderContent() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [undo, redo, canUndo, canRedo])
 
+  // 记录用户编辑操作
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        Sentry.addBreadcrumb({
+          category: 'user-action',
+          message: e.shiftKey ? 'Redo operation' : 'Undo operation',
+          level: 'info',
+        })
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
   useEffect(() => {
     const templateId = searchParams.get('template')
     const instructionId = searchParams.get('instruction')
@@ -166,6 +214,7 @@ function BuilderContent() {
     setIsExistingContent(!!templateId || !!instructionId)
 
     if (templateId) {
+      const startTime = performance.now()
       fetch(`/api/templates/${templateId}`)
         .then(res => res.json())
         .then((template) => {
@@ -176,11 +225,30 @@ function BuilderContent() {
             if (template.flowData) {
               importFlowData(template.flowData)
             }
+
+            const endTime = performance.now()
+            Sentry.captureMessage('Template Load Performance', {
+              level: 'info',
+              extra: {
+                templateId,
+                loadTime: endTime - startTime,
+                hasFlowData: !!template.flowData,
+              },
+            })
           }
         })
-        .catch(console.error)
+        .catch((error) => {
+          Sentry.captureException(error, {
+            extra: {
+              templateId,
+              action: 'load_template',
+            },
+          })
+          console.error(error)
+        })
     }
     else if (instructionId) {
+      const startTime = performance.now()
       fetch(`/api/instructions/${instructionId}`)
         .then(res => res.json())
         .then((data) => {
@@ -192,9 +260,27 @@ function BuilderContent() {
             if (instruction.flowData) {
               importFlowData(instruction.flowData)
             }
+
+            const endTime = performance.now()
+            Sentry.captureMessage('Instruction Load Performance', {
+              level: 'info',
+              extra: {
+                instructionId,
+                loadTime: endTime - startTime,
+                hasFlowData: !!instruction.flowData,
+              },
+            })
           }
         })
-        .catch(console.error)
+        .catch((error) => {
+          Sentry.captureException(error, {
+            extra: {
+              instructionId,
+              action: 'load_instruction',
+            },
+          })
+          console.error(error)
+        })
     }
     else {
       // No query parameters, reset to fresh state
@@ -239,15 +325,36 @@ function BuilderContent() {
   }
 
   const handleSaveAndExit = async () => {
-    await saveDraft()
-    toast.success(t('builder.draftTipDescription'))
-    setShowSaveDialog(false)
+    const startTime = performance.now()
+    try {
+      await saveDraft()
+      const endTime = performance.now()
 
-    if (saveDialogAction === 'back') {
-      router.back()
+      Sentry.captureMessage('Draft Save Performance', {
+        level: 'info',
+        extra: {
+          saveTime: endTime - startTime,
+          action: saveDialogAction,
+        },
+      })
+
+      toast.success(t('builder.draftTipDescription'))
+      setShowSaveDialog(false)
+
+      if (saveDialogAction === 'back') {
+        router.back()
+      }
+      else {
+        setInterfaceMode('analyze')
+      }
     }
-    else {
-      setInterfaceMode('analyze')
+    catch (error) {
+      Sentry.captureException(error, {
+        extra: {
+          action: 'save_draft',
+          saveDialogAction,
+        },
+      })
     }
   }
 
