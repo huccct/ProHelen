@@ -25,7 +25,6 @@ export default function SignIn() {
   /**
    * Email sign in
    * @param e - Form event
-   * @returns void
    */
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault()

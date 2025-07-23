@@ -9,7 +9,7 @@ async function getAnalytics() {
     activeUsers,
     totalTemplates,
     totalInstructions,
-    categoryStats,
+    rawCategoryStats,
     recentUsage,
   ] = await prisma.$transaction([
     prisma.user.count(),
@@ -66,6 +66,11 @@ async function getAnalytics() {
       take: 10,
     }),
   ])
+
+  const categoryStats = rawCategoryStats.map(stat => ({
+    category: stat.category,
+    _count: typeof stat._count === 'object' && stat._count?._all ? stat._count._all : 0,
+  }))
 
   return {
     totalUsers,
