@@ -1,35 +1,29 @@
+'use client'
+
+import type { User } from './columns'
 import { DataTable } from '@/components/admin/data-table'
-import { prisma } from '@/lib/db'
-import { columns } from './columns'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useUserColumns } from './columns'
 
-async function getUsers() {
-  return await prisma.user.findMany({
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      createdAt: true,
-      _count: {
-        select: {
-          instructions: true,
-          templates: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  })
-}
+export default function UsersPage() {
+  const { t } = useTranslation()
+  const columns = useUserColumns()
+  const [users, setUsers] = useState<User[]>([])
 
-export default async function UsersPage() {
-  const users = await getUsers()
+  useEffect(() => {
+    async function fetchUsers() {
+      const response = await fetch('/api/admin/users')
+      const data = await response.json()
+      setUsers(data)
+    }
+    fetchUsers()
+  }, [])
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">用户管理</h1>
+        <h1 className="text-3xl font-bold">{t('admin.users.title')}</h1>
       </div>
 
       <DataTable columns={columns} data={users} />

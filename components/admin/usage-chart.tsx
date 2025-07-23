@@ -34,7 +34,17 @@ export function UsageChart({ data }: UsageChartProps) {
           axisLine={false}
           tickFormatter={value => `${value}`}
         />
-        <Tooltip />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: '#1f2937',
+            border: 'none',
+            borderRadius: '0.375rem',
+            color: '#ffffff',
+          }}
+          wrapperStyle={{ outline: 'none' }}
+          itemStyle={{ color: '#ffffff' }}
+          labelStyle={{ color: '#ffffff' }}
+        />
         <Bar
           dataKey="value"
           fill="currentColor"

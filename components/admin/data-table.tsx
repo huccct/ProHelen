@@ -23,17 +23,21 @@ import {
 } from '@tanstack/react-table'
 
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  pageSize?: number
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  pageSize = 10,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const { t } = useTranslation()
 
   const table = useReactTable({
     data,
@@ -44,6 +48,11 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     state: {
       sorting,
+    },
+    initialState: {
+      pagination: {
+        pageSize,
+      },
     },
   })
 
@@ -94,30 +103,43 @@ export function DataTable<TData, TValue>({
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      暂无数据
+                      {t('common.table.noData')}
                     </TableCell>
                   </TableRow>
                 )}
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          上一页
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          下一页
-        </Button>
+      <div className="flex items-center justify-between py-4">
+        <div className="text-sm text-muted-foreground">
+          {t('common.table.itemsPerPage', { count: table.getState().pagination.pageSize })}
+        </div>
+        <div className="flex items-center space-x-6">
+          <div className="text-sm text-muted-foreground">
+            {t('common.table.pageInfo', {
+              current: table.getState().pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              {t('common.table.previousPage')}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              {t('common.table.nextPage')}
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )

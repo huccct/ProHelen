@@ -1,9 +1,10 @@
 'use client'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
-import { formatDistanceToNow } from 'date-fns'
+import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { Star } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export interface Template {
   id: string
@@ -23,72 +24,76 @@ export interface Template {
   }
 }
 
-export const columns: ColumnDef<Template>[] = [
-  {
-    accessorKey: 'title',
-    header: '标题',
-  },
-  {
-    accessorKey: 'category',
-    header: '分类',
-  },
-  {
-    accessorKey: 'creator',
-    header: '创建者',
-    cell: ({ row }) => {
-      const creator = row.getValue('creator') as Template['creator']
-      return creator?.name || creator?.email || '系统模板'
+export function useTemplateColumns() {
+  const { t } = useTranslation()
+
+  const columns: ColumnDef<Template>[] = [
+    {
+      accessorKey: 'title',
+      header: t('admin.templates.columns.title'),
     },
-  },
-  {
-    accessorKey: 'isPublic',
-    header: '状态',
-    cell: ({ row }) => (
-      <Badge variant={row.getValue('isPublic') ? 'default' : 'secondary'}>
-        {row.getValue('isPublic') ? '已发布' : '未发布'}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: 'isPremium',
-    header: '类型',
-    cell: ({ row }) => (
-      <Badge variant={row.getValue('isPremium') ? 'default' : 'secondary'}>
-        {row.getValue('isPremium') ? '高级版' : '基础版'}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: 'rating',
-    header: '评分',
-    cell: ({ row }) => {
-      const rating = row.getValue('rating') as number | null
-      return rating
-        ? (
-            <div className="flex items-center">
-              <Star className="w-4 h-4 text-yellow-400 mr-1" />
-              {rating.toFixed(1)}
-            </div>
-          )
-        : (
-            '暂无评分'
-          )
+    {
+      accessorKey: 'category',
+      header: t('admin.templates.columns.category'),
     },
-  },
-  {
-    accessorKey: '_count.reviews',
-    header: '评价数',
-  },
-  {
-    accessorKey: '_count.favorites',
-    header: '收藏数',
-  },
-  {
-    accessorKey: 'createdAt',
-    header: '创建时间',
-    cell: ({ row }) => {
-      const date = new Date(row.getValue('createdAt'))
-      return formatDistanceToNow(date, { addSuffix: true, locale: zhCN })
+    {
+      accessorKey: 'creator',
+      header: t('admin.templates.columns.author'),
+      cell: ({ row }) => {
+        const creator = row.getValue('creator') as Template['creator']
+        return creator?.name || creator?.email || t('admin.templates.systemTemplate')
+      },
     },
-  },
-]
+    {
+      accessorKey: 'isPublic',
+      header: t('admin.templates.columns.status'),
+      cell: ({ row }) => (
+        <Badge variant={row.getValue('isPublic') ? 'default' : 'secondary'}>
+          {row.getValue('isPublic') ? t('admin.templates.status.public') : t('admin.templates.status.private')}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: 'isPremium',
+      header: t('admin.templates.columns.type'),
+      cell: ({ row }) => (
+        <Badge variant={row.getValue('isPremium') ? 'default' : 'secondary'}>
+          {row.getValue('isPremium') ? t('admin.templates.type.premium') : t('admin.templates.type.basic')}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: 'rating',
+      header: t('admin.templates.columns.rating'),
+      cell: ({ row }) => {
+        const rating = row.getValue('rating') as number | null
+        return rating
+          ? (
+              <div className="flex items-center">
+                <Star className="w-4 h-4 text-yellow-400 mr-1" />
+                {rating.toFixed(1)}
+              </div>
+            )
+          : t('admin.templates.noRating')
+      },
+    },
+    {
+      accessorKey: '_count.reviews',
+      header: t('admin.templates.columns.reviewCount'),
+    },
+    {
+      accessorKey: '_count.favorites',
+      header: t('admin.templates.columns.favoriteCount'),
+    },
+    {
+      accessorKey: 'createdAt',
+      header: t('admin.templates.columns.createdAt'),
+      cell: ({ row }) => {
+        const date = new Date(row.getValue('createdAt'))
+        return format(date, 'yyyy-MM-dd HH:mm:ss', { locale: zhCN })
+      },
+    },
+  ]
+
+  return columns
+}

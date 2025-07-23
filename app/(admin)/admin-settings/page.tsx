@@ -7,19 +7,21 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const { t } = useTranslation()
 
   const handleSave = async () => {
     setIsLoading(true)
     try {
-      toast.success('设置已保存')
+      toast.success(t('admin.settings.saveSuccess'))
     }
     catch (error) {
       console.error(error)
-      toast.error('保存设置失败')
+      toast.error(t('admin.settings.saveError'))
     }
     finally {
       setIsLoading(false)
@@ -28,35 +30,35 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">系统设置</h1>
+      <h1 className="text-3xl font-bold">{t('admin.settings.title')}</h1>
 
       <Tabs defaultValue="general" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="general">基本设置</TabsTrigger>
-          <TabsTrigger value="api">API 设置</TabsTrigger>
-          <TabsTrigger value="security">安全设置</TabsTrigger>
+          <TabsTrigger value="general" className="cursor-pointer">{t('admin.settings.tabs.general')}</TabsTrigger>
+          <TabsTrigger value="api" className="cursor-pointer">{t('admin.settings.tabs.api')}</TabsTrigger>
+          <TabsTrigger value="security" className="cursor-pointer">{t('admin.settings.tabs.security')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>基本设置</CardTitle>
+              <CardTitle>{t('admin.settings.general.title')}</CardTitle>
               <CardDescription>
-                配置系统的基本参数
+                {t('admin.settings.general.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="site-name">网站名称</Label>
+                <Label htmlFor="site-name">{t('admin.settings.general.siteName')}</Label>
                 <Input id="site-name" defaultValue="ProHelen" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="site-description">网站描述</Label>
+                <Label htmlFor="site-description">{t('admin.settings.general.siteDescription')}</Label>
                 <Input id="site-description" defaultValue="AI提示词工程平台" />
               </div>
               <div className="flex items-center space-x-2">
                 <Switch id="maintenance" />
-                <Label htmlFor="maintenance">维护模式</Label>
+                <Label htmlFor="maintenance">{t('admin.settings.general.maintenanceMode')}</Label>
               </div>
             </CardContent>
           </Card>
@@ -65,18 +67,18 @@ export default function SettingsPage() {
         <TabsContent value="api" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>API 设置</CardTitle>
+              <CardTitle>{t('admin.settings.api.title')}</CardTitle>
               <CardDescription>
-                配置 API 相关参数
+                {t('admin.settings.api.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="openai-key">OpenAI API Key</Label>
+                <Label htmlFor="openai-key">{t('admin.settings.api.openaiKey')}</Label>
                 <Input id="openai-key" type="password" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="api-rate-limit">API 速率限制 (每分钟请求数)</Label>
+                <Label htmlFor="api-rate-limit">{t('admin.settings.api.rateLimit')}</Label>
                 <Input id="api-rate-limit" type="number" defaultValue={60} />
               </div>
             </CardContent>
@@ -86,23 +88,23 @@ export default function SettingsPage() {
         <TabsContent value="security" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>安全设置</CardTitle>
+              <CardTitle>{t('admin.settings.security.title')}</CardTitle>
               <CardDescription>
-                配置系统安全相关参数
+                {t('admin.settings.security.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="session-timeout">会话超时时间 (分钟)</Label>
+                <Label htmlFor="session-timeout">{t('admin.settings.security.sessionTimeout')}</Label>
                 <Input id="session-timeout" type="number" defaultValue={30} />
               </div>
               <div className="flex items-center space-x-2">
                 <Switch id="force-2fa" />
-                <Label htmlFor="force-2fa">强制开启两步验证</Label>
+                <Label htmlFor="force-2fa">{t('admin.settings.security.force2fa')}</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Switch id="allow-registration" defaultChecked />
-                <Label htmlFor="allow-registration">允许新用户注册</Label>
+                <Label htmlFor="allow-registration">{t('admin.settings.security.allowRegistration')}</Label>
               </div>
             </CardContent>
           </Card>
@@ -110,8 +112,8 @@ export default function SettingsPage() {
       </Tabs>
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={isLoading}>
-          {isLoading ? '保存中...' : '保存设置'}
+        <Button onClick={handleSave} disabled={isLoading} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 cursor-pointer">
+          {isLoading ? t('admin.settings.saving') : t('admin.settings.save')}
         </Button>
       </div>
     </div>

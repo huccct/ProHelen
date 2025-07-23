@@ -1,8 +1,9 @@
 'use client'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
-import { formatDistanceToNow } from 'date-fns'
+import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
+import { useTranslation } from 'react-i18next'
 
 export interface Instruction {
   id: string
@@ -22,60 +23,71 @@ export interface Instruction {
   } | null
 }
 
-export const columns: ColumnDef<Instruction>[] = [
-  {
-    accessorKey: 'title',
-    header: '标题',
-  },
-  {
-    accessorKey: 'category',
-    header: '分类',
-    cell: ({ row }) => row.getValue('category') || '未分类',
-  },
-  {
-    accessorKey: 'user',
-    header: '创建者',
-    cell: ({ row }) => {
-      const user = row.getValue('user') as Instruction['user']
-      return user.name || user.email
+export function useInstructionColumns() {
+  const { t } = useTranslation()
+
+  const columns: ColumnDef<Instruction>[] = [
+    {
+      accessorKey: 'title',
+      header: t('admin.instructions.columns.title'),
+      cell: ({ row }) => (
+        <div className="max-w-sm md:max-w-md whitespace-normal break-words">
+          {row.getValue('title') as string}
+        </div>
+      ),
     },
-  },
-  {
-    accessorKey: 'isPublished',
-    header: '发布状态',
-    cell: ({ row }) => (
-      <Badge variant={row.getValue('isPublished') ? 'default' : 'secondary'}>
-        {row.getValue('isPublished') ? '已发布' : '未发布'}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: 'isDraft',
-    header: '草稿状态',
-    cell: ({ row }) => (
-      <Badge variant={row.getValue('isDraft') ? 'default' : 'secondary'}>
-        {row.getValue('isDraft') ? '草稿' : '完成'}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: 'usageCount',
-    header: '使用次数',
-  },
-  {
-    accessorKey: 'publishedTemplate',
-    header: '关联模板',
-    cell: ({ row }) => {
-      const template = row.getValue('publishedTemplate') as Instruction['publishedTemplate']
-      return template ? template.title : '无'
+    {
+      accessorKey: 'category',
+      header: t('admin.instructions.columns.category'),
+      cell: ({ row }) => row.getValue('category') || t('admin.instructions.noCategory'),
     },
-  },
-  {
-    accessorKey: 'createdAt',
-    header: '创建时间',
-    cell: ({ row }) => {
-      const date = new Date(row.getValue('createdAt'))
-      return formatDistanceToNow(date, { addSuffix: true, locale: zhCN })
+    {
+      accessorKey: 'user',
+      header: t('admin.instructions.columns.author'),
+      cell: ({ row }) => {
+        const user = row.getValue('user') as Instruction['user']
+        return user.name || user.email
+      },
     },
-  },
-]
+    {
+      accessorKey: 'isPublished',
+      header: t('admin.instructions.columns.status'),
+      cell: ({ row }) => (
+        <Badge variant={row.getValue('isPublished') ? 'default' : 'secondary'}>
+          {row.getValue('isPublished') ? t('admin.instructions.status.published') : t('admin.instructions.status.draft')}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: 'isDraft',
+      header: t('admin.instructions.columns.draftStatus'),
+      cell: ({ row }) => (
+        <Badge variant={row.getValue('isDraft') ? 'default' : 'secondary'}>
+          {row.getValue('isDraft') ? t('admin.instructions.draftStatus.draft') : t('admin.instructions.draftStatus.completed')}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: 'usageCount',
+      header: t('admin.instructions.columns.usageCount'),
+    },
+    {
+      accessorKey: 'publishedTemplate',
+      header: t('admin.instructions.columns.relatedTemplate'),
+      cell: ({ row }) => {
+        const template = row.getValue('publishedTemplate') as Instruction['publishedTemplate']
+        return template ? template.title : t('admin.instructions.noTemplate')
+      },
+    },
+    {
+      accessorKey: 'createdAt',
+      header: t('admin.instructions.columns.createdAt'),
+      cell: ({ row }) => {
+        const date = new Date(row.getValue('createdAt'))
+        return format(date, 'yyyy-MM-dd HH:mm:ss', { locale: zhCN })
+      },
+    },
+  ]
+
+  return columns
+}

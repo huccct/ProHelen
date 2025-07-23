@@ -37,13 +37,23 @@ export function CategoryDistribution({ data }: CategoryDistributionProps) {
           outerRadius={120}
           fill="#8884d8"
           dataKey="value"
-          label={({ name, percent }) => `${name} ${(percent ?? 0 * 100).toFixed(0)}%`}
+          label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
         >
           {chartData.map((_, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: '#1f2937',
+            border: 'none',
+            borderRadius: '0.375rem',
+            color: '#ffffff',
+          }}
+          wrapperStyle={{ outline: 'none' }}
+          itemStyle={{ color: '#ffffff' }}
+          labelStyle={{ color: '#ffffff' }}
+        />
         <Legend />
       </PieChart>
     </ResponsiveContainer>
