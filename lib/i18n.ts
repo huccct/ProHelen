@@ -11,6 +11,12 @@ const resources = {
         templates: 'Templates',
         myInstructions: 'My Instructions',
         builder: 'Builder',
+        adminDashboard: 'Dashboard',
+        adminUsers: 'Users',
+        adminTemplates: 'Templates',
+        adminInstructions: 'Instructions',
+        adminAnalytics: 'Analytics',
+        adminSettings: 'Settings',
       },
 
       common: {
@@ -1336,6 +1342,12 @@ const resources = {
         templates: '模板',
         myInstructions: '我的指令',
         builder: '构建器',
+        adminDashboard: '仪表盘',
+        adminUsers: '用户管理',
+        adminTemplates: '模板管理',
+        adminInstructions: '指令管理',
+        adminAnalytics: '数据分析',
+        adminSettings: '系统设置',
       },
 
       common: {

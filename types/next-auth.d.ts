@@ -1,10 +1,15 @@
-import type { DefaultSession } from 'next-auth'
 import 'next-auth'
 
 declare module 'next-auth' {
+  interface User {
+    id: string
+    role?: 'USER' | 'ADMIN'
+  }
+
   interface Session {
-    user: {
+    user: User & {
       id: string
-    } & DefaultSession['user']
+      role?: 'USER' | 'ADMIN'
+    }
   }
 }

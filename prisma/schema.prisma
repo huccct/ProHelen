@@ -13,6 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
 
 model User {
   id            String    @id @default(cuid())
@@ -26,12 +30,14 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
-  instructions  Instruction[]  // 用户的私人指令
+  instructions  Instruction[]
   templates     Template[]
   reviews       TemplateReview[]
   favorites     UserFavoriteTemplate[]
   blockUsages   UserBlockUsage[]
   userSessions  UserSession[]
+  systemSettings SystemSetting[]
+  role          Role      @default(USER)
 }
 
 model Account {
@@ -204,10 +210,23 @@ model UserSession {
   id            String   @id @default(cuid())
   userId        String
   sessionId     String   @unique
-  blockSequence String[] // 用户添加块的顺序
+  blockSequence String[]
   completedAt   DateTime @default(now())
   
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@index([userId])
+}
+
+model SystemSetting {
+  id            String   @id @default(cuid())
+  key           String   @unique
+  value         String   @db.Text
+  description   String?
+  category      String   // general, api, security
+  updatedAt     DateTime @updatedAt
+  updatedBy     String?
+  updatedByUser User?    @relation(fields: [updatedBy], references: [id])
+
+  @@index([category])
 }

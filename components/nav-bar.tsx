@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { BookText, Files, LogOut, Wrench } from 'lucide-react'
+import { BookText, Files, LayoutDashboard, LogOut, Wrench } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -27,6 +27,8 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
   const { data: session } = useSession()
   const router = useRouter()
   const { t } = useTranslation()
+
+  const isAdmin = (session?.user as any)?.role === 'ADMIN'
 
   const handleSignOut = () => {
     signOut({ redirect: false })
@@ -71,6 +73,18 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
                         {session.user?.name || 'User'}
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
+                      {isAdmin && (
+                        <>
+                          <DropdownMenuItem
+                            className="cursor-pointer flex items-center gap-2"
+                            onClick={() => router.push('/admin-dashboard')}
+                          >
+                            <LayoutDashboard className="w-4 h-4" />
+                            {t('nav.adminDashboard')}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                        </>
+                      )}
                       <DropdownMenuItem
                         className="cursor-pointer flex items-center gap-2"
                         onClick={() => router.push('/builder')}
