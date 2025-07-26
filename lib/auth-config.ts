@@ -31,13 +31,14 @@ export const authOptions: NextAuthOptions = {
         if (!isValid)
           throw new Error('Invalid credentials')
 
-        const force2faSetting = await prisma.systemSetting.findUnique({
-          where: { key: 'security.force.2fa' },
-        })
+        // TODO: Implement 2FA functionality
+        // const force2faSetting = await prisma.systemSetting.findUnique({
+        //   where: { key: 'security.force.2fa' },
+        // })
 
-        if (force2faSetting?.value === 'true' && !user.has2fa) {
-          throw new Error('2FA required')
-        }
+        // if (force2faSetting?.value === 'true' && !user.has2fa) {
+        //   throw new Error('2FA required')
+        // }
 
         return {
           id: user.id,
