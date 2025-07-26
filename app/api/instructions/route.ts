@@ -1,12 +1,20 @@
 import type { NextRequest } from 'next/server'
 import { authOptions } from '@/lib/auth-config'
 import { prisma } from '@/lib/db'
+import { checkMaintenanceMode } from '@/lib/server-utils'
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 
 // GET /api/instructions - Get user's instructions list
 export async function GET(request: NextRequest) {
   try {
+    if (await checkMaintenanceMode()) {
+      return NextResponse.json(
+        { error: 'System is under maintenance' },
+        { status: 503 },
+      )
+    }
+
     // Get current user session
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
@@ -102,6 +110,14 @@ export async function GET(request: NextRequest) {
 // POST /api/instructions - Create new instruction
 export async function POST(request: NextRequest) {
   try {
+    // 检查维护模式
+    if (await checkMaintenanceMode()) {
+      return NextResponse.json(
+        { error: 'System is under maintenance' },
+        { status: 503 },
+      )
+    }
+
     // Get current user session
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {

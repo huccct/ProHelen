@@ -1,8 +1,9 @@
+import { authOptions } from '@/lib/auth-config'
 import { prisma } from '@/lib/db'
 import { getServerSession } from 'next-auth'
 
 export async function GET() {
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
 
   if (!session?.user || (session.user as any).role !== 'ADMIN') {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -18,7 +19,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
 
   if (!session?.user || (session.user as any).role !== 'ADMIN') {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })

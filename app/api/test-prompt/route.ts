@@ -1,20 +1,32 @@
 import type { NextRequest } from 'next/server'
 import process from 'node:process'
+import { authOptions } from '@/lib/auth-config'
+import { prisma } from '@/lib/db'
+import { checkMaintenanceMode, checkRateLimit } from '@/lib/server-utils'
+import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-
-interface Message {
-  role: 'user' | 'assistant'
-  content: string
-  timestamp: Date
-}
-
 export async function POST(request: NextRequest) {
   try {
+    if (await checkMaintenanceMode()) {
+      return NextResponse.json(
+        { error: 'System is under maintenance' },
+        { status: 503 },
+      )
+    }
+
+    const session = await getServerSession(authOptions)
+    const identifier = session?.user?.id || request.headers.get('x-forwarded-for') || 'anonymous'
+
+    const rateLimitResult = await checkRateLimit(identifier)
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { status: 429 },
+      )
+    }
+
     const { systemPrompt, userMessage, conversationHistory } = await request.json()
 
     if (!systemPrompt || !userMessage) {
@@ -24,12 +36,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!process.env.OPENAI_API_KEY) {
+    const apiKeySetting = await prisma.systemSetting.findUnique({
+      where: { key: 'api.openai.key' },
+    })
+
+    const apiKey = apiKeySetting?.value || process.env.OPENAI_API_KEY
+
+    if (!apiKey) {
       return NextResponse.json(
         { error: 'OpenAI API key not configured' },
         { status: 500 },
       )
     }
+
+    const openai = new OpenAI({
+      apiKey,
+    })
 
     // Build the messages array for the API
     const messages: { role: 'system' | 'user' | 'assistant', content: string }[] = [
@@ -38,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Add conversation history
     if (conversationHistory && Array.isArray(conversationHistory)) {
-      conversationHistory.forEach((msg: Message) => {
+      conversationHistory.forEach((msg: any) => { // Assuming Message type is not defined, using 'any' for now
         messages.push({
           role: msg.role,
           content: msg.content,

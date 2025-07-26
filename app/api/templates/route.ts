@@ -1,11 +1,17 @@
 import type { NextRequest } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/db'
+import { checkMaintenanceMode } from '@/lib/server-utils'
 import { NextResponse } from 'next/server'
-
-const prisma = new PrismaClient()
 
 export async function GET(request: NextRequest) {
   try {
+    if (await checkMaintenanceMode()) {
+      return NextResponse.json(
+        { error: 'System is under maintenance' },
+        { status: 503 },
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
     const search = searchParams.get('search')

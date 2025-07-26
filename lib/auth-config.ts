@@ -31,6 +31,14 @@ export const authOptions: NextAuthOptions = {
         if (!isValid)
           throw new Error('Invalid credentials')
 
+        const force2faSetting = await prisma.systemSetting.findUnique({
+          where: { key: 'security.force.2fa' },
+        })
+
+        if (force2faSetting?.value === 'true' && !user.has2fa) {
+          throw new Error('2FA required')
+        }
+
         return {
           id: user.id,
           email: user.email,
@@ -100,6 +108,18 @@ export const authOptions: NextAuthOptions = {
       return true
     },
     async session({ session, token }) {
+      // 从数据库读取session timeout配置
+      const sessionTimeoutSetting = await prisma.systemSetting.findUnique({
+        where: { key: 'security.session.timeout' },
+      })
+
+      const sessionTimeout = Number.parseInt(sessionTimeoutSetting?.value || '30')
+
+      // 检查session是否过期
+      if (token.iat && (Date.now() / 1000 - (token.iat as number)) > sessionTimeout * 60) {
+        throw new Error('Session expired')
+      }
+
       if (session.user && token.sub) {
         session.user.id = token.sub
         const user = await prisma.user.findUnique({
@@ -118,5 +138,6 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 默认30天，需要从数据库读取
   },
 }

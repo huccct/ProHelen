@@ -1,11 +1,11 @@
 import type { NextRequest } from 'next/server'
 import process from 'node:process'
+import { authOptions } from '@/lib/auth-config'
+import { prisma } from '@/lib/db'
+import { checkMaintenanceMode, checkRateLimit } from '@/lib/server-utils'
+import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
 
 interface ExtractedBlock {
   type: string
@@ -29,6 +29,24 @@ interface AnalysisResponse {
 
 export async function POST(request: NextRequest) {
   try {
+    if (await checkMaintenanceMode()) {
+      return NextResponse.json(
+        { error: 'System is under maintenance' },
+        { status: 503 },
+      )
+    }
+
+    const session = await getServerSession(authOptions)
+    const identifier = session?.user?.id || request.headers.get('x-forwarded-for') || 'anonymous'
+
+    const rateLimitResult = await checkRateLimit(identifier)
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { status: 429 },
+      )
+    }
+
     const { userPrompt } = await request.json()
 
     if (!userPrompt || typeof userPrompt !== 'string') {
@@ -38,12 +56,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!process.env.OPENAI_API_KEY) {
+    const apiKeySetting = await prisma.systemSetting.findUnique({
+      where: { key: 'api.openai.key' },
+    })
+
+    const apiKey = apiKeySetting?.value || process.env.OPENAI_API_KEY
+
+    if (!apiKey) {
       return NextResponse.json(
         { error: 'OpenAI API key not configured' },
         { status: 500 },
       )
     }
+
+    const openai = new OpenAI({
+      apiKey,
+    })
 
     const analysisPrompt = `
 You are an expert in prompt engineering following the structured 5-category system. Analyze the user request and extract relevant instruction blocks based on our proven framework.

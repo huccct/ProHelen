@@ -72,6 +72,8 @@ const resources = {
             unpublish: 'Unpublish',
             export: 'Export Data',
             create: 'Create Template',
+            exportSuccess: 'Templates exported successfully',
+            exportError: 'Failed to export templates',
           },
           noRating: 'No rating',
           systemTemplate: 'System Template',
@@ -111,6 +113,8 @@ const resources = {
             unpublish: 'Unpublish',
             export: 'Export Data',
             create: 'Create Instruction',
+            exportSuccess: 'Instructions exported successfully',
+            exportError: 'Failed to export instructions',
           },
           noAuthor: 'No author',
           noCategory: 'Uncategorized',
@@ -135,6 +139,7 @@ const resources = {
           activeRate: 'Active Rate',
         },
         settings: {
+          loadError: 'Failed to load settings',
           title: 'System Settings',
           tabs: {
             general: 'General',
@@ -146,6 +151,7 @@ const resources = {
             description: 'Configure basic system parameters',
             siteName: 'Site Name',
             siteDescription: 'Site Description',
+            siteDescriptionDefault: 'AI Instruction Management Platform',
             maintenanceMode: 'Maintenance Mode',
           },
           api: {
@@ -1559,6 +1565,8 @@ const resources = {
             unpublish: '取消发布',
             export: '导出数据',
             create: '创建模板',
+            exportSuccess: '模板导出成功',
+            exportError: '模板导出失败',
           },
           noRating: '暂无评分',
           systemTemplate: '系统模板',
@@ -1598,6 +1606,8 @@ const resources = {
             unpublish: '取消发布',
             export: '导出数据',
             create: '创建指令',
+            exportSuccess: '指令导出成功',
+            exportError: '指令导出失败',
           },
           noAuthor: '无作者',
           noCategory: '未分类',
@@ -1622,6 +1632,7 @@ const resources = {
           activeRate: '活跃率',
         },
         settings: {
+          loadError: '加载失败',
           title: '系统设置',
           tabs: {
             general: '基本设置',
@@ -1633,7 +1644,9 @@ const resources = {
             description: '配置系统的基本参数',
             siteName: '网站名称',
             siteDescription: '网站描述',
+            siteDescriptionDefault: 'AI提示词工程平台',
             maintenanceMode: '维护模式',
+
           },
           api: {
             title: 'API 设置',

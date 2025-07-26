@@ -1,12 +1,20 @@
 import type { NextRequest } from 'next/server'
 import { authOptions } from '@/lib/auth-config'
 import { RecommendationEngine } from '@/lib/recommendation-engine'
+import { checkMaintenanceMode } from '@/lib/server-utils'
 import { getServerSession } from 'next-auth'
 
 const engine = new RecommendationEngine()
 
 export async function POST(request: NextRequest) {
   try {
+    if (await checkMaintenanceMode()) {
+      return Response.json(
+        { error: 'System is under maintenance' },
+        { status: 503 },
+      )
+    }
+
     const session = await getServerSession(authOptions)
     const body = await request.json()
 
@@ -33,6 +41,14 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    // 检查维护模式
+    if (await checkMaintenanceMode()) {
+      return Response.json(
+        { error: 'System is under maintenance' },
+        { status: 503 },
+      )
+    }
+
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })

@@ -3,6 +3,17 @@ import { hash } from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
+  const allowRegistrationSetting = await prisma.systemSetting.findUnique({
+    where: { key: 'security.allow.registration' },
+  })
+
+  if (allowRegistrationSetting?.value === 'false') {
+    return NextResponse.json(
+      { error: 'Registration is currently disabled' },
+      { status: 403 },
+    )
+  }
+
   try {
     const { name, email, password } = await req.json()
 

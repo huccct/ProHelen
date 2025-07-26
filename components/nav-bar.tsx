@@ -21,9 +21,10 @@ import { toast } from 'sonner'
 
 interface NavBarProps {
   hideSignIn?: boolean
+  siteName?: string
 }
 
-export function NavBar({ hideSignIn = false }: NavBarProps) {
+export function NavBar({ hideSignIn = false, siteName = 'ProHelen' }: NavBarProps) {
   const { data: session } = useSession()
   const router = useRouter()
   const { t } = useTranslation()
@@ -51,7 +52,7 @@ export function NavBar({ hideSignIn = false }: NavBarProps) {
               height={32}
               className="mr-2 filter invert-0 dark:invert"
             />
-            ProHelen
+            <span className="text-xl font-bold">{siteName}</span>
           </div>
 
           <div className="flex items-center gap-2">
