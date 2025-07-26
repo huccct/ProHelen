@@ -1478,7 +1478,7 @@ const resources = {
             },
           },
           testPrompt: {
-            title: 'Try Your AI',
+            title: 'Try Your Prompt',
             emptyState: 'Type a message below to chat with your AI',
             thinking: 'Thinking...',
             inputPlaceholder: 'Type your test message... (Press Enter to send)',
@@ -2986,7 +2986,7 @@ const resources = {
             },
           },
           testPrompt: {
-            title: '试用您的AI',
+            title: '试用您的提示词',
             emptyState: '在下方输入消息与您的AI聊天',
             thinking: '思考中...',
             inputPlaceholder: '输入您的测试消息...（按Enter发送）',

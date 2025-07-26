@@ -144,6 +144,7 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
       setTimeout(() => {
         setAnalysis(data.analysis)
         setSelectedBlocks(new Set(data.analysis.extractedBlocks.map((block: ExtractedBlock) => block.type)))
+        setSelectedEnhancements(new Set(data.analysis.suggestedEnhancements.map((enhancement: SuggestedEnhancement) => enhancement.type)))
         setIsAnalyzing(false)
         setAnalysisProgress(0)
       }, 300) // Quick transition from 100% to results

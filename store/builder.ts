@@ -63,6 +63,7 @@ interface BuilderActions {
   setSelectedNode: (nodeType: string | null) => void
   setShowRecommendations: (show: boolean) => void
   updatePreview: () => void
+  setPreview: (preview: { system: string, human: string, assistant: string }) => void
   exportFlowData: () => { nodes: Node<CustomNodeData>[], edges: Edge[] }
   importFlowData: (flowData: { nodes: Node<CustomNodeData>[], edges: Edge[] }) => void
   resetFlow: () => void
@@ -1131,6 +1132,8 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
     })
   },
 
+  setPreview: preview => set({ preview }),
+
   exportFlowData: () => {
     const { nodes, edges } = get()
     return { nodes, edges }
@@ -1153,7 +1156,11 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set, get) 
       }
     })
 
-    set({ nodes: adjustedNodes, edges })
+    set({
+      nodes: adjustedNodes,
+      edges,
+      originalUserQuery: '',
+    })
     get().updatePreview()
   },
 

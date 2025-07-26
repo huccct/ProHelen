@@ -3,9 +3,9 @@
 import type { InstructionFormData } from './save-instruction-modal'
 import { Button } from '@/components/ui/button'
 import { useBuilderStore } from '@/store/builder'
-import { Copy, Download, Play, Save } from 'lucide-react'
+import { Copy, Download, Edit, Eye, Play, Save } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/shallow'
@@ -22,16 +22,20 @@ function selector(state: any) {
     preview: state.preview,
     nodes: state.nodes,
     exportFlowData: state.exportFlowData,
+    setPreview: state.setPreview,
   }
 }
 
 export function PromptPreview({ className, style }: PromptPreviewProps) {
   const { t } = useTranslation()
   const router = useRouter()
-  const { preview, nodes, exportFlowData } = useBuilderStore(useShallow(selector))
+  const { preview, nodes, exportFlowData, setPreview } = useBuilderStore(useShallow(selector))
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [showTestModal, setShowTestModal] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedContent, setEditedContent] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const generateCustomInstructions = () => {
     if (!preview.system && !preview.human && !preview.assistant) {
@@ -55,7 +59,35 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
     return content.trim()
   }
 
+  useEffect(() => {
+    setEditedContent(generateCustomInstructions())
+  }, [preview])
+
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      textareaRef.current.focus()
+      textareaRef.current.setSelectionRange(0, 0)
+    }
+  }, [isEditing])
+
   const generateSystemPrompt = () => {
+    if (isEditing) {
+      const lines = editedContent.split('\n')
+      let systemContent = ''
+
+      for (const line of lines) {
+        if (line.includes('## User Interaction Guidelines')) {
+          break
+        }
+        if (line.includes('## Response Guidelines')) {
+          break
+        }
+        systemContent += `${line}\n`
+      }
+
+      return systemContent.trim() || t('builder.components.promptPreview.systemPromptPlaceholder')
+    }
+
     if (!preview.system) {
       return t('builder.components.promptPreview.systemPromptPlaceholder')
     }
@@ -65,9 +97,57 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
 
   const currentContent = generateCustomInstructions()
 
+  const handleToggleEdit = () => {
+    if (isEditing) {
+      try {
+        const lines = editedContent.split('\n')
+        let systemContent = ''
+        let humanContent = ''
+        let assistantContent = ''
+
+        let currentSection = 'system'
+
+        for (const line of lines) {
+          if (line.includes('## User Interaction Guidelines')) {
+            currentSection = 'human'
+            continue
+          }
+          if (line.includes('## Response Guidelines')) {
+            currentSection = 'assistant'
+            continue
+          }
+
+          if (currentSection === 'system') {
+            systemContent += `${line}\n`
+          }
+          else if (currentSection === 'human') {
+            humanContent += `${line}\n`
+          }
+          else if (currentSection === 'assistant') {
+            assistantContent += `${line}\n`
+          }
+        }
+
+        setPreview({
+          system: systemContent.trim(),
+          human: humanContent.trim(),
+          assistant: assistantContent.trim(),
+        })
+
+        toast.success('Content updated successfully!')
+      }
+      catch {
+        toast.error('Failed to parse content. Please check the format.')
+      }
+    }
+
+    setIsEditing(!isEditing)
+  }
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(preview.system)
+      const contentToCopy = isEditing ? editedContent : preview.system
+      await navigator.clipboard.writeText(contentToCopy)
       toast.success(t('builder.components.promptPreview.messages.copied'))
     }
     catch {
@@ -76,8 +156,9 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
   }
 
   const handleExport = () => {
+    const contentToExport = isEditing ? editedContent : preview.system
     const promptData = {
-      system: preview.system,
+      system: contentToExport,
       temperature: preview.temperature,
       maxTokens: preview.maxTokens,
       exportedAt: new Date().toISOString(),
@@ -98,14 +179,15 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
   }
 
   const handleTest = async () => {
-    if (!preview.system.trim()) {
+    const contentToTest = isEditing ? editedContent : preview.system
+    if (!contentToTest.trim()) {
       toast.error(t('builder.components.promptPreview.messages.addContentBeforeTest'))
       return
     }
 
     // Auto-copy the system prompt to clipboard
     try {
-      await navigator.clipboard.writeText(preview.system)
+      await navigator.clipboard.writeText(contentToTest)
       toast.success(t('builder.components.promptPreview.messages.systemPromptCopied'))
     }
     catch {
@@ -117,7 +199,8 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
   }
 
   const handleSave = () => {
-    if (!preview.system.trim()) {
+    const contentToSave = isEditing ? editedContent : preview.system
+    if (!contentToSave.trim()) {
       toast.error(t('builder.components.promptPreview.messages.addContentBeforeSave'))
       return
     }
@@ -195,19 +278,41 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
               {t('builder.components.promptPreview.stats.blocks', { count: nodeCount })}
             </p>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleToggleEdit}
+            className="h-8 w-8 p-0 cursor-pointer"
+            title={isEditing ? 'Exit edit mode' : 'Edit content'}
+          >
+            {isEditing ? <Eye className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+          </Button>
         </div>
 
         <div className="flex-1 mb-4">
           <div className="relative h-full border border-border rounded-lg bg-background">
-            <div className="absolute inset-0 p-4 overflow-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              <pre className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-mono">
-                {currentContent}
-              </pre>
-            </div>
+            {isEditing
+              ? (
+                  <textarea
+                    ref={textareaRef}
+                    value={editedContent}
+                    onChange={e => setEditedContent(e.target.value)}
+                    className="w-full h-full p-4 text-xs text-foreground leading-relaxed font-mono bg-transparent border-none outline-none resize-none"
+                    placeholder={t('builder.components.promptPreview.placeholder')}
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  />
+                )
+              : (
+                  <div className="absolute inset-0 p-4 overflow-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    <pre className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-mono">
+                      {currentContent}
+                    </pre>
+                  </div>
+                )}
 
             {hasContent && (
               <div className="absolute bottom-2 right-2 px-2 py-1 bg-muted rounded text-xs text-muted-foreground">
-                {currentContent.length}
+                {(isEditing ? editedContent : currentContent).length}
                 {' '}
                 chars
               </div>
