@@ -120,7 +120,11 @@ export function NavBar({ hideSignIn = false, siteName = 'ProHelen' }: NavBarProp
                 )
               : !hideSignIn && (
                   <Button
-                    onClick={() => router.push('/sign-in')}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      router.push('/sign-in')
+                    }}
                     className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
                   >
                     {t('auth.signInButton')}

@@ -350,7 +350,11 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
                   <Button
                     size="sm"
                     className="flex-1 cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
-                    onClick={() => router.push(`/builder?template=${template.id}`)}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      router.push(`/builder?template=${template.id}`)
+                    }}
                   >
                     <Users className="w-4 h-4 mr-2" />
                     {t('templates.actions.useTemplate')}
