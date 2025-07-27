@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import { sanitizePassword, sanitizeText } from '@/lib/xss-protection'
 import { hash } from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
@@ -6,9 +7,19 @@ export async function POST(req: Request) {
   try {
     const { token, password } = await req.json()
 
+    const cleanToken = sanitizeText(token)
+    const cleanPassword = sanitizePassword(password)
+
+    if (!cleanToken || !cleanPassword) {
+      return NextResponse.json(
+        { error: 'Invalid input data' },
+        { status: 400 },
+      )
+    }
+
     // Find the token and check if it's valid
     const verificationToken = await prisma.verificationToken.findUnique({
-      where: { token },
+      where: { token: cleanToken },
     })
 
     if (!verificationToken) {
@@ -39,7 +50,7 @@ export async function POST(req: Request) {
     }
 
     // Hash new password
-    const hashedPassword = await hash(password, 12)
+    const hashedPassword = await hash(cleanPassword, 12)
 
     // Update user's password
     await prisma.user.update({
@@ -49,7 +60,7 @@ export async function POST(req: Request) {
 
     // Update verification token
     await prisma.verificationToken.upsert({
-      where: { token },
+      where: { token: cleanToken },
       update: { isUsed: true },
       create: {
         identifier: verificationToken.identifier,

@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from 'next-auth'
 import process from 'node:process'
 import { prisma } from '@/lib/db'
+import { sanitizeEmail, sanitizePassword } from '@/lib/xss-protection'
 import { compare } from 'bcryptjs'
 import AzureADProvider from 'next-auth/providers/azure-ad'
 import CredentialsProvider from 'next-auth/providers/credentials'
@@ -19,14 +20,22 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password)
           throw new Error('Invalid credentials')
 
+        // sanitize user input
+        const cleanEmail = sanitizeEmail(credentials.email)
+        const cleanPassword = sanitizePassword(credentials.password)
+
+        if (!cleanEmail || !cleanPassword) {
+          throw new Error('Invalid credentials')
+        }
+
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email: cleanEmail },
         })
 
         if (!user || !user.password)
           throw new Error('Invalid credentials')
 
-        const isValid = await compare(credentials.password, user.password)
+        const isValid = await compare(cleanPassword, user.password)
 
         if (!isValid)
           throw new Error('Invalid credentials')
@@ -67,34 +76,37 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      // For third-party login (Google, GitHub, Azure), ensure the user exists in the database
       if (account?.provider !== 'credentials' && user.email) {
         try {
+          // sanitize user input
+          const cleanEmail = sanitizeEmail(user.email)
+          const cleanName = user.name ? user.name.replace(/<[^>]*>/g, '') : null
+
+          if (!cleanEmail) {
+            return false
+          }
+
           // Check if the user already exists
           const existingUser = await prisma.user.findUnique({
-            where: { email: user.email },
+            where: { email: cleanEmail },
           })
 
           if (!existingUser) {
-            // Create a new user
             const newUser = await prisma.user.create({
               data: {
-                email: user.email,
-                name: user.name || user.email.split('@')[0],
+                email: cleanEmail,
+                name: cleanName || cleanEmail.split('@')[0],
                 image: user.image || null,
-                // Third-party login users do not set a password
                 password: null,
               },
             })
-            // Update the user object's id to ensure the session callback can correctly get it
             user.id = newUser.id
           }
           else {
-            // Update the existing user's information (e.g. avatar, name)
             await prisma.user.update({
-              where: { email: user.email },
+              where: { email: cleanEmail },
               data: {
-                name: user.name || existingUser.name,
+                name: cleanName || existingUser.name,
                 image: user.image || existingUser.image,
               },
             })
@@ -109,14 +121,12 @@ export const authOptions: NextAuthOptions = {
       return true
     },
     async session({ session, token }) {
-      // 从数据库读取session timeout配置
       const sessionTimeoutSetting = await prisma.systemSetting.findUnique({
         where: { key: 'security.session.timeout' },
       })
 
       const sessionTimeout = Number.parseInt(sessionTimeoutSetting?.value || '30')
 
-      // 检查session是否过期
       if (token.iat && (Date.now() / 1000 - (token.iat as number)) > sessionTimeout * 60) {
         throw new Error('Session expired')
       }
@@ -139,6 +149,6 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 默认30天，需要从数据库读取
+    maxAge: 30 * 24 * 60 * 60,
   },
 }

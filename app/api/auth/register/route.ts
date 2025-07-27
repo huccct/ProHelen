@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import { sanitizeEmail, sanitizePassword, sanitizeText } from '@/lib/xss-protection'
 import { hash } from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
@@ -17,9 +18,20 @@ export async function POST(req: Request) {
   try {
     const { name, email, password } = await req.json()
 
+    const cleanName = sanitizeText(name)
+    const cleanEmail = sanitizeEmail(email)
+    const cleanPassword = sanitizePassword(password)
+
+    if (!cleanName || !cleanEmail || !cleanPassword) {
+      return NextResponse.json(
+        { error: 'Invalid input data' },
+        { status: 400 },
+      )
+    }
+
     // check the email is already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: cleanEmail },
     })
 
     if (existingUser) {
@@ -30,13 +42,13 @@ export async function POST(req: Request) {
     }
 
     // hash the password
-    const hashedPassword = await hash(password, 12)
+    const hashedPassword = await hash(cleanPassword, 12)
 
     // create user
     const user = await prisma.user.create({
       data: {
-        name,
-        email,
+        name: cleanName,
+        email: cleanEmail,
         password: hashedPassword,
       },
     })

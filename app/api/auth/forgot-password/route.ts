@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto'
 import process from 'node:process'
 import { prisma } from '@/lib/db'
+import { sanitizeEmail } from '@/lib/xss-protection'
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
@@ -10,8 +11,17 @@ export async function POST(req: Request) {
   try {
     const { email } = await req.json()
 
+    const cleanEmail = sanitizeEmail(email)
+
+    if (!cleanEmail) {
+      return NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 },
+      )
+    }
+
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { email: cleanEmail },
     })
 
     if (!user) {
@@ -39,7 +49,7 @@ export async function POST(req: Request) {
 
     await resend.emails.send({
       from: 'ProHelen <no-reply@prohelen.dev>',
-      to: email,
+      to: cleanEmail,
       subject: 'Reset your password',
       html: `
         <h2>Reset Your Password</h2>
