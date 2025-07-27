@@ -1,21 +1,11 @@
 'use client'
 
+import type { PasswordFieldProps } from '@/types/auth'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5'
-
-interface PasswordFieldProps {
-  id: string
-  label: string
-  placeholder: string
-  value: string
-  onChange: (value: string) => void
-  showStrengthIndicator?: boolean
-  error?: string
-  required?: boolean
-}
 
 export function PasswordField({
   id,

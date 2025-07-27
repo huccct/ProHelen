@@ -1,10 +1,6 @@
 'use client'
 
-interface AuthFooterProps {
-  text: string
-  linkText: string
-  onLinkClick: () => void
-}
+import type { AuthFooterProps } from '@/types/auth'
 
 export function AuthFooter({ text, linkText, onLinkClick }: AuthFooterProps) {
   return (

@@ -1,13 +1,8 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import type { AuthLayoutProps } from '@/types/auth'
 import { AuthContainer } from '@/components/auth/auth-animations'
 import { NavBar } from '@/components/common/nav-bar'
-
-interface AuthLayoutProps {
-  children: ReactNode
-  hideSignIn?: boolean
-}
 
 export function AuthLayout({ children, hideSignIn = false }: AuthLayoutProps) {
   return (

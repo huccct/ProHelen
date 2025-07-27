@@ -1,9 +1,5 @@
+import type { PasswordValidation } from '@/types/auth'
 import { toast } from 'sonner'
-
-export interface PasswordValidation {
-  met: boolean
-  message: string
-}
 
 export function validatePassword(password: string, t: (key: string) => string): PasswordValidation[] {
   const requirements = [

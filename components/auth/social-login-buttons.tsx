@@ -1,14 +1,11 @@
 'use client'
 
+import type { SocialLoginButtonsProps } from '@/types/auth'
 import { AuthSocialButton } from '@/components/auth/auth-animations'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { FaGithub, FaMicrosoft } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
-
-interface SocialLoginButtonsProps {
-  onSocialSignIn: (provider: string) => void
-}
 
 export function SocialLoginButtons({ onSocialSignIn }: SocialLoginButtonsProps) {
   const { t } = useTranslation()

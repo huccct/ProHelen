@@ -1,18 +1,8 @@
 'use client'
 
+import type { InputFieldProps } from '@/types/auth'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-
-interface InputFieldProps {
-  id: string
-  label: string
-  type?: string
-  placeholder: string
-  value: string
-  onChange: (value: string) => void
-  required?: boolean
-  name?: string
-}
 
 export function InputField({
   id,

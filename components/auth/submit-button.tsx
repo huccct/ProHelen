@@ -1,15 +1,7 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import type { SubmitButtonProps } from '@/types/auth'
 import { Button } from '@/components/ui/button'
-
-interface SubmitButtonProps {
-  isLoading: boolean
-  loadingText: string
-  children: ReactNode
-  className?: string
-  [key: string]: any
-}
 
 export function SubmitButton({
   isLoading,

@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import type { AuthButtonProps, AuthContainerProps, AuthFormContainerProps, AuthLegalTextProps, AuthSubtitleProps, AuthTitleProps } from '@/types/auth'
 import { motion } from 'framer-motion'
 
 export const authAnimations = {
@@ -34,11 +34,6 @@ export const authAnimations = {
   },
 }
 
-interface AuthContainerProps {
-  children: ReactNode
-  className?: string
-}
-
 export function AuthContainer({ children, className = '' }: AuthContainerProps) {
   return (
     <motion.div
@@ -52,11 +47,6 @@ export function AuthContainer({ children, className = '' }: AuthContainerProps) 
   )
 }
 
-interface AuthTitleProps {
-  children: ReactNode
-  className?: string
-}
-
 export function AuthTitle({ children, className = '' }: AuthTitleProps) {
   return (
     <motion.h2
@@ -66,11 +56,6 @@ export function AuthTitle({ children, className = '' }: AuthTitleProps) {
       {children}
     </motion.h2>
   )
-}
-
-interface AuthSubtitleProps {
-  children: ReactNode
-  className?: string
 }
 
 export function AuthSubtitle({ children, className = '' }: AuthSubtitleProps) {
@@ -84,11 +69,6 @@ export function AuthSubtitle({ children, className = '' }: AuthSubtitleProps) {
   )
 }
 
-interface AuthFormContainerProps {
-  children: ReactNode
-  className?: string
-}
-
 export function AuthFormContainer({ children, className = '' }: AuthFormContainerProps) {
   return (
     <motion.div
@@ -100,24 +80,12 @@ export function AuthFormContainer({ children, className = '' }: AuthFormContaine
   )
 }
 
-interface AuthButtonProps {
-  children: ReactNode
-  className?: string
-  onClick?: () => void
-  [key: string]: any
-}
-
 export function AuthSocialButton({ children, className: _className = '', ..._props }: AuthButtonProps) {
   return (
     <motion.div variants={authAnimations.buttonVariants} whileHover="hover">
       {children}
     </motion.div>
   )
-}
-
-interface AuthLegalTextProps {
-  children: ReactNode
-  className?: string
 }
 
 export function AuthLegalText({ children, className = '' }: AuthLegalTextProps) {
