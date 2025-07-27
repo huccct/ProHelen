@@ -1,8 +1,8 @@
 'use client'
 
 import logo from '@/assets/icons/logo.png'
-import LanguageSwitcher from '@/components/language-switcher'
-import { ThemeToggle } from '@/components/theme-toggle'
+import LanguageSwitcher from '@/components/common/language-switcher'
+import { ThemeToggle } from '@/components/common/theme-toggle'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,

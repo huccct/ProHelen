@@ -1,6 +1,6 @@
 'use client'
 
-import { NavBar } from '@/components/nav-bar'
+import { NavBar } from '@/components/common/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'

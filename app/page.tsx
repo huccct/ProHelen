@@ -1,8 +1,8 @@
 'use client'
 
+import { NavBar } from '@/components/common/nav-bar'
 import { CornerGrids } from '@/components/corner-grid'
 import { InteractivePlayground } from '@/components/interactive-playground'
-import { NavBar } from '@/components/nav-bar'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'

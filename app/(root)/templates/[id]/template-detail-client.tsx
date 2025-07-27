@@ -1,7 +1,7 @@
 'use client'
 
 import type { Template } from '../_components/template-list'
-import { NavBar } from '@/components/nav-bar'
+import { NavBar } from '@/components/common/nav-bar'
 import { Button } from '@/components/ui/button'
 import { getCategoryDisplayName } from '@/lib/utils'
 import { ArrowLeft } from 'lucide-react'

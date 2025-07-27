@@ -1,6 +1,6 @@
 'use client'
 
-import { NavBar } from '@/components/nav-bar'
+import { NavBar } from '@/components/common/nav-bar'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CategoryFilter } from './_components/category-filter'

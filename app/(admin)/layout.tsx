@@ -1,5 +1,5 @@
 import { AdminSidebar } from '@/components/admin/sidebar'
-import { NavBar } from '@/components/nav-bar'
+import { NavBar } from '@/components/common/nav-bar'
 import { authOptions } from '@/lib/auth-config'
 import { prisma } from '@/lib/db'
 import { getServerSession } from 'next-auth'

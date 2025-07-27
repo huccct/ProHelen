@@ -3,7 +3,6 @@
 import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 
-// shared animations
 export const authAnimations = {
   fadeIn: {
     initial: { opacity: 0, y: 20 },
@@ -40,7 +39,6 @@ interface AuthContainerProps {
   className?: string
 }
 
-// auth container
 export function AuthContainer({ children, className = '' }: AuthContainerProps) {
   return (
     <motion.div
@@ -59,7 +57,6 @@ interface AuthTitleProps {
   className?: string
 }
 
-// auth title
 export function AuthTitle({ children, className = '' }: AuthTitleProps) {
   return (
     <motion.h2
@@ -76,7 +73,6 @@ interface AuthSubtitleProps {
   className?: string
 }
 
-// auth subtitle
 export function AuthSubtitle({ children, className = '' }: AuthSubtitleProps) {
   return (
     <motion.p
@@ -93,7 +89,6 @@ interface AuthFormContainerProps {
   className?: string
 }
 
-// auth form container
 export function AuthFormContainer({ children, className = '' }: AuthFormContainerProps) {
   return (
     <motion.div
@@ -112,7 +107,6 @@ interface AuthButtonProps {
   [key: string]: any
 }
 
-// social login button
 export function AuthSocialButton({ children, className: _className = '', ..._props }: AuthButtonProps) {
   return (
     <motion.div variants={authAnimations.buttonVariants} whileHover="hover">
@@ -126,7 +120,6 @@ interface AuthLegalTextProps {
   className?: string
 }
 
-// legal text
 export function AuthLegalText({ children, className = '' }: AuthLegalTextProps) {
   return (
     <motion.p
