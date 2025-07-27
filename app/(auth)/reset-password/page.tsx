@@ -1,8 +1,11 @@
 'use client'
 
 import { AuthFormContainer, AuthSubtitle, AuthTitle } from '@/components/auth/auth-animations'
+import { AuthFooter } from '@/components/auth/auth-footer'
 import { AuthLayout } from '@/components/auth/auth-layout'
+import { AuthLegalText } from '@/components/auth/auth-legal-text'
 import { PasswordField } from '@/components/auth/password-field'
+import { SubmitButton } from '@/components/auth/submit-button'
 import { Button } from '@/components/ui/button'
 import { handleAuthError, handleAuthSuccess, validatePasswordRequirements } from '@/lib/auth-utils'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -101,27 +104,22 @@ function ResetPasswordForm() {
             required
           />
 
-          <Button
-            type="submit"
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
-            disabled={isLoading}
+          <SubmitButton
+            isLoading={isLoading}
+            loadingText={t('auth.resetPassword.resettingPassword')}
           >
-            {isLoading ? t('auth.resetPassword.resettingPassword') : t('auth.resetPassword.resetPasswordButton')}
-          </Button>
+            {t('auth.resetPassword.resetPasswordButton')}
+          </SubmitButton>
         </form>
 
-        <div className="text-center text-sm text-muted-foreground">
-          {t('auth.forgotPassword.rememberPassword')}
-          {' '}
-          <button
-            type="button"
-            className="text-foreground hover:underline cursor-pointer"
-            onClick={() => router.push('/sign-in')}
-          >
-            {t('auth.signInButton')}
-          </button>
-        </div>
+        <AuthFooter
+          text={t('auth.forgotPassword.rememberPassword')}
+          linkText={t('auth.signInButton')}
+          onLinkClick={() => router.push('/sign-in')}
+        />
       </AuthFormContainer>
+
+      <AuthLegalText />
     </AuthLayout>
   )
 }

@@ -1,18 +1,18 @@
 'use client'
 
-import { AuthFormContainer, AuthLegalText, AuthSocialButton, AuthSubtitle, AuthTitle } from '@/components/auth/auth-animations'
+import { AuthFormContainer, AuthSubtitle, AuthTitle } from '@/components/auth/auth-animations'
+import { AuthFooter } from '@/components/auth/auth-footer'
 import { AuthLayout } from '@/components/auth/auth-layout'
+import { AuthLegalText } from '@/components/auth/auth-legal-text'
+import { InputField } from '@/components/auth/input-field'
 import { PasswordField } from '@/components/auth/password-field'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { SocialLoginButtons } from '@/components/auth/social-login-buttons'
+import { SubmitButton } from '@/components/auth/submit-button'
 import { handleAuthError, handleAuthSuccess } from '@/lib/auth-utils'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaGithub, FaMicrosoft } from 'react-icons/fa'
-import { FcGoogle } from 'react-icons/fc'
 import { toast } from 'sonner'
 
 export default function SignIn() {
@@ -64,22 +64,21 @@ export default function SignIn() {
 
       <AuthFormContainer>
         <form onSubmit={handleEmailSignIn} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">{t('auth.emailAddress')}</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder={t('auth.emailPlaceholder')}
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="bg-input border-border text-foreground h-12"
-              required
-            />
-          </div>
+          <InputField
+            id="email"
+            label={t('auth.emailAddress')}
+            type="email"
+            placeholder={t('auth.emailPlaceholder')}
+            value={email}
+            onChange={setEmail}
+            required
+          />
 
           <div className="space-y-2">
             <div className="flex justify-between">
-              <Label htmlFor="password">{t('auth.password')}</Label>
+              <label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                {t('auth.password')}
+              </label>
               <button
                 type="button"
                 className="text-sm text-foreground hover:underline cursor-pointer"
@@ -99,90 +98,24 @@ export default function SignIn() {
             />
           </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
-            disabled={isLoading}
+          <SubmitButton
+            isLoading={isLoading}
+            loadingText={t('auth.signIn.signingIn')}
           >
-            {isLoading ? t('auth.signIn.signingIn') : t('auth.signInButton')}
-          </Button>
+            {t('auth.signInButton')}
+          </SubmitButton>
         </form>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-background text-muted-foreground">{t('auth.orContinueWith')}</span>
-          </div>
-        </div>
+        <SocialLoginButtons onSocialSignIn={handleSocialSignIn} />
 
-        <div className="grid grid-cols-3 gap-3">
-          <AuthSocialButton>
-            <Button
-              variant="outline"
-              className="w-full h-12 cursor-pointer"
-              onClick={() => handleSocialSignIn('google')}
-            >
-              <FcGoogle className="h-5 w-5" />
-            </Button>
-          </AuthSocialButton>
-          <AuthSocialButton>
-            <Button
-              variant="outline"
-              className="w-full h-12 cursor-pointer"
-              onClick={() => handleSocialSignIn('github')}
-            >
-              <FaGithub className="h-5 w-5" />
-            </Button>
-          </AuthSocialButton>
-          <AuthSocialButton>
-            <Button
-              variant="outline"
-              className="w-full h-12 cursor-pointer"
-              onClick={() => handleSocialSignIn('azure-ad')}
-            >
-              <FaMicrosoft className="h-5 w-5" />
-            </Button>
-          </AuthSocialButton>
-        </div>
-
-        <div className="text-center text-sm text-muted-foreground">
-          {t('auth.dontHaveAccount')}
-          {' '}
-          <button
-            type="button"
-            className="text-foreground hover:underline cursor-pointer"
-            onClick={() => router.push('/sign-up')}
-          >
-            {t('auth.signUpButton')}
-          </button>
-        </div>
+        <AuthFooter
+          text={t('auth.dontHaveAccount')}
+          linkText={t('auth.signUpButton')}
+          onLinkClick={() => router.push('/sign-up')}
+        />
       </AuthFormContainer>
 
-      <AuthLegalText>
-        {t('auth.byContinuing')}
-        {' '}
-        <a
-          href="/terms"
-          className="underline text-foreground hover:text-foreground/80 transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('auth.termsOfService')}
-        </a>
-        {' '}
-        {t('auth.and')}
-        {' '}
-        <a
-          href="/privacy"
-          className="underline text-foreground hover:text-foreground/80 transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('auth.privacyPolicy')}
-        </a>
-      </AuthLegalText>
+      <AuthLegalText />
     </AuthLayout>
   )
 }

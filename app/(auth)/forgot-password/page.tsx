@@ -1,10 +1,12 @@
 'use client'
 
-import { AuthFormContainer, AuthLegalText, AuthSubtitle, AuthTitle } from '@/components/auth/auth-animations'
+import { AuthFormContainer, AuthSubtitle, AuthTitle } from '@/components/auth/auth-animations'
+import { AuthFooter } from '@/components/auth/auth-footer'
 import { AuthLayout } from '@/components/auth/auth-layout'
+import { AuthLegalText } from '@/components/auth/auth-legal-text'
+import { InputField } from '@/components/auth/input-field'
+import { SubmitButton } from '@/components/auth/submit-button'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { handleAuthError, handleAuthSuccess } from '@/lib/auth-utils'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -56,27 +58,22 @@ export default function ForgotPassword() {
         {!isSent
           ? (
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">{t('auth.emailAddress')}</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder={t('auth.emailPlaceholder')}
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    className="bg-input border-border text-foreground h-12"
-                    required
-                  />
-                </div>
+                <InputField
+                  id="email"
+                  label={t('auth.emailAddress')}
+                  type="email"
+                  placeholder={t('auth.emailPlaceholder')}
+                  value={email}
+                  onChange={setEmail}
+                  required
+                />
 
-                <Button
-                  type="submit"
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
-                  disabled={isLoading}
+                <SubmitButton
+                  isLoading={isLoading}
+                  loadingText={t('auth.forgotPassword.sendingResetLink')}
                 >
-                  {isLoading ? t('auth.forgotPassword.sendingResetLink') : t('auth.forgotPassword.sendResetLink')}
-                </Button>
+                  {t('auth.forgotPassword.sendResetLink')}
+                </SubmitButton>
               </form>
             )
           : (
@@ -100,42 +97,14 @@ export default function ForgotPassword() {
               </div>
             )}
 
-        <div className="text-center text-sm text-muted-foreground">
-          {t('auth.forgotPassword.rememberPassword')}
-          {' '}
-          <button
-            type="button"
-            className="text-foreground hover:underline cursor-pointer"
-            onClick={() => router.push('/sign-in')}
-          >
-            {t('auth.signInButton')}
-          </button>
-        </div>
+        <AuthFooter
+          text={t('auth.forgotPassword.rememberPassword')}
+          linkText={t('auth.signInButton')}
+          onLinkClick={() => router.push('/sign-in')}
+        />
       </AuthFormContainer>
 
-      <AuthLegalText>
-        {t('auth.byContinuing')}
-        {' '}
-        <a
-          href="/terms"
-          className="underline text-foreground hover:text-foreground/80 transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('auth.termsOfService')}
-        </a>
-        {' '}
-        {t('auth.and')}
-        {' '}
-        <a
-          href="/privacy"
-          className="underline text-foreground hover:text-foreground/80 transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('auth.privacyPolicy')}
-        </a>
-      </AuthLegalText>
+      <AuthLegalText />
     </AuthLayout>
   )
 }

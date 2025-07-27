@@ -1,18 +1,18 @@
 'use client'
 
-import { AuthFormContainer, AuthLegalText, AuthSocialButton, AuthSubtitle, AuthTitle } from '@/components/auth/auth-animations'
+import { AuthFormContainer, AuthSubtitle, AuthTitle } from '@/components/auth/auth-animations'
+import { AuthFooter } from '@/components/auth/auth-footer'
 import { AuthLayout } from '@/components/auth/auth-layout'
+import { AuthLegalText } from '@/components/auth/auth-legal-text'
+import { InputField } from '@/components/auth/input-field'
 import { PasswordField } from '@/components/auth/password-field'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { SocialLoginButtons } from '@/components/auth/social-login-buttons'
+import { SubmitButton } from '@/components/auth/submit-button'
 import { handleAuthError, handleAuthSuccess, validatePasswordRequirements } from '@/lib/auth-utils'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaGithub, FaMicrosoft } from 'react-icons/fa'
-import { FcGoogle } from 'react-icons/fc'
 
 export default function SignUp() {
   const { t } = useTranslation()
@@ -24,11 +24,6 @@ export default function SignUp() {
     confirmPassword: '',
   })
   const [isLoading, setIsLoading] = useState(false)
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,6 +64,10 @@ export default function SignUp() {
     }
   }
 
+  const handleSocialSignIn = (provider: string) => {
+    signIn(provider, { callbackUrl: '/' })
+  }
+
   return (
     <AuthLayout>
       <div className="text-center space-y-4">
@@ -78,33 +77,24 @@ export default function SignUp() {
 
       <AuthFormContainer>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">{t('auth.fullName')}</Label>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              placeholder={t('auth.fullNamePlaceholder')}
-              value={formData.name}
-              onChange={handleChange}
-              className="bg-input border-border text-foreground h-12"
-              required
-            />
-          </div>
+          <InputField
+            id="name"
+            label={t('auth.fullName')}
+            placeholder={t('auth.fullNamePlaceholder')}
+            value={formData.name}
+            onChange={value => setFormData(prev => ({ ...prev, name: value }))}
+            required
+          />
 
-          <div className="space-y-2">
-            <Label htmlFor="email">{t('auth.emailAddress')}</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder={t('auth.emailPlaceholder')}
-              value={formData.email}
-              onChange={handleChange}
-              className="bg-input border-border text-foreground h-12"
-              required
-            />
-          </div>
+          <InputField
+            id="email"
+            label={t('auth.emailAddress')}
+            type="email"
+            placeholder={t('auth.emailPlaceholder')}
+            value={formData.email}
+            onChange={value => setFormData(prev => ({ ...prev, email: value }))}
+            required
+          />
 
           <PasswordField
             id="password"
@@ -126,90 +116,24 @@ export default function SignUp() {
             required
           />
 
-          <Button
-            type="submit"
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 mt-6 cursor-pointer"
-            disabled={isLoading}
+          <SubmitButton
+            isLoading={isLoading}
+            loadingText={t('auth.creatingAccount')}
           >
-            {isLoading ? t('auth.creatingAccount') : t('auth.createAccount')}
-          </Button>
+            {t('auth.createAccount')}
+          </SubmitButton>
         </form>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-background text-muted-foreground">{t('auth.orContinueWith')}</span>
-          </div>
-        </div>
+        <SocialLoginButtons onSocialSignIn={handleSocialSignIn} />
 
-        <div className="grid grid-cols-3 gap-3">
-          <AuthSocialButton>
-            <Button
-              variant="outline"
-              className="w-full h-12 cursor-pointer"
-              onClick={() => signIn('google', { callbackUrl: '/' })}
-            >
-              <FcGoogle className="h-5 w-5" />
-            </Button>
-          </AuthSocialButton>
-          <AuthSocialButton>
-            <Button
-              variant="outline"
-              className="w-full h-12 cursor-pointer"
-              onClick={() => signIn('github', { callbackUrl: '/' })}
-            >
-              <FaGithub className="h-5 w-5" />
-            </Button>
-          </AuthSocialButton>
-          <AuthSocialButton>
-            <Button
-              variant="outline"
-              className="w-full h-12 cursor-pointer"
-              onClick={() => signIn('azure-ad', { callbackUrl: '/' })}
-            >
-              <FaMicrosoft className="h-5 w-5" />
-            </Button>
-          </AuthSocialButton>
-        </div>
-
-        <div className="text-center text-sm text-muted-foreground">
-          {t('auth.alreadyHaveAccount')}
-          {' '}
-          <button
-            type="button"
-            className="text-foreground hover:underline cursor-pointer"
-            onClick={() => router.push('/sign-in')}
-          >
-            {t('auth.signInButton')}
-          </button>
-        </div>
+        <AuthFooter
+          text={t('auth.alreadyHaveAccount')}
+          linkText={t('auth.signInButton')}
+          onLinkClick={() => router.push('/sign-in')}
+        />
       </AuthFormContainer>
 
-      <AuthLegalText>
-        {t('auth.byContinuing')}
-        {' '}
-        <a
-          href="/terms"
-          className="underline text-foreground hover:text-foreground/80 transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('auth.termsOfService')}
-        </a>
-        {' '}
-        {t('auth.and')}
-        {' '}
-        <a
-          href="/privacy"
-          className="underline text-foreground hover:text-foreground/80 transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('auth.privacyPolicy')}
-        </a>
-      </AuthLegalText>
+      <AuthLegalText />
     </AuthLayout>
   )
 }
