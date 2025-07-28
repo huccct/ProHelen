@@ -1,7 +1,10 @@
+import type { CustomNodeData } from '@/types/builder'
+import type { Node } from '@xyflow/react'
 import type { ClassValue } from 'clsx'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { NODE_CATEGORIES } from './constants'
+import { NODE_CATEGORIES, NODE_LABELS, STORE_CONFIG } from './constants'
+import i18n from './i18n'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -46,4 +49,32 @@ export function categorizeNodeType(nodeType: string): string {
     }
   }
   return 'other'
+}
+
+export function createNodeId(type: string, nodes: Node<CustomNodeData>[]): string {
+  return `${type}-${nodes.length + 1}`
+}
+
+export function generateNodeLabel(type: string): string {
+  return NODE_LABELS[type] || type.split('_').map(word =>
+    word.charAt(0).toUpperCase() + word.slice(1),
+  ).join(' ')
+}
+
+export function calculateNodePosition(index: number, baseY: number = STORE_CONFIG.BASE_Y) {
+  return {
+    x: STORE_CONFIG.START_X + (index * STORE_CONFIG.NODE_SPACING),
+    y: baseY,
+  }
+}
+
+export function detectLanguage(text: string): 'zh' | 'en' {
+  if (!text)
+    return 'en'
+  const chineseRegex = /[\u4E00-\u9FFF]/
+  return chineseRegex.test(text) ? 'zh' : 'en'
+}
+
+export function getInterfaceLanguage(): 'zh' | 'en' {
+  return i18n.language?.startsWith('zh') ? 'zh' : 'en'
 }

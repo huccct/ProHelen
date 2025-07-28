@@ -947,3 +947,50 @@ export const DEFAULT_NODE_METADATA: NodeMetadata = {
   description: 'Custom instruction',
   colors: { gradient: 'from-gray-500 to-gray-600', border: 'border-gray-500/30' },
 }
+
+export const STORE_CONFIG = {
+  MAX_HISTORY_SIZE: 50,
+  NODE_SPACING: 350,
+  START_X: 200,
+  BASE_Y: 150,
+  ENHANCEMENT_BASE_Y: 200,
+  ANIMATION_DELAY: 50,
+  FOCUS_DELAY: 100,
+} as const
+
+export const NODE_LABELS: Record<string, string> = {
+  step_by_step: 'Step by Step',
+  role_definition: 'Role Definition',
+  context_setting: 'Context Setting',
+  output_format: 'Output Format',
+  goal_setting: 'Goal Setting',
+  learning_style: 'Learning Style',
+  subject_focus: 'Subject Focus',
+  difficulty_level: 'Difficulty Level',
+  communication_style: 'Communication Style',
+  creative_thinking: 'Creative Thinking',
+  conditional_logic: 'Conditional Logic',
+  personality_traits: 'Personality Traits',
+  error_handling: 'Error Handling',
+  feedback_style: 'Feedback Style',
+  time_management: 'Time Management',
+  prioritization: 'Prioritization',
+  career_planning: 'Career Planning',
+  skill_assessment: 'Skill Assessment',
+} as const
+
+export const CONTENT_CATEGORIES = {
+  SYSTEM: ['role_definition', 'goal_setting'] as const,
+  CONTEXT: ['context_setting', 'subject_focus', 'career_planning'] as const,
+  BEHAVIOR: ['communication_style', 'feedback_style', 'personality_traits', 'creative_thinking'] as const,
+  PROCESS: ['learning_style', 'difficulty_level', 'step_by_step', 'time_management', 'prioritization', 'skill_assessment'] as const,
+  CONSTRAINTS: ['conditional_logic', 'error_handling'] as const,
+  FORMAT: ['output_format'] as const,
+} as const
+
+export const TEMPLATE_BLOCKS = {
+  tutor: ['role_definition', 'context_setting', 'learning_style', 'goal_setting', 'step_by_step'],
+  business_consultant: ['role_definition', 'context_setting', 'communication_style', 'output_format', 'prioritization'],
+  creative_assistant: ['role_definition', 'personality_traits', 'creative_thinking', 'output_format', 'feedback_style'],
+  step_by_step_guide: ['role_definition', 'context_setting', 'step_by_step', 'output_format', 'error_handling'],
+} as const

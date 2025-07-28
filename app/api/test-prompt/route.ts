@@ -7,6 +7,11 @@ import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
+interface ConversationMessage {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+}
+
 export async function POST(request: NextRequest) {
   try {
     if (await checkMaintenanceMode()) {
@@ -54,13 +59,13 @@ export async function POST(request: NextRequest) {
     })
 
     // Build the messages array for the API
-    const messages: { role: 'system' | 'user' | 'assistant', content: string }[] = [
+    const messages: ConversationMessage[] = [
       { role: 'system', content: systemPrompt },
     ]
 
     // Add conversation history
     if (conversationHistory && Array.isArray(conversationHistory)) {
-      conversationHistory.forEach((msg: any) => { // Assuming Message type is not defined, using 'any' for now
+      conversationHistory.forEach((msg: ConversationMessage) => {
         messages.push({
           role: msg.role,
           content: msg.content,

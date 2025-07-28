@@ -1,3 +1,4 @@
+import type { ExtractedBlock, SuggestedEnhancement } from '@/types/builder'
 import type { NextRequest } from 'next/server'
 import process from 'node:process'
 import { authOptions } from '@/lib/auth-config'
@@ -6,19 +7,6 @@ import { checkMaintenanceMode, checkRateLimit } from '@/lib/server-utils'
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
-
-interface ExtractedBlock {
-  type: string
-  content: string
-  confidence: number
-  reasoning: string
-}
-
-interface SuggestedEnhancement {
-  type: string
-  reason: string
-  impact: 'high' | 'medium' | 'low'
-}
 
 interface AnalysisResponse {
   extractedBlocks: ExtractedBlock[]
