@@ -6,7 +6,7 @@ import { ThemeProvider } from '@/lib/theme-context'
 import * as Sentry from '@sentry/nextjs'
 import { SessionProvider, useSession } from 'next-auth/react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import '@/lib/i18n'
 
 interface AppSettings {
@@ -71,7 +71,9 @@ export default function Providers({ children, appSettings }: ProvidersProps) {
       <ThemeProvider defaultTheme="dark">
         <AppSettingsProvider settings={appSettings}>
           <TooltipProvider>
-            <SentryMonitoring />
+            <Suspense fallback={null}>
+              <SentryMonitoring />
+            </Suspense>
             {children}
           </TooltipProvider>
         </AppSettingsProvider>
