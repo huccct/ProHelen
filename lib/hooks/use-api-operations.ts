@@ -1,4 +1,4 @@
-import type { InstructionFormData } from '@/app/(root)/builder/_components/save-instruction-modal'
+import type { InstructionFormData } from '@/types/builder'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'

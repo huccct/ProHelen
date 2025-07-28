@@ -47,36 +47,18 @@ async function copyToClipboard(text: string): Promise<boolean> {
 
 interface StatsDisplayProps {
   nodeCount: number
-  isEditing: boolean
-  editedContent: string
-  currentContent: string
 }
 
 const StatsDisplay = memo<StatsDisplayProps>(({
   nodeCount,
-  isEditing,
-  editedContent,
-  currentContent,
 }) => {
   const { t } = useTranslation()
-
-  const charCount = useMemo(() => {
-    const content = isEditing ? editedContent : currentContent
-    return content.length
-  }, [isEditing, editedContent, currentContent])
 
   return (
     <>
       <p className="text-xs text-muted-foreground mt-1">
         {t('builder.components.promptPreview.stats.blocks', { count: nodeCount })}
       </p>
-      {charCount > UI_CONFIG.CHAR_DISPLAY_THRESHOLD && (
-        <div className="absolute bottom-2 right-2 px-2 py-1 bg-muted rounded text-xs text-muted-foreground">
-          {charCount}
-          {' '}
-          chars
-        </div>
-      )}
     </>
   )
 })
@@ -100,27 +82,50 @@ const ContentDisplay = memo<ContentDisplayProps>(({
 }) => {
   const { t } = useTranslation()
 
+  const charCount = useMemo(() => {
+    const content = isEditing ? editedContent : currentContent
+    return content.length
+  }, [isEditing, editedContent, currentContent])
+
   if (isEditing) {
     return (
-      <textarea
-        ref={textareaRef}
-        value={editedContent}
-        onChange={e => onEditedContentChange(e.target.value)}
-        className="w-full h-full p-4 text-xs text-foreground leading-relaxed font-mono bg-transparent border-none outline-none resize-none"
-        placeholder={t('builder.components.promptPreview.placeholder')}
-        style={UI_CONFIG.TEXTAREA_SCROLL_CONFIG}
-      />
+      <div className="relative w-full h-full">
+        <textarea
+          ref={textareaRef}
+          value={editedContent}
+          onChange={e => onEditedContentChange(e.target.value)}
+          className="w-full h-full p-4 text-xs text-foreground leading-relaxed font-mono bg-transparent border-none outline-none resize-none"
+          placeholder={t('builder.components.promptPreview.placeholder')}
+          style={UI_CONFIG.TEXTAREA_SCROLL_CONFIG}
+        />
+        {charCount > UI_CONFIG.CHAR_DISPLAY_THRESHOLD && (
+          <div className="absolute bottom-2 right-2 px-2 py-1 bg-muted/90 backdrop-blur-sm rounded text-xs text-muted-foreground pointer-events-none">
+            {charCount}
+            {' '}
+            chars
+          </div>
+        )}
+      </div>
     )
   }
 
   return (
-    <div
-      className="absolute inset-0 p-4 overflow-auto"
-      style={UI_CONFIG.TEXTAREA_SCROLL_CONFIG}
-    >
-      <pre className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-mono">
-        {currentContent}
-      </pre>
+    <div className="relative w-full h-full">
+      <div
+        className="absolute inset-0 p-4 overflow-auto"
+        style={UI_CONFIG.TEXTAREA_SCROLL_CONFIG}
+      >
+        <pre className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-mono">
+          {currentContent}
+        </pre>
+      </div>
+      {charCount > UI_CONFIG.CHAR_DISPLAY_THRESHOLD && (
+        <div className="absolute bottom-2 right-2 px-2 py-1 bg-muted/90 backdrop-blur-sm rounded text-xs text-muted-foreground pointer-events-none">
+          {charCount}
+          {' '}
+          chars
+        </div>
+      )}
     </div>
   )
 })
@@ -308,9 +313,6 @@ export const PromptPreview = memo<PromptPreviewProps>(({ className, style }) => 
             </h3>
             <StatsDisplay
               nodeCount={nodeCount}
-              isEditing={isEditing}
-              editedContent={editedContent}
-              currentContent={currentContent}
             />
           </div>
           <Button

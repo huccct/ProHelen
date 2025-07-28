@@ -1,6 +1,6 @@
 'use client'
 
-import type { CustomNodeData } from '@/app/(root)/builder/_components/custom-node'
+import type { CustomNodeData } from '@/types/builder'
 import { CustomNode } from '@/app/(root)/builder/_components/custom-node'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
