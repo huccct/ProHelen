@@ -1,5 +1,6 @@
 'use client'
 
+import { useAppSettings } from '@/components/common/app-settings-context'
 import { NavBar } from '@/components/common/nav-bar'
 import { CornerGrids } from '@/components/corner-grid'
 import { InteractivePlayground } from '@/components/interactive-playground'
@@ -169,12 +170,14 @@ export default function Home() {
     })
   }
 
+  const { siteName } = useAppSettings()
+
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
       <ConnectedLinesBackground />
 
       <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/20">
-        <NavBar />
+        <NavBar siteName={siteName} />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-16">

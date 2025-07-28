@@ -1,5 +1,6 @@
 'use client'
 
+import { AppSettingsProvider } from '@/components/common/app-settings-context'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ThemeProvider } from '@/lib/theme-context'
 import * as Sentry from '@sentry/nextjs'
@@ -7,6 +8,17 @@ import { SessionProvider, useSession } from 'next-auth/react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import '@/lib/i18n'
+
+interface AppSettings {
+  siteName: string
+  siteDescription: string
+  maintenanceMode: boolean
+}
+
+interface ProvidersProps {
+  children: React.ReactNode
+  appSettings: AppSettings
+}
 
 function SentryMonitoring() {
   const pathname = usePathname()
@@ -53,14 +65,16 @@ function SentryMonitoring() {
   return null
 }
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({ children, appSettings }: ProvidersProps) {
   return (
     <SessionProvider>
       <ThemeProvider defaultTheme="dark">
-        <TooltipProvider>
-          <SentryMonitoring />
-          {children}
-        </TooltipProvider>
+        <AppSettingsProvider settings={appSettings}>
+          <TooltipProvider>
+            <SentryMonitoring />
+            {children}
+          </TooltipProvider>
+        </AppSettingsProvider>
       </ThemeProvider>
     </SessionProvider>
   )

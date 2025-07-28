@@ -1,5 +1,6 @@
 'use client'
 
+import { useAppSettings } from '@/components/common/app-settings-context'
 import { NavBar } from '@/components/common/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Search } from 'lucide-react'
@@ -18,10 +19,12 @@ export default function MyInstructionsPage() {
     setSearchQuery(e.target.value)
   }
 
+  const { siteName } = useAppSettings()
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20">
-        <NavBar />
+        <NavBar siteName={siteName} />
       </div>
       <main className="container mx-auto px-4 py-8 pt-28">
         <div className="flex flex-col space-y-6">

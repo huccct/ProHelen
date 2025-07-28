@@ -1,33 +1,9 @@
 import { AdminSidebar } from '@/components/admin/sidebar'
 import { NavBar } from '@/components/common/nav-bar'
 import { authOptions } from '@/lib/auth-config'
-import { prisma } from '@/lib/db'
+import { getAppSettings } from '@/lib/server-utils'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
-
-async function getAppSettings() {
-  try {
-    const settings = await prisma.systemSetting.findMany()
-    const settingsMap = settings.reduce((acc: any, setting: any) => {
-      acc[setting.key] = setting.value
-      return acc
-    }, {} as Record<string, string>)
-
-    return {
-      siteName: settingsMap['site.name'] || 'ProHelen',
-      siteDescription: settingsMap['site.description'] || 'AI Instruction Management Platform',
-      maintenanceMode: settingsMap['maintenance.mode'] === 'true',
-    }
-  }
-  catch (error) {
-    console.error('Failed to load app settings:', error)
-    return {
-      siteName: 'ProHelen',
-      siteDescription: 'AI Instruction Management Platform',
-      maintenanceMode: false,
-    }
-  }
-}
 
 export default async function AdminLayout({
   children,
@@ -47,7 +23,6 @@ export default async function AdminLayout({
   }
 
   const appSettings = await getAppSettings()
-
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar siteName={appSettings.siteName} />

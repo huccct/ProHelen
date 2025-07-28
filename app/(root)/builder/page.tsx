@@ -1,5 +1,7 @@
 'use client'
 
+import type { ExtractedBlock, SuggestedEnhancement } from '@/types/builder'
+import { useAppSettings } from '@/components/common/app-settings-context'
 import { FlowCanvas } from '@/components/flow-canvas'
 import { HelpPanel } from '@/components/help-panel'
 import { OnboardingTour } from '@/components/onboarding-tour'
@@ -11,10 +13,10 @@ import * as Sentry from '@sentry/nextjs'
 import { ArrowLeft, HelpCircle, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-
 import { PromptAnalyzer } from './_components/prompt-analyzer'
 import { PromptPreview } from './_components/prompt-preview'
 
@@ -25,9 +27,6 @@ function BuilderContent() {
   const { t } = useTranslation()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [showSaveDialog, setShowSaveDialog] = useState(false)
-  const [saveDialogAction, setSaveDialogAction] = useState<'back' | 'analyze'>('back')
-  const [isExistingContent, setIsExistingContent] = useState(false)
   const importFlowData = useBuilderStore(state => state.importFlowData)
   const title = useBuilderStore(state => state.title)
   const description = useBuilderStore(state => state.description)
@@ -40,10 +39,14 @@ function BuilderContent() {
   const canRedo = useBuilderStore(state => state.canRedo)
   const saveDraft = useBuilderStore(state => state.saveDraft)
   const hasPendingChanges = useBuilderStore(state => state.hasPendingChanges)
+
   const [previewWidth, setPreviewWidth] = useState(320)
   const [isDragging, setIsDragging] = useState(false)
   const [showHelpPanel, setShowHelpPanel] = useState(false)
   const [showOnboardingTour, setShowOnboardingTour] = useState(false)
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [saveDialogAction, setSaveDialogAction] = useState<'back' | 'analyze'>('back')
+  const [isExistingContent, setIsExistingContent] = useState(false)
 
   // init interface mode
   const [interfaceMode, setInterfaceMode] = useState<InterfaceMode>('analyze')
@@ -58,7 +61,6 @@ function BuilderContent() {
     }
   }, [searchParams])
 
-  // 记录用户会话开始
   useEffect(() => {
     Sentry.addBreadcrumb({
       category: 'session',
@@ -88,7 +90,7 @@ function BuilderContent() {
    * @param userQuery - User query to apply analysis results to
    * @returns void
    */
-  const handleAnalysisComplete = useCallback((blocks: any[], enhancements: any[], userQuery?: string) => {
+  const handleAnalysisComplete = useCallback((blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[], userQuery?: string) => {
     const startTime = performance.now()
     const { applyAnalysisResults } = useBuilderStore.getState()
 
@@ -105,7 +107,6 @@ function BuilderContent() {
     setDescription(t('builder.analyzer.defaults.generatedByAnalysis'))
     setInterfaceMode('advanced')
 
-    // 记录分析完成
     const endTime = performance.now()
     Sentry.captureMessage('Analysis Complete', {
       level: 'info',
@@ -118,20 +119,20 @@ function BuilderContent() {
     })
   }, [])
 
-  const handleMouseDown = useCallback(() => {
+  const handleMouseDown = () => {
     setIsDragging(true)
-  }, [])
+  }
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = () => {
     setIsDragging(false)
-  }, [])
+  }
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
+  const handleMouseMove = (e: MouseEvent) => {
     if (isDragging) {
       const newWidth = window.innerWidth - e.clientX
       setPreviewWidth(Math.max(280, Math.min(600, newWidth)))
     }
-  }, [isDragging])
+  }
 
   useEffect(() => {
     if (isDragging) {
@@ -142,7 +143,7 @@ function BuilderContent() {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [isDragging, handleMouseMove, handleMouseUp])
+  }, [isDragging])
 
   useEffect(() => {
     const tourCompleted = localStorage.getItem('prohelen-tour-completed')
@@ -190,7 +191,6 @@ function BuilderContent() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [undo, redo, canUndo, canRedo])
 
-  // 记录用户编辑操作
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
@@ -380,6 +380,8 @@ function BuilderContent() {
     }
   }
 
+  const { siteName } = useAppSettings()
+
   // analyze mode show prompt analyzer
   if (interfaceMode === 'analyze') {
     return (
@@ -395,7 +397,7 @@ function BuilderContent() {
             </Link>
             <div className="flex items-center gap-2">
               <Zap className="h-5 w-5 text-primary" />
-              <span className="font-semibold">ProHelen</span>
+              <span className="font-semibold">{siteName}</span>
             </div>
             <div />
           </div>
@@ -439,7 +441,6 @@ function BuilderContent() {
             />
           </div>
 
-          {/* Mode Toggle */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -492,7 +493,6 @@ function BuilderContent() {
         />
       </div>
 
-      {/* Help Panel */}
       <HelpPanel
         isOpen={showHelpPanel}
         onClose={() => setShowHelpPanel(false)}
@@ -502,7 +502,6 @@ function BuilderContent() {
         }}
       />
 
-      {/* Onboarding Tour */}
       <OnboardingTour
         isOpen={showOnboardingTour}
         onClose={() => setShowOnboardingTour(false)}

@@ -34,3 +34,27 @@ export async function checkMaintenanceMode() {
 
   return maintenanceSetting?.value === 'true'
 }
+
+export async function getAppSettings() {
+  try {
+    const settings = await prisma.systemSetting.findMany()
+    const settingsMap = settings.reduce((acc: any, setting: any) => {
+      acc[setting.key] = setting.value
+      return acc
+    }, {} as Record<string, string>)
+
+    return {
+      siteName: settingsMap['site.name'] || 'ProHelen',
+      siteDescription: settingsMap['site.description'] || 'AI Instruction Management Platform',
+      maintenanceMode: settingsMap['maintenance.mode'] === 'true',
+    }
+  }
+  catch (error) {
+    console.error('Failed to load app settings:', error)
+    return {
+      siteName: 'ProHelen',
+      siteDescription: 'AI Instruction Management Platform',
+      maintenanceMode: false,
+    }
+  }
+}

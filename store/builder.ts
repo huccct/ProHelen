@@ -1,4 +1,5 @@
 import type { CustomNodeData } from '@/app/(root)/builder/_components/custom-node'
+import type { ExtractedBlock, SuggestedEnhancement } from '@/types/builder'
 import type { Connection, Edge, Node, OnEdgesChange, OnNodesChange } from '@xyflow/react'
 import i18n from '@/lib/i18n'
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
@@ -28,19 +29,6 @@ interface BuilderState {
   }
   history: HistoryState[]
   historyIndex: number
-}
-
-interface ExtractedBlock {
-  type: string
-  content: string
-  confidence: number
-  reasoning: string
-}
-
-interface SuggestedEnhancement {
-  type: string
-  reason: string
-  impact: 'high' | 'medium' | 'low'
 }
 
 interface BuilderActions {

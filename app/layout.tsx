@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Providers from '@/app/providers'
+import { getAppSettings } from '@/lib/server-utils'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Toaster } from 'sonner'
 import './globals.css'
@@ -41,17 +42,30 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  let appSettings
+  try {
+    appSettings = await getAppSettings()
+  }
+  catch (error) {
+    console.error('Failed to load app settings:', error)
+    appSettings = {
+      siteName: 'ProHelen',
+      siteDescription: 'AI Instruction Management Platform',
+      maintenanceMode: false,
+    }
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers appSettings={appSettings}>{children}</Providers>
         <Toaster position="top-center" richColors />
       </body>
     </html>
