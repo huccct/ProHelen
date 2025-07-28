@@ -37,3 +37,7 @@ export default withSentryConfig(nextConfig, {
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
 })
+
+if (!process.env.TURBOPACK) {
+  module.exports = withSentryConfig(module.exports, { ...module.exports })
+}

@@ -89,7 +89,7 @@ export function InteractivePlayground() {
       <CustomNode
         {...props}
         onUpdateNodeData={updateNodeData}
-        onDeleteNode={deleteNodeLocal}
+        onShowDeleteConfirm={(nodeId: string) => deleteNodeLocal(nodeId)}
       />
     ),
   }), [updateNodeData, deleteNodeLocal])

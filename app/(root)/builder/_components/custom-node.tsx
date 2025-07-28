@@ -248,8 +248,13 @@ export const CustomNode = memo<CustomNodeProps>(({
   const metadata = useMemo(() =>
     NODE_METADATA[data.type] || DEFAULT_NODE_METADATA, [data.type])
 
-  const containerClass = useMemo(() =>
-    `${CSS_CLASSES_CUSTOM_NODE.container} ${isEditing ? '' : `min-w-[${NODE_CONFIG.DEFAULT_MIN_WIDTH}px] max-w-[${NODE_CONFIG.DEFAULT_MAX_WIDTH}px]`} ${selected ? CSS_CLASSES_CUSTOM_NODE.selected : ''}`, [isEditing, selected])
+  const containerClass = useMemo(() => {
+    const baseClass = CSS_CLASSES_CUSTOM_NODE.container
+    const widthClass = isEditing ? '' : 'min-w-[240px] max-w-[320px]'
+    const selectedClass = selected ? CSS_CLASSES_CUSTOM_NODE.selected : ''
+
+    return `${baseClass} ${widthClass} ${selectedClass}`.trim()
+  }, [isEditing, selected])
 
   const cardClass = useMemo(() =>
     `${CSS_CLASSES_CUSTOM_NODE.card} ${isEditing ? CSS_CLASSES_CUSTOM_NODE.cardEditing : CSS_CLASSES_CUSTOM_NODE.cardDefault}`, [isEditing])

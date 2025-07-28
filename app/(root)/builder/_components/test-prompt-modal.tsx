@@ -449,7 +449,6 @@ export const TestPromptModal = memo<TestPromptModalProps>(({ open, onOpenChange 
     }
   }, [open, hasAutoSent, preview.system, originalUserQuery, t, messages.length, addMessage, updateState, handleSendMessage])
 
-  // 对话框关闭处理
   useEffect(() => {
     if (!open) {
       updateState({ hasAutoSent: false, input: '' })
