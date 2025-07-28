@@ -1,10 +1,10 @@
 'use client'
 
 import type { ExtractedBlock, SuggestedEnhancement } from '@/types/builder'
+import { FlowCanvas } from '@/components/builder/flow-canvas'
+import { HelpPanel } from '@/components/builder/help-panel'
+import { OnboardingTour } from '@/components/builder/onboarding-tour'
 import { useAppSettings } from '@/components/common/app-settings-context'
-import { FlowCanvas } from '@/components/flow-canvas'
-import { HelpPanel } from '@/components/help-panel'
-import { OnboardingTour } from '@/components/onboarding-tour'
 import { STORAGE_KEYS } from '@/lib/constants'
 import { useAutoSave } from '@/lib/hooks/use-auto-save'
 import { useDataLoader } from '@/lib/hooks/use-data-loader'
