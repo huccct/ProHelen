@@ -137,6 +137,19 @@
   .scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
+
+  .custom-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    scroll-snap-type: x proximity;
+  }
+  .custom-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .custom-scroll button {
+    scroll-snap-align: start;
+  }
 }
 
 @keyframes cyberpunk-dash {

@@ -1,23 +1,21 @@
 'use client'
 
-import type { InstructionFormData } from './save-instruction-modal'
+import type { ExportData, InstructionFormData, PromptPreviewProps } from '@/types/builder'
 import { Button } from '@/components/ui/button'
+import { EXPORT_CONFIG, UI_CONFIG } from '@/lib/constants'
+import { useApiOperations } from '@/lib/hooks/use-api-operations'
+import { useContentParser } from '@/lib/hooks/use-content-parser'
+import { useEditingState } from '@/lib/hooks/use-editing-state'
 import { useBuilderStore } from '@/store/builder'
 import { Copy, Download, Edit, Eye, Play, Save } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/shallow'
 import { SaveInstructionModal } from './save-instruction-modal'
 import { TestPromptModal } from './test-prompt-modal'
 
-interface PromptPreviewProps {
-  className?: string
-  style?: React.CSSProperties
-}
-
-function selector(state: any) {
+function storeSelector(state: any) {
   return {
     preview: state.preview,
     nodes: state.nodes,
@@ -26,262 +24,299 @@ function selector(state: any) {
   }
 }
 
-export function PromptPreview({ className, style }: PromptPreviewProps) {
+function createDownloadLink(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+interface StatsDisplayProps {
+  nodeCount: number
+  isEditing: boolean
+  editedContent: string
+  currentContent: string
+}
+
+const StatsDisplay = memo<StatsDisplayProps>(({
+  nodeCount,
+  isEditing,
+  editedContent,
+  currentContent,
+}) => {
   const { t } = useTranslation()
-  const router = useRouter()
-  const { preview, nodes, exportFlowData, setPreview } = useBuilderStore(useShallow(selector))
+
+  const charCount = useMemo(() => {
+    const content = isEditing ? editedContent : currentContent
+    return content.length
+  }, [isEditing, editedContent, currentContent])
+
+  return (
+    <>
+      <p className="text-xs text-muted-foreground mt-1">
+        {t('builder.components.promptPreview.stats.blocks', { count: nodeCount })}
+      </p>
+      {charCount > UI_CONFIG.CHAR_DISPLAY_THRESHOLD && (
+        <div className="absolute bottom-2 right-2 px-2 py-1 bg-muted rounded text-xs text-muted-foreground">
+          {charCount}
+          {' '}
+          chars
+        </div>
+      )}
+    </>
+  )
+})
+
+StatsDisplay.displayName = 'StatsDisplay'
+
+interface ContentDisplayProps {
+  isEditing: boolean
+  editedContent: string
+  onEditedContentChange: (content: string) => void
+  currentContent: string
+  textareaRef: React.RefObject<HTMLTextAreaElement>
+}
+
+const ContentDisplay = memo<ContentDisplayProps>(({
+  isEditing,
+  editedContent,
+  onEditedContentChange,
+  currentContent,
+  textareaRef,
+}) => {
+  const { t } = useTranslation()
+
+  if (isEditing) {
+    return (
+      <textarea
+        ref={textareaRef}
+        value={editedContent}
+        onChange={e => onEditedContentChange(e.target.value)}
+        className="w-full h-full p-4 text-xs text-foreground leading-relaxed font-mono bg-transparent border-none outline-none resize-none"
+        placeholder={t('builder.components.promptPreview.placeholder')}
+        style={UI_CONFIG.TEXTAREA_SCROLL_CONFIG}
+      />
+    )
+  }
+
+  return (
+    <div
+      className="absolute inset-0 p-4 overflow-auto"
+      style={UI_CONFIG.TEXTAREA_SCROLL_CONFIG}
+    >
+      <pre className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-mono">
+        {currentContent}
+      </pre>
+    </div>
+  )
+})
+
+ContentDisplay.displayName = 'ContentDisplay'
+
+interface ActionButtonsProps {
+  hasContent: boolean
+  onCopy: () => void
+  onExport: () => void
+  onTest: () => void
+  onSave: () => void
+}
+
+const ActionButtons = memo<ActionButtonsProps>(({
+  hasContent,
+  onCopy,
+  onExport,
+  onTest,
+  onSave,
+}) => {
+  const { t } = useTranslation()
+
+  const buttonClass = 'cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+
+  return (
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onCopy}
+          disabled={!hasContent}
+          className={buttonClass}
+        >
+          <Copy className="h-3 w-3 mr-1" />
+          {t('builder.components.promptPreview.actions.copy')}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onExport}
+          disabled={!hasContent}
+          className={buttonClass}
+        >
+          <Download className="h-3 w-3 mr-1" />
+          {t('builder.components.promptPreview.actions.export')}
+        </Button>
+      </div>
+
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onTest}
+        disabled={!hasContent}
+        className={`w-full ${buttonClass}`}
+      >
+        <Play className="h-3 w-3 mr-1" />
+        {t('builder.components.promptPreview.actions.test')}
+      </Button>
+
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onSave}
+        disabled={!hasContent}
+        className={`w-full ${buttonClass}`}
+      >
+        <Save className="h-3 w-3 mr-1" />
+        {t('builder.components.promptPreview.actions.save')}
+      </Button>
+    </div>
+  )
+})
+
+ActionButtons.displayName = 'ActionButtons'
+
+const HelpText = memo(() => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-border">
+      <p className="text-xs text-muted-foreground text-center">
+        💡
+        {' '}
+        {t('builder.components.promptPreview.helpText')}
+      </p>
+    </div>
+  )
+})
+
+HelpText.displayName = 'HelpText'
+
+export const PromptPreview = memo<PromptPreviewProps>(({ className, style }) => {
+  const { t } = useTranslation()
+  const { preview, nodes, exportFlowData, setPreview } = useBuilderStore(useShallow(storeSelector))
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [showTestModal, setShowTestModal] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedContent, setEditedContent] = useState('')
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const generateCustomInstructions = () => {
-    if (!preview.system && !preview.human && !preview.assistant) {
-      return t('builder.components.promptPreview.placeholder')
-    }
+  const { generateCustomInstructions, parseEditedContent, generateSystemPrompt } = useContentParser(preview)
+  const {
+    isEditing,
+    editedContent,
+    setEditedContent,
+    textareaRef,
+    toggleEdit,
+  } = useEditingState(generateCustomInstructions, parseEditedContent, setPreview)
+  const { isSaving, saveInstruction } = useApiOperations()
 
-    let content = ''
+  const currentContent = useMemo(() => generateCustomInstructions(), [generateCustomInstructions])
+  const hasContent = useMemo(() =>
+    Boolean(preview.system || preview.human || preview.assistant), [preview])
+  const nodeCount = nodes.length
 
-    if (preview.system) {
-      content += preview.system
-    }
-
-    if (preview.human && preview.human.trim()) {
-      content += `\n\n## User Interaction Guidelines\n${preview.human}`
-    }
-
-    if (preview.assistant && preview.assistant.trim()) {
-      content += `\n\n## Response Guidelines\n${preview.assistant}`
-    }
-
-    return content.trim()
-  }
-
-  useEffect(() => {
-    setEditedContent(generateCustomInstructions())
-  }, [preview])
-
-  useEffect(() => {
-    if (isEditing && textareaRef.current) {
-      textareaRef.current.focus()
-      textareaRef.current.setSelectionRange(0, 0)
-    }
-  }, [isEditing])
-
-  const generateSystemPrompt = () => {
-    if (isEditing) {
-      const lines = editedContent.split('\n')
-      let systemContent = ''
-
-      for (const line of lines) {
-        if (line.includes('## User Interaction Guidelines')) {
-          break
-        }
-        if (line.includes('## Response Guidelines')) {
-          break
-        }
-        systemContent += `${line}\n`
-      }
-
-      return systemContent.trim() || t('builder.components.promptPreview.systemPromptPlaceholder')
-    }
-
-    if (!preview.system) {
-      return t('builder.components.promptPreview.systemPromptPlaceholder')
-    }
-
-    return preview.system
-  }
-
-  const currentContent = generateCustomInstructions()
-
-  const handleToggleEdit = () => {
-    if (isEditing) {
-      try {
-        const lines = editedContent.split('\n')
-        let systemContent = ''
-        let humanContent = ''
-        let assistantContent = ''
-
-        let currentSection = 'system'
-
-        for (const line of lines) {
-          if (line.includes('## User Interaction Guidelines')) {
-            currentSection = 'human'
-            continue
-          }
-          if (line.includes('## Response Guidelines')) {
-            currentSection = 'assistant'
-            continue
-          }
-
-          if (currentSection === 'system') {
-            systemContent += `${line}\n`
-          }
-          else if (currentSection === 'human') {
-            humanContent += `${line}\n`
-          }
-          else if (currentSection === 'assistant') {
-            assistantContent += `${line}\n`
-          }
-        }
-
-        setPreview({
-          system: systemContent.trim(),
-          human: humanContent.trim(),
-          assistant: assistantContent.trim(),
-        })
-
-        toast.success('Content updated successfully!')
-      }
-      catch {
-        toast.error('Failed to parse content. Please check the format.')
-      }
-    }
-
-    setIsEditing(!isEditing)
-  }
-
-  const handleCopy = async () => {
-    try {
-      const contentToCopy = isEditing ? editedContent : preview.system
-      await navigator.clipboard.writeText(contentToCopy)
+  const handleCopy = useCallback(async () => {
+    const contentToCopy = isEditing ? editedContent : preview.system
+    if (await copyToClipboard(contentToCopy)) {
       toast.success(t('builder.components.promptPreview.messages.copied'))
     }
-    catch {
+    else {
       toast.error(t('builder.components.promptPreview.messages.copyFailed'))
     }
-  }
+  }, [isEditing, editedContent, preview.system, t])
 
-  const handleExport = () => {
+  const handleExport = useCallback(() => {
     const contentToExport = isEditing ? editedContent : preview.system
-    const promptData = {
+    const exportData: ExportData = {
       system: contentToExport,
       temperature: preview.temperature,
       maxTokens: preview.maxTokens,
       exportedAt: new Date().toISOString(),
     }
 
-    const blob = new Blob([JSON.stringify(promptData, null, 2)], {
-      type: 'application/json',
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: EXPORT_CONFIG.MIME_TYPE,
     })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'prompt-export.json'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-    toast.success(t('builder.components.promptPreview.messages.exported'))
-  }
 
-  const handleTest = async () => {
+    createDownloadLink(blob, EXPORT_CONFIG.FILENAME)
+    toast.success(t('builder.components.promptPreview.messages.exported'))
+  }, [isEditing, editedContent, preview, t])
+
+  const handleTest = useCallback(async () => {
     const contentToTest = isEditing ? editedContent : preview.system
     if (!contentToTest.trim()) {
       toast.error(t('builder.components.promptPreview.messages.addContentBeforeTest'))
       return
     }
 
-    // Auto-copy the system prompt to clipboard
-    try {
-      await navigator.clipboard.writeText(contentToTest)
+    if (await copyToClipboard(contentToTest)) {
       toast.success(t('builder.components.promptPreview.messages.systemPromptCopied'))
     }
-    catch {
-      // If clipboard fails, still open the modal
+    else {
       console.warn('Failed to copy to clipboard')
     }
 
     setShowTestModal(true)
-  }
+  }, [isEditing, editedContent, preview.system, t])
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     const contentToSave = isEditing ? editedContent : preview.system
     if (!contentToSave.trim()) {
       toast.error(t('builder.components.promptPreview.messages.addContentBeforeSave'))
       return
     }
     setShowSaveModal(true)
-  }
+  }, [isEditing, editedContent, preview.system, t])
 
-  const checkIfDraft = async (id: string) => {
-    try {
-      const response = await fetch(`/api/instructions/${id}`)
-      const data = await response.json()
-      return data.instruction?.isDraft || false
-    }
-    catch (error) {
-      console.error('Error checking draft status:', error)
-      return false
-    }
-  }
+  const handleSaveInstructionSubmit = useCallback(async (instructionData: InstructionFormData) => {
+    const systemPrompt = generateSystemPrompt(isEditing ? editedContent : undefined)
+    const flowData = exportFlowData()
 
-  const handleSaveInstructionSubmit = async (instructionData: InstructionFormData) => {
-    try {
-      setIsSaving(true)
-
-      const flowData = exportFlowData()
-      const systemPrompt = generateSystemPrompt()
-      const searchParams = new URLSearchParams(window.location.search)
-      const instructionId = searchParams.get('instruction')
-      const isDraft = instructionId && await checkIfDraft(instructionId)
-
-      const response = await fetch(isDraft ? `/api/instructions/${instructionId}` : '/api/instructions', {
-        method: isDraft ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: instructionData.title,
-          description: instructionData.description,
-          category: instructionData.category,
-          content: systemPrompt,
-          tags: instructionData.tags,
-          flowData,
-          isDraft: false, // Convert from draft to regular instruction
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to save instruction')
-      }
-
-      await response.json()
-      toast.success('Instruction saved successfully!')
+    const success = await saveInstruction(instructionData, systemPrompt, flowData)
+    if (success) {
       setShowSaveModal(false)
-
-      // Redirect to instructions page
-      router.push('/my-instructions')
     }
-    catch (error) {
-      console.error('Error saving instruction:', error)
-      toast.error('Failed to save, please try again')
-    }
-    finally {
-      setIsSaving(false)
-    }
-  }
-
-  const hasContent = preview.system || preview.human || preview.assistant
-  const nodeCount = nodes.length
+  }, [generateSystemPrompt, isEditing, editedContent, exportFlowData, saveInstruction])
 
   return (
     <aside className={className} style={style} data-tour="preview-panel">
       <div className="p-4 flex flex-col h-full bg-card/50">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-medium text-foreground">{t('builder.components.promptPreview.title')}</h3>
-            <p className="text-xs text-muted-foreground mt-1">
-              {t('builder.components.promptPreview.stats.blocks', { count: nodeCount })}
-            </p>
+            <h3 className="text-sm font-medium text-foreground">
+              {t('builder.components.promptPreview.title')}
+            </h3>
+            <StatsDisplay
+              nodeCount={nodeCount}
+              isEditing={isEditing}
+              editedContent={editedContent}
+              currentContent={currentContent}
+            />
           </div>
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleToggleEdit}
+            onClick={toggleEdit}
             className="h-8 w-8 p-0 cursor-pointer"
             title={isEditing ? 'Exit edit mode' : 'Edit content'}
           >
@@ -291,91 +326,26 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
 
         <div className="flex-1 mb-4">
           <div className="relative h-full border border-border rounded-lg bg-background">
-            {isEditing
-              ? (
-                  <textarea
-                    ref={textareaRef}
-                    value={editedContent}
-                    onChange={e => setEditedContent(e.target.value)}
-                    className="w-full h-full p-4 text-xs text-foreground leading-relaxed font-mono bg-transparent border-none outline-none resize-none"
-                    placeholder={t('builder.components.promptPreview.placeholder')}
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                  />
-                )
-              : (
-                  <div className="absolute inset-0 p-4 overflow-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    <pre className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-mono">
-                      {currentContent}
-                    </pre>
-                  </div>
-                )}
+            <ContentDisplay
+              isEditing={isEditing}
+              editedContent={editedContent}
+              onEditedContentChange={setEditedContent}
+              currentContent={currentContent}
+              textareaRef={textareaRef as React.RefObject<HTMLTextAreaElement>}
+            />
 
-            {hasContent && (
-              <div className="absolute bottom-2 right-2 px-2 py-1 bg-muted rounded text-xs text-muted-foreground">
-                {(isEditing ? editedContent : currentContent).length}
-                {' '}
-                chars
-              </div>
-            )}
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCopy}
-              disabled={!hasContent}
-              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Copy className="h-3 w-3 mr-1" />
-              {t('builder.components.promptPreview.actions.copy')}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExport}
-              disabled={!hasContent}
-              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Download className="h-3 w-3 mr-1" />
-              {t('builder.components.promptPreview.actions.export')}
-            </Button>
-          </div>
+        <ActionButtons
+          hasContent={hasContent}
+          onCopy={handleCopy}
+          onExport={handleExport}
+          onTest={handleTest}
+          onSave={handleSave}
+        />
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleTest}
-            disabled={!hasContent}
-            className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Play className="h-3 w-3 mr-1" />
-            {t('builder.components.promptPreview.actions.test')}
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSave}
-            disabled={!hasContent}
-            className="w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Save className="h-3 w-3 mr-1" />
-            {t('builder.components.promptPreview.actions.save')}
-          </Button>
-        </div>
-
-        {!hasContent && (
-          <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-border">
-            <p className="text-xs text-muted-foreground text-center">
-              💡
-              {' '}
-              {t('builder.components.promptPreview.helpText')}
-            </p>
-          </div>
-        )}
+        {!hasContent && <HelpText />}
       </div>
 
       <style jsx>
@@ -393,7 +363,12 @@ export function PromptPreview({ className, style }: PromptPreviewProps) {
         isLoading={isSaving}
       />
 
-      <TestPromptModal open={showTestModal} onOpenChange={setShowTestModal} />
+      <TestPromptModal
+        open={showTestModal}
+        onOpenChange={setShowTestModal}
+      />
     </aside>
   )
-}
+})
+
+PromptPreview.displayName = 'PromptPreview'

@@ -1,189 +1,417 @@
 'use client'
 
+import type { ExtractedBlock, SuggestedEnhancement } from '@/types/builder'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { ANALYSIS_CONFIG, IMPACT_COLORS } from '@/lib/constants'
+import { useAnalysis } from '@/lib/hooks/use-analysis'
+import { useCarousel } from '@/lib/hooks/use-carousel'
 import { useBuilderStore } from '@/store/builder'
-import { ArrowRight, Brain, CheckCircle, ChevronLeft, ChevronRight, Lightbulb, Loader2, MessageSquare, Sparkles, Wand2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import {
+  ArrowRight,
+  Brain,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Lightbulb,
+  Loader2,
+  MessageSquare,
+  Sparkles,
+  Wand2,
+} from 'lucide-react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
-
-interface ExtractedBlock {
-  type: string
-  content: string
-  confidence: number
-  reasoning: string
-}
-
-interface SuggestedEnhancement {
-  type: string
-  reason: string
-  impact: 'high' | 'medium' | 'low'
-}
-
-interface AnalysisResponse {
-  extractedBlocks: ExtractedBlock[]
-  suggestedEnhancements: SuggestedEnhancement[]
-  missingEssentials: string[]
-  detectedIntent: string
-}
 
 interface PromptAnalyzerProps {
   onAnalysisComplete: (blocks: ExtractedBlock[], enhancements: SuggestedEnhancement[], userQuery?: string) => void
   onSwitchToAdvanced: () => void
 }
 
-export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: PromptAnalyzerProps) {
+interface StepIndicatorProps {
+  hasAnalysis: boolean
+}
+
+const StepIndicator = memo<StepIndicatorProps>(({ hasAnalysis }) => {
   const { t } = useTranslation()
-  const originalUserQuery = useBuilderStore(state => state.originalUserQuery)
+
+  const steps = [
+    { key: 'describe', active: !hasAnalysis },
+    { key: 'confirm', active: hasAnalysis },
+  ]
+
+  return (
+    <div className="flex items-center justify-between mb-6">
+      {steps.map((step, index) => (
+        <React.Fragment key={step.key}>
+          <div className="flex items-center z-10 bg-background">
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                step.active
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground'
+              }`}
+            >
+              {index + 1}
+            </div>
+            <span
+              className={`text-sm font-medium ml-2 ${
+                step.active ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              {t(`builder.analyzer.steps.${step.key}`)}
+            </span>
+          </div>
+
+          {index < steps.length - 1 && (
+            <div className="flex-1 h-px bg-border mx-4" />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  )
+})
+
+StepIndicator.displayName = 'StepIndicator'
+
+interface ExampleCardProps {
+  category: string
+  onClick: (text: string) => void
+  disabled?: boolean
+}
+
+const ExampleCard = memo<ExampleCardProps>(({ category, onClick, disabled }) => {
+  const { t } = useTranslation()
+
+  const handleClick = useCallback(() => {
+    onClick(t(`builder.analyzer.examples.${category}.text`))
+  }, [category, onClick, t])
+
+  return (
+    <Button
+      variant="outline"
+      onClick={handleClick}
+      disabled={disabled}
+      className="h-auto p-4 text-left justify-start cursor-pointer transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:shadow-lg hover:-translate-y-1 hover:z-10 relative"
+    >
+      <div>
+        <div className="font-medium text-sm mb-1">
+          {t(`builder.analyzer.examples.${category}.title`)}
+        </div>
+        <div
+          className="text-xs text-muted-foreground overflow-hidden"
+          style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+          }}
+        >
+          {t(`builder.analyzer.examples.${category}.text`)}
+        </div>
+      </div>
+    </Button>
+  )
+})
+
+ExampleCard.displayName = 'ExampleCard'
+
+interface CarouselProps {
+  onExampleClick: (text: string) => void
+  disabled?: boolean
+}
+
+const Carousel = memo<CarouselProps>(({ onExampleClick, disabled }) => {
+  const { t } = useTranslation()
+  const {
+    currentIndex,
+    totalSlides,
+    getCurrentExamples,
+    goToPrevious,
+    goToNext,
+    goToSlide,
+    startAutoPlay,
+    stopAutoPlay,
+  } = useCarousel()
+
+  useEffect(() => {
+    if (!disabled) {
+      startAutoPlay()
+      return stopAutoPlay
+    }
+  }, [disabled, startAutoPlay, stopAutoPlay])
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Lightbulb className="h-5 w-5" />
+            {t('builder.analyzer.examples.title')}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goToPrevious}
+              disabled={disabled}
+              className="h-8 w-8 p-0 cursor-pointer"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              {currentIndex + 1}
+              {' '}
+              /
+              {totalSlides}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goToNext}
+              disabled={disabled}
+              className="h-8 w-8 p-0 cursor-pointer"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-visible py-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 transition-all duration-500 ease-in-out">
+            {getCurrentExamples().map(category => (
+              <ExampleCard
+                key={`${category}-${currentIndex}`}
+                category={category}
+                onClick={onExampleClick}
+                disabled={disabled}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex justify-center mt-4 gap-2">
+          {Array.from({ length: totalSlides }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              disabled={disabled}
+              className={`w-2 h-2 rounded-full transition-colors duration-200 cursor-pointer ${
+                index === currentIndex ? 'bg-primary' : 'bg-muted-foreground/30'
+              }`}
+            />
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+})
+
+Carousel.displayName = 'Carousel'
+
+interface AnalysisInputProps {
+  userPrompt: string
+  onPromptChange: (value: string) => void
+  onAnalyze: () => void
+  isAnalyzing: boolean
+  analysisProgress: number
+}
+
+const AnalysisInput = memo<AnalysisInputProps>(({
+  userPrompt,
+  onPromptChange,
+  onAnalyze,
+  isAnalyzing,
+  analysisProgress,
+}) => {
+  const { t } = useTranslation()
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      if (userPrompt.trim() && !isAnalyzing) {
+        onAnalyze()
+      }
+    }
+  }, [userPrompt, isAnalyzing, onAnalyze])
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <MessageSquare className="h-5 w-5" />
+          {t('builder.analyzer.input.title')}
+        </CardTitle>
+        <CardDescription>
+          {t('builder.analyzer.input.description')}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Textarea
+          value={userPrompt}
+          onChange={e => onPromptChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={t('builder.analyzer.input.placeholder')}
+          className={`min-h-[${ANALYSIS_CONFIG.TEXTAREA_MIN_HEIGHT}px] max-h-[${ANALYSIS_CONFIG.TEXTAREA_MAX_HEIGHT}px] resize-none overflow-y-auto scrollbar`}
+          disabled={isAnalyzing}
+        />
+
+        {isAnalyzing && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">
+                {t('builder.analyzer.input.analyzing')}
+              </span>
+              <span className="text-primary font-medium">
+                {analysisProgress}
+                %
+              </span>
+            </div>
+            <div className="w-full bg-muted rounded-full h-2">
+              <div
+                className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${analysisProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-end items-center">
+          <Button
+            variant="outline"
+            onClick={onAnalyze}
+            disabled={!userPrompt.trim() || isAnalyzing}
+            className="cursor-pointer"
+          >
+            {isAnalyzing && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            {isAnalyzing
+              ? `${t('builder.analyzer.input.analyzing')} ${analysisProgress}%`
+              : t('builder.analyzer.input.analyze')}
+            {!isAnalyzing && <ArrowRight className="h-4 w-4 ml-2" />}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+})
+
+AnalysisInput.displayName = 'AnalysisInput'
+
+interface SelectableItemProps {
+  isSelected: boolean
+  onToggle: () => void
+  title: string
+  content?: string
+  confidence?: number
+  reasoning?: string
+  impact?: 'high' | 'medium' | 'low'
+  reason?: string
+  variant: 'block' | 'enhancement'
+}
+
+const SelectableItem = memo<SelectableItemProps>(({
+  isSelected,
+  onToggle,
+  title,
+  content,
+  confidence,
+  reasoning,
+  impact,
+  reason,
+  variant,
+}) => {
+  const { t } = useTranslation()
+
+  const borderColor = variant === 'block'
+    ? (isSelected ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50')
+    : (isSelected ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20' : 'border-border hover:bg-muted/50')
+
+  const checkboxColor = variant === 'block'
+    ? (isSelected ? 'border-primary bg-primary' : 'border-muted-foreground')
+    : (isSelected ? 'border-yellow-500 bg-yellow-500' : 'border-muted-foreground')
+
+  const checkIconColor = variant === 'block' ? 'text-primary-foreground' : 'text-white'
+
+  return (
+    <div
+      className={`border rounded-lg p-4 cursor-pointer transition-all ${borderColor}`}
+      onClick={onToggle}
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${checkboxColor}`}>
+              {isSelected && <CheckCircle className={`h-3 w-3 ${checkIconColor}`} />}
+            </div>
+            <span className="font-medium">{title}</span>
+
+            {confidence && (
+              <span className="text-xs bg-muted px-2 py-1 rounded">
+                {t('builder.analyzer.results.confidence', { percent: Math.round(confidence * 100) })}
+              </span>
+            )}
+
+            {impact && (
+              <span className={`text-xs px-2 py-1 rounded ${IMPACT_COLORS[impact]}`}>
+                {t(`builder.analyzer.results.impact.${impact}`)}
+              </span>
+            )}
+          </div>
+
+          {content && (
+            <p className="text-sm text-muted-foreground mb-2">{content}</p>
+          )}
+
+          {reasoning && (
+            <p className="text-xs text-muted-foreground italic">
+              {t('builder.analyzer.results.reasoning', { reason: reasoning })}
+            </p>
+          )}
+
+          {reason && (
+            <p className="text-sm text-muted-foreground mt-2">{reason}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+})
+
+SelectableItem.displayName = 'SelectableItem'
+
+export const PromptAnalyzer = memo<PromptAnalyzerProps>(({
+  onAnalysisComplete,
+  onSwitchToAdvanced,
+}) => {
+  const { t } = useTranslation()
+  const originalUserQuery = useBuilderStore(useCallback(state => state.originalUserQuery, []))
   const [userPrompt, setUserPrompt] = useState('')
-  const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [analysisProgress, setAnalysisProgress] = useState(0)
-  const [selectedBlocks, setSelectedBlocks] = useState<Set<string>>(new Set())
-  const [selectedEnhancements, setSelectedEnhancements] = useState<Set<string>>(new Set())
 
-  // Carousel state
-  const [currentExampleIndex, setCurrentExampleIndex] = useState(0)
-  const allExamples = ['learning', 'work', 'writing', 'personal', 'research', 'business', 'creative', 'data', 'marketing', 'legal', 'health', 'finance']
-  const itemsToShow = 3
-  const totalSlides = Math.ceil(allExamples.length / itemsToShow)
+  const {
+    analysis,
+    isAnalyzing,
+    analysisProgress,
+    selectedBlocks,
+    selectedEnhancements,
+    analyzePrompt,
+    resetAnalysis,
+    toggleBlockSelection,
+    toggleEnhancementSelection,
+  } = useAnalysis(userPrompt)
 
-  // Auto carousel effect
-  useEffect(() => {
-    if (!analysis) {
-      const interval = setInterval(() => {
-        setCurrentExampleIndex(prev => (prev + 1) % totalSlides)
-      }, 4000) // Change every 4 seconds
-
-      return () => clearInterval(interval)
-    }
-  }, [analysis, totalSlides])
-
-  // Reset prompt when originalUserQuery is cleared (e.g., when navigating from my-instructions)
-  useEffect(() => {
-    if (originalUserQuery === '') {
-      setUserPrompt('')
-      setAnalysis(null)
-      setSelectedBlocks(new Set())
-      setSelectedEnhancements(new Set())
-    }
-  }, [originalUserQuery])
-
-  const getBlockTypeLabel = (blockType: string): string => {
+  const getBlockTypeLabel = useCallback((blockType: string): string => {
     const camelCase = blockType.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
     return t(`builder.components.blockPicker.blocks.${camelCase}.label`, { defaultValue: blockType })
-  }
+  }, [t])
 
-  const getCurrentExamples = () => {
-    const startIndex = currentExampleIndex * itemsToShow
-    return allExamples.slice(startIndex, startIndex + itemsToShow)
-  }
+  const canProceed = useMemo(() =>
+    analysis && (selectedBlocks.size > 0 || selectedEnhancements.size > 0), [analysis, selectedBlocks.size, selectedEnhancements.size])
 
-  const handlePrevious = () => {
-    setCurrentExampleIndex(prev => (prev - 1 + totalSlides) % totalSlides)
-  }
+  const handleExampleClick = useCallback((text: string) => {
+    setUserPrompt(text)
+    resetAnalysis()
+  }, [resetAnalysis])
 
-  const handleNext = () => {
-    setCurrentExampleIndex(prev => (prev + 1) % totalSlides)
-  }
-
-  const handleExampleClick = (exampleText: string) => {
-    setUserPrompt(exampleText)
-    setAnalysis(null)
-  }
-
-  // Simulate analysis progress
-  const simulateAnalysisProgress = () => {
-    setAnalysisProgress(0)
-    const progressSteps = [
-      { progress: 15, delay: 200 },
-      { progress: 35, delay: 500 },
-      { progress: 60, delay: 800 },
-      { progress: 85, delay: 1200 },
-      { progress: 99, delay: 1500 }, // Stop at 99% and wait for API
-    ]
-
-    progressSteps.forEach(({ progress, delay }) => {
-      setTimeout(() => {
-        setAnalysisProgress(progress)
-      }, delay)
-    })
-  }
-
-  const handleAnalyze = async () => {
-    if (!userPrompt.trim()) {
-      toast.error(t('builder.analyzer.errors.emptyPrompt'))
-      return
-    }
-
-    setIsAnalyzing(true)
-    simulateAnalysisProgress()
-
-    try {
-      const response = await fetch('/api/analyze-prompt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userPrompt: userPrompt.trim() }),
-      })
-
-      if (!response.ok) {
-        throw new Error(t('builder.analyzer.errors.analysisFailed'))
-      }
-
-      const data = await response.json()
-      if (!data.success) {
-        throw new Error(data.error || t('builder.analyzer.errors.analysisFailed'))
-      }
-
-      // API completed, quickly go to 100% and show results
-      setAnalysisProgress(100)
-      setTimeout(() => {
-        setAnalysis(data.analysis)
-        setSelectedBlocks(new Set(data.analysis.extractedBlocks.map((block: ExtractedBlock) => block.type)))
-        setSelectedEnhancements(new Set(data.analysis.suggestedEnhancements.map((enhancement: SuggestedEnhancement) => enhancement.type)))
-        setIsAnalyzing(false)
-        setAnalysisProgress(0)
-      }, 300) // Quick transition from 100% to results
-    }
-    catch (error) {
-      console.error('Error analyzing prompt:', error)
-      toast.error(error instanceof Error ? error.message : t('builder.analyzer.errors.analysisFailed'))
-      setIsAnalyzing(false)
-      setAnalysisProgress(0)
-    }
-  }
-
-  const handleBlockToggle = (blockType: string) => {
-    setSelectedBlocks((prev) => {
-      const newSet = new Set(prev)
-      if (newSet.has(blockType)) {
-        newSet.delete(blockType)
-      }
-      else {
-        newSet.add(blockType)
-      }
-      return newSet
-    })
-  }
-
-  const handleEnhancementToggle = (enhancementType: string) => {
-    setSelectedEnhancements((prev) => {
-      const newSet = new Set(prev)
-      if (newSet.has(enhancementType)) {
-        newSet.delete(enhancementType)
-      }
-      else {
-        newSet.add(enhancementType)
-      }
-      return newSet
-    })
-  }
-
-  const handleAcceptBlocks = () => {
+  const handleAcceptBlocks = useCallback(() => {
     if (!analysis)
       return
 
@@ -196,18 +424,26 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
     )
 
     onAnalysisComplete(selectedBlocksData, selectedEnhancementsData, userPrompt)
-  }
+  }, [analysis, selectedBlocks, selectedEnhancements, userPrompt, onAnalysisComplete])
 
-  const canProceed = analysis && (selectedBlocks.size > 0 || selectedEnhancements.size > 0)
+  useEffect(() => {
+    if (originalUserQuery === '') {
+      setUserPrompt('')
+      resetAnalysis()
+    }
+  }, [originalUserQuery, resetAnalysis])
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">{t('builder.analyzer.title')}</h2>
-            <p className="text-muted-foreground mt-1">{t('builder.analyzer.subtitle')}</p>
+            <h2 className="text-2xl font-bold text-foreground">
+              {t('builder.analyzer.title')}
+            </h2>
+            <p className="text-muted-foreground mt-1">
+              {t('builder.analyzer.subtitle')}
+            </p>
           </div>
           <Button
             variant="outline"
@@ -219,173 +455,28 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
           </Button>
         </div>
 
-        {/* Step Indicator */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className={`flex items-center gap-2 ${!analysis ? 'text-primary' : 'text-muted-foreground'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${!analysis ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
-              1
-            </div>
-            <span className="text-sm font-medium">{t('builder.analyzer.steps.describe')}</span>
-          </div>
-          <div className="flex-1 h-px bg-border" />
-          <div className={`flex items-center gap-2 ${analysis ? 'text-primary' : 'text-muted-foreground'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${analysis ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
-              2
-            </div>
-            <span className="text-sm font-medium">{t('builder.analyzer.steps.confirm')}</span>
-          </div>
-        </div>
+        <StepIndicator hasAnalysis={!!analysis} />
       </div>
 
       {!analysis
         ? (
-          /* Input Stage */
             <div className="space-y-6">
-              {/* Input Area */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5" />
-                    {t('builder.analyzer.input.title')}
-                  </CardTitle>
-                  <CardDescription>
-                    {t('builder.analyzer.input.description')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Textarea
-                    value={userPrompt}
-                    onChange={e => setUserPrompt(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault()
-                        if (userPrompt.trim() && !isAnalyzing) {
-                          handleAnalyze()
-                        }
-                      }
-                    }}
-                    placeholder={t('builder.analyzer.input.placeholder')}
-                    className="min-h-[120px] max-h-[300px] resize-none overflow-y-auto scrollbar"
-                    disabled={isAnalyzing}
-                  />
-                  {/* Progress bar when analyzing */}
-                  {isAnalyzing && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{t('builder.analyzer.input.analyzing')}</span>
-                        <span className="text-primary font-medium">
-                          {analysisProgress}
-                          %
-                        </span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
-                          style={{ width: `${analysisProgress}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
+              <AnalysisInput
+                userPrompt={userPrompt}
+                onPromptChange={setUserPrompt}
+                onAnalyze={analyzePrompt}
+                isAnalyzing={isAnalyzing}
+                analysisProgress={analysisProgress}
+              />
 
-                  <div className="flex justify-end items-center">
-                    <Button
-                      variant="outline"
-                      onClick={handleAnalyze}
-                      disabled={!userPrompt.trim() || isAnalyzing}
-                      className="cursor-pointer"
-                    >
-                      {isAnalyzing && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                      {isAnalyzing
-                        ? `${t('builder.analyzer.input.analyzing')} ${analysisProgress}%`
-                        : t('builder.analyzer.input.analyze')}
-                      {!isAnalyzing && <ArrowRight className="h-4 w-4 ml-2" />}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Examples */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Lightbulb className="h-5 w-5" />
-                      {t('builder.analyzer.examples.title')}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handlePrevious}
-                        disabled={isAnalyzing}
-                        className="h-8 w-8 p-0 cursor-pointer"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      <span className="text-sm text-muted-foreground">
-                        {currentExampleIndex + 1}
-                        {' '}
-                        /
-                        {totalSlides}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleNext}
-                        disabled={isAnalyzing}
-                        className="h-8 w-8 p-0 cursor-pointer"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-visible py-2">
-                    <div
-                      className="grid grid-cols-1 md:grid-cols-3 gap-3 transition-all duration-500 ease-in-out"
-                      style={{ transform: `translateX(0%)` }}
-                    >
-                      {getCurrentExamples().map((category, _index) => (
-                        <Button
-                          key={`${category}-${currentExampleIndex}`}
-                          variant="outline"
-                          onClick={() => handleExampleClick(t(`builder.analyzer.examples.${category}.text`))}
-                          className="h-auto p-4 text-left justify-start cursor-pointer transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:shadow-lg hover:-translate-y-1 hover:z-10 relative"
-                          disabled={isAnalyzing}
-                        >
-                          <div>
-                            <div className="font-medium text-sm mb-1">
-                              {t(`builder.analyzer.examples.${category}.title`)}
-                            </div>
-                            <div className="text-xs text-muted-foreground overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
-                              {t(`builder.analyzer.examples.${category}.text`)}
-                            </div>
-                          </div>
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex justify-center mt-4 gap-2">
-                    {Array.from({ length: totalSlides }).map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentExampleIndex(index)}
-                        className={`w-2 h-2 rounded-full transition-colors duration-200 cursor-pointer ${
-                          index === currentExampleIndex ? 'bg-primary' : 'bg-muted-foreground/30'
-                        }`}
-                        disabled={isAnalyzing}
-                      />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <Carousel
+                onExampleClick={handleExampleClick}
+                disabled={isAnalyzing}
+              />
             </div>
           )
         : (
-          /* Analysis Results */
             <div className="space-y-6">
-              {/* Intent Detection */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -400,7 +491,6 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
                 </CardContent>
               </Card>
 
-              {/* Extracted Blocks */}
               {analysis.extractedBlocks.length > 0 && (
                 <Card>
                   <CardHeader>
@@ -415,51 +505,22 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
                   <CardContent>
                     <div className="space-y-3">
                       {analysis.extractedBlocks.map((block, index) => (
-                        <div
+                        <SelectableItem
                           key={index}
-                          className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                            selectedBlocks.has(block.type)
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border hover:bg-muted/50'
-                          }`}
-                          onClick={() => handleBlockToggle(block.type)}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                                  selectedBlocks.has(block.type)
-                                    ? 'border-primary bg-primary'
-                                    : 'border-muted-foreground'
-                                }`}
-                                >
-                                  {selectedBlocks.has(block.type) && (
-                                    <CheckCircle className="h-3 w-3 text-primary-foreground" />
-                                  )}
-                                </div>
-                                <span className="font-medium">
-                                  {getBlockTypeLabel(block.type)}
-                                </span>
-                                <span className="text-xs bg-muted px-2 py-1 rounded">
-                                  {t('builder.analyzer.results.confidence', { percent: Math.round(block.confidence * 100) })}
-                                </span>
-                              </div>
-                              <p className="text-sm text-muted-foreground mb-2">
-                                {block.content}
-                              </p>
-                              <p className="text-xs text-muted-foreground italic">
-                                {t('builder.analyzer.results.reasoning', { reason: block.reasoning })}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
+                          isSelected={selectedBlocks.has(block.type)}
+                          onToggle={() => toggleBlockSelection(block.type)}
+                          title={getBlockTypeLabel(block.type)}
+                          content={block.content}
+                          confidence={block.confidence}
+                          reasoning={block.reasoning}
+                          variant="block"
+                        />
                       ))}
                     </div>
                   </CardContent>
                 </Card>
               )}
 
-              {/* Suggested Enhancements */}
               {analysis.suggestedEnhancements.length > 0 && (
                 <Card>
                   <CardHeader>
@@ -474,61 +535,25 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
                   <CardContent>
                     <div className="space-y-3">
                       {analysis.suggestedEnhancements.map((enhancement, index) => (
-                        <div
+                        <SelectableItem
                           key={index}
-                          className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                            selectedEnhancements.has(enhancement.type)
-                              ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20'
-                              : 'border-border hover:bg-muted/50'
-                          }`}
-                          onClick={() => handleEnhancementToggle(enhancement.type)}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                                selectedEnhancements.has(enhancement.type)
-                                  ? 'border-yellow-500 bg-yellow-500'
-                                  : 'border-muted-foreground'
-                              }`}
-                              >
-                                {selectedEnhancements.has(enhancement.type) && (
-                                  <CheckCircle className="h-3 w-3 text-white" />
-                                )}
-                              </div>
-                              <span className="font-medium">
-                                {getBlockTypeLabel(enhancement.type)}
-                              </span>
-                              <span className={`text-xs px-2 py-1 rounded ${
-                                enhancement.impact === 'high'
-                                  ? 'bg-red-100 text-red-700 dark:bg-red-950/20 dark:text-red-300'
-                                  : enhancement.impact === 'medium'
-                                    ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950/20 dark:text-yellow-300'
-                                    : 'bg-green-100 text-green-700 dark:bg-green-950/20 dark:text-green-300'
-                              }`}
-                              >
-                                {enhancement.impact === 'high' ? t('builder.analyzer.results.impact.high') : enhancement.impact === 'medium' ? t('builder.analyzer.results.impact.medium') : t('builder.analyzer.results.impact.low')}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-2">
-                            {enhancement.reason}
-                          </p>
-                        </div>
+                          isSelected={selectedEnhancements.has(enhancement.type)}
+                          onToggle={() => toggleEnhancementSelection(enhancement.type)}
+                          title={getBlockTypeLabel(enhancement.type)}
+                          impact={enhancement.impact}
+                          reason={enhancement.reason}
+                          variant="enhancement"
+                        />
                       ))}
                     </div>
                   </CardContent>
                 </Card>
               )}
 
-              {/* Actions */}
               <div className="flex gap-4 justify-center">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setAnalysis(null)
-                    setSelectedBlocks(new Set())
-                    setSelectedEnhancements(new Set())
-                  }}
+                  onClick={resetAnalysis}
                   className="cursor-pointer"
                 >
                   {t('builder.analyzer.results.reanalyze')}
@@ -547,4 +572,6 @@ export function PromptAnalyzer({ onAnalysisComplete, onSwitchToAdvanced }: Promp
           )}
     </div>
   )
-}
+})
+
+PromptAnalyzer.displayName = 'PromptAnalyzer'

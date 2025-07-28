@@ -115,14 +115,12 @@ export function Toolbar({ className }: ToolbarProps) {
     setZoomInput(currentZoom.toString())
   }
 
-  // Sync input value with current zoom when zoom changes externally
   useEffect(() => {
     setZoomInput(currentZoom.toString())
   }, [currentZoom])
 
   return (
     <div className={`flex items-center justify-between px-4 py-2 border-b border-border bg-background ${className}`} data-tour="toolbar">
-      {/* Left section - Edit actions */}
       <div className="flex items-center space-x-1">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -182,7 +180,6 @@ export function Toolbar({ className }: ToolbarProps) {
 
       </div>
 
-      {/* Center section - View controls */}
       <div className="flex items-center space-x-1">
         <Button
           variant="ghost"
@@ -215,7 +212,6 @@ export function Toolbar({ className }: ToolbarProps) {
         </Button>
       </div>
 
-      {/* Right section - Progress & View mode */}
       <div className="flex items-center space-x-3">
         <ProgressIndicator />
 

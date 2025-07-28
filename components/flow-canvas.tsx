@@ -160,7 +160,7 @@ export function FlowCanvas({ className, onStartTour, onShowHelp }: FlowCanvasPro
                 nodeTypes={nodeTypes}
                 nodesConnectable={false}
                 colorMode={theme === 'light' ? 'light' : 'dark'}
-                defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+                defaultViewport={{ x: 100, y: 200, zoom: 0.77 }}
                 fitView={false}
                 proOptions={{
                   hideAttribution: true,
