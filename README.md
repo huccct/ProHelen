@@ -9,7 +9,7 @@
   [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
   [![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)](https://www.prisma.io/)
   
-  [🌐 Live Demo](https://prohelen.dev) · [📖 Documentation](#features) · [⚡ Quick Start](#quick-start)
+  [🌐 Live Demo](https://prohelen.dev) · [📖 Features](#-core-features) · [⚡ Quick Start](#-quick-start)
 </div>
 
 
