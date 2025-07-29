@@ -1007,3 +1007,7 @@ export const MODAL_TYPES = {
   PUBLISH: 'publish',
   UNPUBLISH: 'unpublish',
 } as const
+
+export const TEMPLATES_PER_PAGE = 6
+export const SKELETON_COUNT = 6
+export const MAX_VISIBLE_TAGS = 3

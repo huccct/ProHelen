@@ -20,14 +20,11 @@ export const metadata: Metadata = {
   description: 'A Web-Based Tool for Customising LLM Behaviour Using Visual Instruction Generation',
   metadataBase: new URL('https://prohelen.dev'),
   openGraph: {
-    title: 'ProHelen - Visual Instruction Generation for LLMs',
-    description: 'Create, customize and share AI prompts with our visual instruction builder. Transform your ideas into powerful AI assistants.',
-    url: 'https://prohelen.dev',
     siteName: 'ProHelen',
     type: 'website',
     images: [
       {
-        url: '/assets/icons/logo.png',
+        url: 'https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/image.4g4rsmo6u6.webp',
         width: 1200,
         height: 630,
         alt: 'ProHelen - Visual Instruction Generation',
@@ -36,9 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ProHelen - Visual Instruction Generation for LLMs',
-    description: 'Create, customize and share AI prompts with our visual instruction builder.',
-    images: ['/assets/icons/logo.png'],
+    images: ['https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/image.4g4rsmo6u6.webp'],
   },
 }
 

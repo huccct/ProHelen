@@ -1,6 +1,6 @@
 'use client'
 
-import type { Template } from '../../_components/template-list'
+import type { Template } from '@/types/templates'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslation } from 'react-i18next'
 

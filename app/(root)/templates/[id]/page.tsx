@@ -1,5 +1,5 @@
+import type { Template } from '@/types/templates'
 import type { Metadata } from 'next'
-import type { Template } from '../_components/template-list'
 import process from 'node:process'
 import { notFound } from 'next/navigation'
 import { TemplateDetailClient } from './template-detail-client'
@@ -43,15 +43,15 @@ export async function generateMetadata(
 
   const title = `${template.title} - ProHelen`
   const description = template.description
+  const url = `${process.env.NEXT_PUBLIC_APP_URL || 'https://prohelen.dev'}/templates/${id}`
 
   return {
     title,
     description,
-    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://prohelen.dev'),
     openGraph: {
       title,
       description,
-      url: `/templates/${id}`,
+      url,
       type: 'article',
       siteName: 'ProHelen',
       images: [

@@ -1,5 +1,6 @@
 'use client'
 
+import type { TemplateCategory } from '@/types/templates'
 import { useAppSettings } from '@/components/common/app-settings-context'
 import { NavBar } from '@/components/common/nav-bar'
 import { useState } from 'react'
@@ -8,20 +9,15 @@ import { CategoryFilter } from './_components/category-filter'
 import { SearchBar } from './_components/search-bar'
 import { TemplateList } from './_components/template-list'
 
-// template categories - now dynamic from database
-export type TemplateCategory = string
-
 export default function TemplatesPage() {
   const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<TemplateCategory>('All')
 
-  // handle search query change
   const handleSearchChange = (query: string) => {
     setSearchQuery(query)
   }
 
-  // handle category filter change
   const handleCategoryChange = (category: TemplateCategory) => {
     setActiveCategory(category)
   }

@@ -26,3 +26,16 @@ export interface Template {
   createdAt?: string
   isPremium?: boolean
 }
+
+export type TemplateCategory = string
+
+export interface Review {
+  id: string
+  rating: number
+  comment?: string
+  user: {
+    name?: string
+    email: string
+  }
+  createdAt: string
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import type { Template } from '../_components/template-list'
+import type { Template } from '@/types/templates'
 import { useAppSettings } from '@/components/common/app-settings-context'
 import { NavBar } from '@/components/common/nav-bar'
 import { Button } from '@/components/ui/button'
@@ -50,7 +50,7 @@ export function TemplateDetailClient({ template }: TemplateDetailClientProps) {
                 onClick={() => {
                   const tweetText = `🚀 ${template.title}\n\n${template.description}\n\n#ProHelen #AI #PromptEngineering`
                   const url = window.location.href
-                  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}&via=ProHelen`
+                  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}`
                   window.open(twitterUrl, '_blank', 'width=550,height=420,scrollbars=yes,resizable=yes')
                 }}
               >

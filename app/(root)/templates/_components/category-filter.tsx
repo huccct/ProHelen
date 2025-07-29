@@ -1,6 +1,6 @@
 'use client'
 
-import type { TemplateCategory } from '../page'
+import type { TemplateCategory } from '@/types/templates'
 import { getCategoryDisplayName } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'

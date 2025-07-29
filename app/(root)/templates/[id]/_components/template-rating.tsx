@@ -1,5 +1,6 @@
 'use client'
 
+import type { Review } from '@/types/templates'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,17 +14,6 @@ interface TemplateRatingProps {
   templateId: string
   currentRating?: number
   ratingCount?: number
-}
-
-interface Review {
-  id: string
-  rating: number
-  comment?: string
-  user: {
-    name?: string
-    email: string
-  }
-  createdAt: string
 }
 
 export function TemplateRating({ templateId, currentRating, ratingCount }: TemplateRatingProps) {
@@ -106,7 +96,6 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
         toast.success(hasUserReviewed ? t('templateDetail.reviewUpdated') : t('templateDetail.reviewSubmitted'))
         setHasUserReviewed(true)
 
-        // 首次提交评论后清除表单，给用户更好的反馈体验
         if (isFirstTimeReview) {
           setUserRating(0)
           setComment('')
@@ -203,7 +192,6 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* User Rating Section */}
         {session?.user
           ? (
               <div className="border-b border-border pb-6">
@@ -249,7 +237,6 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
               </div>
             )}
 
-        {/* Reviews List */}
         {reviews.length > 0 && (
           <div>
             <h3 className="text-lg font-medium mb-4">{t('templateDetail.reviews')}</h3>
