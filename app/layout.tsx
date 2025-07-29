@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/image.4g4rsmo6u6.webp',
+        url: 'https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/home.45hz0jmq81.webp',
         width: 1200,
         height: 630,
         alt: 'ProHelen - Visual Instruction Generation',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/image.4g4rsmo6u6.webp'],
+    images: ['https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/home.45hz0jmq81.webp'],
   },
 }
 

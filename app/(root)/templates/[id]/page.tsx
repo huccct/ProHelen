@@ -56,7 +56,7 @@ export async function generateMetadata(
       siteName: 'ProHelen',
       images: [
         {
-          url: 'https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/image.4g4rsmo6u6.webp',
+          url: 'https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/home.45hz0jmq81.webp',
           width: 1200,
           height: 630,
           alt: template.title,
@@ -67,7 +67,7 @@ export async function generateMetadata(
       card: 'summary_large_image',
       title,
       description,
-      images: ['https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/image.4g4rsmo6u6.webp'],
+      images: ['https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/home.45hz0jmq81.webp'],
     },
     alternates: {
       canonical: `/templates/${id}`,
