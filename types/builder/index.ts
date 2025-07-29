@@ -218,3 +218,49 @@ export interface NodeMetadata {
     border: string
   }
 }
+
+export type BlockCategory = 'foundation' | 'interaction' | 'task_control' | 'thinking_logic' | 'skills_development'
+
+export interface BlockDefinition {
+  category: BlockCategory
+  weight: number
+  requiredFor: string[]
+  incompatibleWith: string[]
+  tags: string[]
+}
+
+export interface RecommendationResult {
+  blockType: string
+  score: number
+  reason: string
+  problem?: string
+  solution?: string
+  suggestedContent?: string
+  impact?: string
+  priority?: 'high' | 'medium' | 'low'
+  category?: BlockCategory
+  confidence?: number
+  tags?: string[]
+}
+
+export interface RecommendationContext {
+  currentBlocks: string[]
+  selectedBlockType?: string
+  userId?: string
+  blockContents?: Record<string, string>
+  userPreferences?: UserPreferences
+  sessionContext?: SessionContext
+}
+
+export interface UserPreferences {
+  preferredCategories?: string[]
+  experienceLevel?: 'beginner' | 'intermediate' | 'advanced'
+  usagePattern?: 'exploration' | 'efficiency' | 'learning'
+}
+
+export interface SessionContext {
+  timeInSession?: number
+  blocksAddedThisSession?: string[]
+  lastAction?: string
+  currentFocus?: string
+}

@@ -95,6 +95,11 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
       return
     }
 
+    if (hasUserReviewed && comment.trim() === '') {
+      toast.error(t('templateDetail.commentRequired') || 'Comment is required when updating a review')
+      return
+    }
+
     if (comment.trim() && !validateComment(comment.trim())) {
       toast.error(t('templateDetail.invalidComment'))
       return

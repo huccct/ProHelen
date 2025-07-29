@@ -1,4 +1,5 @@
-import type { BlockType, NodeMetadata } from '@/types/builder'
+import type { BlockDefinition, BlockType, NodeMetadata, RecommendationResult } from '@/types/builder'
+import { LRUCache } from 'lru-cache'
 import { AlertTriangle, BarChart3, Book, Brain, CheckCircle, Clock, Compass, FileText, Filter, Globe, Heart, Lightbulb, MessageCircle, MessageSquare, Star, Target, Users, Workflow } from 'lucide-react'
 
 export const STORAGE_KEYS = {
@@ -1012,3 +1013,177 @@ export const MODAL_TYPES = {
 export const TEMPLATES_PER_PAGE = 6
 export const SKELETON_COUNT = 6
 export const MAX_VISIBLE_TAGS = 3
+
+export const CACHE_CONFIG = {
+  collaborative: new LRUCache<string, RecommendationResult[]>({
+    max: 1000,
+    ttl: 1000 * 60 * 15, // 15 minutes
+  }),
+  personalized: new LRUCache<string, RecommendationResult[]>({
+    max: 500,
+    ttl: 1000 * 60 * 5, // 5 minutes
+  }),
+  cooccurrence: new LRUCache<string, Map<string, Map<string, number>>>({
+    max: 1,
+    ttl: 1000 * 60 * 30, // 30 minutes
+  }),
+}
+
+export const BLOCK_DEFINITIONS: Record<string, BlockDefinition> = {
+  // 🎭 Foundation - Role & Context
+  role_definition: {
+    category: 'foundation',
+    weight: 1.0,
+    requiredFor: ['context_setting', 'communication_style'],
+    incompatibleWith: [],
+    tags: ['basic', 'essential'],
+  },
+
+  context_setting: {
+    category: 'foundation',
+    weight: 0.9,
+    requiredFor: ['output_format', 'goal_setting'],
+    incompatibleWith: [],
+    tags: ['basic', 'structure'],
+  },
+
+  personality_traits: {
+    category: 'foundation',
+    weight: 0.7,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['personality', 'behavior'],
+  },
+
+  // 💬 Interaction Style
+  communication_style: {
+    category: 'interaction',
+    weight: 0.8,
+    requiredFor: ['feedback_style'],
+    incompatibleWith: [],
+    tags: ['communication', 'tone'],
+  },
+
+  feedback_style: {
+    category: 'interaction',
+    weight: 0.7,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['feedback', 'guidance'],
+  },
+
+  interaction_patterns: {
+    category: 'interaction',
+    weight: 0.6,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['patterns', 'flow'],
+  },
+
+  audience_adaptation: {
+    category: 'interaction',
+    weight: 0.7,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['audience', 'customization'],
+  },
+
+  // 🎛️ Task Control
+  goal_setting: {
+    category: 'task_control',
+    weight: 0.8,
+    requiredFor: ['prioritization', 'success_metrics'],
+    incompatibleWith: [],
+    tags: ['goals', 'objectives'],
+  },
+
+  output_format: {
+    category: 'task_control',
+    weight: 0.8,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['structure', 'clarity'],
+  },
+
+  constraints: {
+    category: 'task_control',
+    weight: 0.7,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['limits', 'boundaries'],
+  },
+
+  prioritization: {
+    category: 'task_control',
+    weight: 0.6,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['priority', 'focus'],
+  },
+
+  success_metrics: {
+    category: 'task_control',
+    weight: 0.6,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['metrics', 'evaluation'],
+  },
+
+  // 🧠 Thinking & Logic
+  reasoning_approach: {
+    category: 'thinking_logic',
+    weight: 0.8,
+    requiredFor: ['step_by_step', 'problem_solving'],
+    incompatibleWith: [],
+    tags: ['reasoning', 'methodology'],
+  },
+
+  step_by_step: {
+    category: 'thinking_logic',
+    weight: 0.9,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['process', 'sequential'],
+  },
+
+  problem_solving: {
+    category: 'thinking_logic',
+    weight: 0.8,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['problem', 'solution'],
+  },
+
+  critical_thinking: {
+    category: 'thinking_logic',
+    weight: 0.7,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['analysis', 'evaluation'],
+  },
+
+  // 🚀 Skills & Development
+  learning_facilitation: {
+    category: 'skills_development',
+    weight: 0.8,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['learning', 'growth'],
+  },
+
+  skill_assessment: {
+    category: 'skills_development',
+    weight: 0.7,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['assessment', 'skills'],
+  },
+
+  professional_development: {
+    category: 'skills_development',
+    weight: 0.6,
+    requiredFor: [],
+    incompatibleWith: [],
+    tags: ['career', 'professional'],
+  },
+} as const

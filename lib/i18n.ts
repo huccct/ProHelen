@@ -518,6 +518,7 @@ const resources = {
       },
 
       templateDetail: {
+        commentRequired: 'Comment is required when updating a review',
         loading: 'Loading template...',
         error: 'Failed to load template',
         tryAgain: 'Try Again',
@@ -2025,6 +2026,7 @@ const resources = {
       },
 
       templateDetail: {
+        commentRequired: '评论是必需的',
         loading: '加载模板中...',
         error: '加载模板失败',
         tryAgain: '重试',

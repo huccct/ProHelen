@@ -1,8 +1,8 @@
 'use client'
 
 import { AppSettingsProvider } from '@/components/common/app-settings-context'
+import { ThemeProvider } from '@/components/theme-context'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { ThemeProvider } from '@/lib/theme-context'
 import * as Sentry from '@sentry/nextjs'
 import { SessionProvider, useSession } from 'next-auth/react'
 import { usePathname, useSearchParams } from 'next/navigation'

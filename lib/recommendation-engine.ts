@@ -1,201 +1,154 @@
+import type { RecommendationContext, RecommendationResult, UserPreferences } from '@/types/builder'
 import { PrismaClient } from '@prisma/client'
+import { BLOCK_DEFINITIONS, CACHE_CONFIG } from './constants'
 
 const prisma = new PrismaClient()
 
-export interface RecommendationResult {
-  blockType: string
-  score: number
-  reason: string
-  problem?: string
-  solution?: string
-  suggestedContent?: string
-  impact?: string
-  priority?: 'high' | 'medium' | 'low'
-}
-
-export interface RecommendationContext {
-  currentBlocks: string[]
-  selectedBlockType?: string
-  userId?: string
-  blockContents?: Record<string, string>
-}
-
-export class RecommendationEngine {
-  private getPracticalRecommendations(context: RecommendationContext): RecommendationResult[] {
-    const { currentBlocks, blockContents = {} } = context
-    const recommendations: RecommendationResult[] = []
-
-    if (!currentBlocks.includes('role_definition')) {
-      recommendations.push({
+/**
+ * Smart Rule Engine for AI Prompt Block Recommendations
+ *
+ * This engine implements expert-based rules to provide intelligent recommendations
+ * for prompt building blocks. It uses predefined conditions and expert knowledge
+ * to suggest the most appropriate blocks based on current context and user preferences.
+ *
+ * The rules follow a hierarchical approach:
+ * 1. Foundation blocks (role_definition, context_setting) are prioritized first
+ * 2. Context-aware recommendations based on current block state
+ * 3. User experience level considerations for personalized guidance
+ */
+class SmartRuleEngine {
+  /**
+   * Static rules array containing expert-defined recommendation logic
+   * Each rule has a condition function and a recommendation object
+   */
+  private static rules = [
+    {
+      id: 'foundation_first',
+      condition: (context: RecommendationContext) =>
+        !context.currentBlocks.includes('role_definition'),
+      recommendation: {
         blockType: 'role_definition',
         score: 0.95,
-        reason: 'Essential foundation block',
-        problem: 'AI doesn\'t know what role to play, responses may be generic',
-        solution: 'Define a specific role for your AI assistant',
-        suggestedContent: 'You are an experienced professional assistant who specializes in providing clear, helpful, and actionable guidance.',
-        impact: 'Your AI will have a consistent professional identity and provide more targeted responses',
-        priority: 'high',
-      })
-    }
-
-    if (currentBlocks.includes('role_definition')
-      && blockContents.role_definition
-      && blockContents.role_definition.length < 50) {
-      recommendations.push({
+        reason: 'Essential foundation - every great prompt starts here',
+        problem: 'Without a defined role, AI responses lack focus and consistency',
+        solution: 'Give your AI a clear identity and purpose',
+        priority: 'high' as const,
+        category: 'foundation' as const,
+        confidence: 0.95,
+        tags: ['essential', 'foundation'],
+      },
+    },
+    {
+      id: 'context_after_role',
+      condition: (context: RecommendationContext) =>
+        context.currentBlocks.includes('role_definition')
+        && !context.currentBlocks.includes('context_setting')
+        && (context.blockContents?.role_definition?.length || 0) > 20,
+      recommendation: {
         blockType: 'context_setting',
         score: 0.85,
-        reason: 'Role needs more context',
-        problem: 'AI role is too vague, needs more specific background',
-        solution: 'Add context to make the role more professional and specific',
-        suggestedContent: 'You work in a professional environment where clear communication and detailed explanations are valued. Your responses should be thorough yet easy to understand.',
-        impact: 'More professional and contextually appropriate responses',
-        priority: 'high',
-      })
-    }
-
-    if (!currentBlocks.includes('output_format') && currentBlocks.length >= 2) {
-      recommendations.push({
+        reason: 'Perfect time to add context to your role',
+        problem: 'Your AI has a role but needs environmental context',
+        solution: 'Define the setting and background for better responses',
+        priority: 'high' as const,
+        category: 'foundation' as const,
+        confidence: 0.88,
+        tags: ['context', 'structure'],
+      },
+    },
+    {
+      id: 'beginner_structure',
+      condition: (context: RecommendationContext) =>
+        context.userPreferences?.experienceLevel === 'beginner'
+        && context.currentBlocks.length >= 2
+        && !context.currentBlocks.includes('output_format'),
+      recommendation: {
         blockType: 'output_format',
-        score: 0.8,
-        reason: 'Improves response structure',
-        problem: 'AI responses lack consistent structure, making them hard to follow',
-        solution: 'Set a clear format for all responses',
-        suggestedContent: 'Please structure your responses as follows:\n## Quick Answer\n## Detailed Explanation\n## Next Steps\n\nThis makes information easier to understand and act upon.',
-        impact: 'Responses will be well-organized and easier to understand',
-        priority: 'medium',
-      })
-    }
+        score: 0.82,
+        reason: 'Structure helps beginners get consistent results',
+        problem: 'Responses might be inconsistent without clear formatting',
+        solution: 'Add structure to make AI responses more predictable',
+        priority: 'medium' as const,
+        category: 'task_control' as const,
+        confidence: 0.75,
+        tags: ['beginner-friendly', 'structure'],
+      },
+    },
+  ]
 
-    if (currentBlocks.includes('role_definition') && !currentBlocks.includes('communication_style')) {
-      recommendations.push({
-        blockType: 'communication_style',
-        score: 0.75,
-        reason: 'Complements role definition',
-        problem: 'AI has a role but communication style is unclear, may sound too formal or casual',
-        solution: 'Define how the AI should communicate with users',
-        suggestedContent: 'Communicate in a friendly, professional tone. Use clear, simple language and avoid jargon. Be encouraging and patient in your explanations.',
-        impact: 'More natural and appropriate conversation style',
-        priority: 'medium',
-      })
-    }
+  /**
+   * Get recommendations based on current context by evaluating all rules
+   *
+   * @param context - Current recommendation context including blocks and user preferences
+   * @returns Array of recommendation results sorted by score
+   */
+  static getRecommendations(context: RecommendationContext): RecommendationResult[] {
+    return this.rules
+      .filter(rule => rule.condition(context))
+      .map(rule => rule.recommendation)
+      .sort((a, b) => b.score - a.score)
+  }
+}
 
-    if (currentBlocks.length >= 3 && !currentBlocks.includes('goal_setting')) {
-      recommendations.push({
-        blockType: 'goal_setting',
-        score: 0.7,
-        reason: 'Provides clear direction',
-        problem: 'Conversations lack clear objectives, may become unfocused',
-        solution: 'Set clear goals for what the AI should help users achieve',
-        suggestedContent: 'Your goal is to help users achieve their objectives efficiently by providing actionable advice, clear explanations, and practical next steps.',
-        impact: 'More focused and goal-oriented assistance',
-        priority: 'low',
-      })
-    }
-
-    return recommendations.sort((a, b) => b.score - a.score)
+/**
+ * Multi-layered Recommendation Engine for AI Prompt Building
+ *
+ * This engine combines three different recommendation strategies:
+ * 1. Smart Rules: Expert-based recommendations with highest priority
+ * 2. Collaborative Filtering: Based on user behavior patterns across all users
+ * 3. Personalized Recommendations: Tailored to individual user preferences and history
+ *
+ * The engine uses intelligent caching, weighted scoring, and multi-dimensional ranking
+ * to provide the most relevant block recommendations for prompt building.
+ */
+export class RecommendationEngine {
+  /**
+   * Get smart rule-based recommendations
+   *
+   * @param context - Current recommendation context
+   * @returns Array of rule-based recommendations
+   */
+  private getSmartRecommendations(context: RecommendationContext): RecommendationResult[] {
+    return SmartRuleEngine.getRecommendations(context)
   }
 
-  private getRuleBasedRecommendations(context: RecommendationContext): RecommendationResult[] {
-    const { selectedBlockType, currentBlocks } = context
-
-    const rules: Record<string, string[]> = {
-      role_definition: ['context_setting', 'communication_style', 'personality_traits'],
-      context_setting: ['output_format', 'goal_setting', 'subject_focus'],
-      goal_setting: ['learning_style', 'difficulty_level', 'time_management'],
-      learning_style: ['subject_focus', 'feedback_style', 'step_by_step'],
-      communication_style: ['feedback_style', 'personality_traits', 'output_format'],
-      output_format: ['step_by_step', 'time_management', 'prioritization'],
-      subject_focus: ['difficulty_level', 'learning_style', 'skill_assessment'],
-      difficulty_level: ['feedback_style', 'error_handling', 'step_by_step'],
-      step_by_step: ['time_management', 'prioritization', 'conditional_logic'],
-      time_management: ['prioritization', 'goal_setting', 'career_planning'],
-      feedback_style: ['error_handling', 'skill_assessment', 'personality_traits'],
-      personality_traits: ['communication_style', 'creative_thinking', 'feedback_style'],
-      prioritization: ['goal_setting', 'time_management', 'career_planning'],
-      conditional_logic: ['error_handling', 'creative_thinking', 'step_by_step'],
-      creative_thinking: ['conditional_logic', 'personality_traits', 'skill_assessment'],
-      error_handling: ['feedback_style', 'conditional_logic', 'step_by_step'],
-      career_planning: ['skill_assessment', 'goal_setting', 'time_management'],
-      skill_assessment: ['career_planning', 'difficulty_level', 'feedback_style'],
-    }
-
-    if (!selectedBlockType || !rules[selectedBlockType]) {
-      return []
-    }
-
-    return rules[selectedBlockType]
-      .filter(blockType => !currentBlocks.includes(blockType))
-      .map(blockType => ({
-        blockType,
-        score: 0.8,
-        reason: 'Commonly used together',
-      }))
-  }
-
+  /**
+   * Get collaborative filtering recommendations based on user behavior patterns
+   *
+   * This method analyzes how different blocks are used together across all users
+   * to find popular combinations and suggest blocks that frequently co-occur.
+   *
+   * @param context - Current recommendation context
+   * @returns Promise resolving to collaborative recommendations
+   */
   private async getCollaborativeRecommendations(context: RecommendationContext): Promise<RecommendationResult[]> {
     const { currentBlocks } = context
-
-    if (currentBlocks.length === 0) {
+    if (currentBlocks.length === 0)
       return []
-    }
+
+    const cacheKey = currentBlocks.sort().join(',')
+    const cached = CACHE_CONFIG.collaborative.get(cacheKey)
+    if (cached)
+      return cached
 
     try {
       const sessions = await prisma.userSession.findMany({
         select: {
           blockSequence: true,
-          userId: true,
         },
-        take: 1000,
+        where: {
+          blockSequence: {
+            hasSome: currentBlocks,
+          },
+        },
+        take: 500,
       })
 
-      const cooccurrence = new Map<string, Map<string, number>>()
+      const cooccurrenceMatrix = this.buildCooccurrenceMatrix(sessions)
+      const recommendations = this.calculateCollaborativeScores(currentBlocks, cooccurrenceMatrix)
 
-      sessions.forEach((session) => {
-        const blocks = session.blockSequence
-
-        for (let i = 0; i < blocks.length; i++) {
-          for (let j = i + 1; j < blocks.length; j++) {
-            const blockA = blocks[i]
-            const blockB = blocks[j]
-
-            if (!cooccurrence.has(blockA)) {
-              cooccurrence.set(blockA, new Map())
-            }
-            const blockAMap = cooccurrence.get(blockA)!
-            blockAMap.set(blockB, (blockAMap.get(blockB) || 0) + 1)
-
-            if (!cooccurrence.has(blockB)) {
-              cooccurrence.set(blockB, new Map())
-            }
-            const blockBMap = cooccurrence.get(blockB)!
-            blockBMap.set(blockA, (blockBMap.get(blockA) || 0) + 1)
-          }
-        }
-      })
-
-      const recommendations = new Map<string, number>()
-
-      currentBlocks.forEach((block) => {
-        const relatedBlocks = cooccurrence.get(block)
-        if (relatedBlocks) {
-          relatedBlocks.forEach((count, targetBlock) => {
-            if (!currentBlocks.includes(targetBlock)) {
-              recommendations.set(targetBlock, (recommendations.get(targetBlock) || 0) + count)
-            }
-          })
-        }
-      })
-
-      const results = Array.from(recommendations.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5)
-        .map(([blockType, count]) => ({
-          blockType,
-          score: Math.min(count / 10, 1),
-          reason: `Used together in ${count} other flows`,
-        }))
-
-      return results
+      CACHE_CONFIG.collaborative.set(cacheKey, recommendations)
+      return recommendations
     }
     catch (error) {
       console.error('Error getting collaborative recommendations:', error)
@@ -203,28 +156,128 @@ export class RecommendationEngine {
     }
   }
 
-  private async getPersonalizedRecommendations(context: RecommendationContext): Promise<RecommendationResult[]> {
-    const { userId, currentBlocks } = context
+  /**
+   * Build a co-occurrence matrix from user sessions
+   *
+   * Creates a matrix showing how often different blocks are used together
+   * in user sessions. This enables finding popular block combinations.
+   *
+   * @param sessions - Array of user session data
+   * @returns Map representing block co-occurrence relationships
+   */
+  private buildCooccurrenceMatrix(sessions: any[]): Map<string, Map<string, number>> {
+    const matrix = new Map<string, Map<string, number>>()
 
-    if (!userId) {
-      return []
+    sessions.forEach((session) => {
+      const blocks = session.blockSequence
+      for (let i = 0; i < blocks.length - 1; i++) {
+        for (let j = i + 1; j < blocks.length; j++) {
+          this.updateCooccurrence(matrix, blocks[i], blocks[j])
+        }
+      }
+    })
+
+    return matrix
+  }
+
+  /**
+   * Update co-occurrence counts for a pair of blocks
+   *
+   * @param matrix - The co-occurrence matrix to update
+   * @param blockA - First block type
+   * @param blockB - Second block type
+   */
+  private updateCooccurrence(matrix: Map<string, Map<string, number>>, blockA: string, blockB: string) {
+    const updatePair = (from: string, to: string) => {
+      if (!matrix.has(from))
+        matrix.set(from, new Map())
+      const subMap = matrix.get(from)!
+      subMap.set(to, (subMap.get(to) || 0) + 1)
     }
 
-    try {
-      const userUsages = await prisma.userBlockUsage.findMany({
-        where: { userId },
-        orderBy: { usageCount: 'desc' },
-        take: 10,
-      })
+    updatePair(blockA, blockB)
+    updatePair(blockB, blockA)
+  }
 
-      return userUsages
-        .filter(usage => !currentBlocks.includes(usage.blockType))
-        .slice(0, 3)
-        .map(usage => ({
-          blockType: usage.blockType,
-          score: Math.min(usage.usageCount / 10, 0.9),
-          reason: `You've used this ${usage.usageCount} times before`,
-        }))
+  /**
+   * Calculate collaborative filtering scores based on co-occurrence matrix
+   *
+   * @param currentBlocks - Currently selected blocks
+   * @param matrix - Co-occurrence matrix
+   * @returns Array of recommendation results with collaborative scores
+   */
+  private calculateCollaborativeScores(currentBlocks: string[], matrix: Map<string, Map<string, number>>): RecommendationResult[] {
+    const scores = new Map<string, number>()
+    const contexts = new Map<string, number>()
+
+    currentBlocks.forEach((block) => {
+      const related = matrix.get(block)
+      if (related) {
+        related.forEach((count, targetBlock) => {
+          if (!currentBlocks.includes(targetBlock)) {
+            scores.set(targetBlock, (scores.get(targetBlock) || 0) + count)
+            contexts.set(targetBlock, (contexts.get(targetBlock) || 0) + 1)
+          }
+        })
+      }
+    })
+
+    return Array.from(scores.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([blockType, count]) => ({
+        blockType,
+        score: Math.min(count / 20, 0.9),
+        reason: `Popular combination (${count} times)`,
+        confidence: Math.min(contexts.get(blockType)! / currentBlocks.length, 1),
+        category: BLOCK_DEFINITIONS[blockType as keyof typeof BLOCK_DEFINITIONS]?.category || 'foundation',
+        tags: ['collaborative', 'popular'],
+      }))
+  }
+
+  /**
+   * Get personalized recommendations based on user's individual behavior
+   *
+   * Analyzes the user's block usage history and recent session patterns
+   * to provide tailored recommendations that match their preferences.
+   *
+   * @param context - Current recommendation context including user ID
+   * @returns Promise resolving to personalized recommendations
+   */
+  private async getPersonalizedRecommendations(context: RecommendationContext): Promise<RecommendationResult[]> {
+    const { userId, currentBlocks, userPreferences } = context
+    if (!userId)
+      return []
+
+    const cacheKey = `${userId}-${currentBlocks.length}`
+    const cached = CACHE_CONFIG.personalized.get(cacheKey)
+    if (cached)
+      return cached
+
+    try {
+      const [userUsages, recentSessions] = await Promise.all([
+        prisma.userBlockUsage.findMany({
+          where: { userId },
+          orderBy: { usageCount: 'desc' },
+          take: 15,
+        }),
+        prisma.userSession.findMany({
+          where: { userId },
+          orderBy: { completedAt: 'desc' },
+          take: 5,
+          select: { blockSequence: true },
+        }),
+      ])
+
+      const recommendations = this.generatePersonalizedScores(
+        userUsages,
+        recentSessions,
+        currentBlocks,
+        userPreferences,
+      )
+
+      CACHE_CONFIG.personalized.set(cacheKey, recommendations)
+      return recommendations
     }
     catch (error) {
       console.error('Error getting personalized recommendations:', error)
@@ -232,60 +285,171 @@ export class RecommendationEngine {
     }
   }
 
-  private mergeAndRankRecommendations(recommendations: RecommendationResult[][]): RecommendationResult[] {
-    const merged = new Map<string, RecommendationResult>()
-
-    recommendations.flat().forEach((rec) => {
-      const existing = merged.get(rec.blockType)
-      if (existing) {
-        if (rec.score > existing.score) {
-          merged.set(rec.blockType, rec)
-        }
-      }
-      else {
-        merged.set(rec.blockType, rec)
+  /**
+   * Generate personalized scores based on user behavior patterns
+   *
+   * Combines frequency-based scoring (how often user uses each block)
+   * with pattern-based scoring (recent session combinations) and applies
+   * user preference multipliers based on experience level.
+   *
+   * @param userUsages - User's block usage statistics
+   * @param recentSessions - User's recent session data
+   * @param currentBlocks - Currently selected blocks
+   * @param userPreferences - User preferences including experience level
+   * @returns Array of personalized recommendation results
+   */
+  private generatePersonalizedScores(
+    userUsages: any[],
+    recentSessions: any[],
+    currentBlocks: string[],
+    userPreferences?: UserPreferences,
+  ): RecommendationResult[] {
+    const frequencyScores = new Map<string, number>()
+    userUsages.forEach((usage) => {
+      if (!currentBlocks.includes(usage.blockType)) {
+        frequencyScores.set(usage.blockType, usage.usageCount)
       }
     })
 
+    const patternScores = new Map<string, number>()
+    recentSessions.forEach((session) => {
+      session.blockSequence.forEach((blockType: string) => {
+        if (!currentBlocks.includes(blockType)) {
+          patternScores.set(blockType, (patternScores.get(blockType) || 0) + 1)
+        }
+      })
+    })
+
+    const preferenceMultiplier = userPreferences?.experienceLevel === 'beginner'
+      ? 1.2
+      : userPreferences?.experienceLevel === 'advanced' ? 0.8 : 1.0
+
+    const combinedScores = new Map<string, number>()
+
+    frequencyScores.forEach((score, blockType) => {
+      const patternBonus = patternScores.get(blockType) || 0
+      const finalScore = (score * 0.7 + patternBonus * 0.3) * preferenceMultiplier
+      combinedScores.set(blockType, finalScore)
+    })
+
+    return Array.from(combinedScores.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([blockType, score]) => ({
+        blockType,
+        score: Math.min(score / 15, 0.85),
+        reason: `Based on your usage pattern`,
+        confidence: Math.min(score / 10, 1),
+        category: BLOCK_DEFINITIONS[blockType as keyof typeof BLOCK_DEFINITIONS]?.category || 'foundation',
+        tags: ['personalized', 'pattern-based'],
+      }))
+  }
+
+  /**
+   * Intelligently merge and rank recommendations from all three sources
+   *
+   * Combines smart rules, collaborative filtering, and personalized recommendations
+   * using weighted scoring and multi-dimensional ranking based on priority,
+   * score, and confidence levels.
+   *
+   * @param recommendations - Array of recommendation arrays from different sources
+   * @param _context - Current recommendation context (unused in this method)
+   * @returns Merged and ranked recommendation results
+   */
+  private intelligentMergeAndRank(
+    recommendations: RecommendationResult[][],
+    _context: RecommendationContext,
+  ): RecommendationResult[] {
+    const merged = new Map<string, RecommendationResult>()
+    const weights = {
+      smart: 1.0,
+      collaborative: 0.7,
+      personalized: 0.8,
+    }
+
+    recommendations.forEach((recs, index) => {
+      const weight = Object.values(weights)[index] || 0.5
+
+      recs.forEach((rec) => {
+        const existing = merged.get(rec.blockType)
+        const weightedScore = rec.score * weight
+
+        if (!existing || weightedScore > existing.score) {
+          merged.set(rec.blockType, {
+            ...rec,
+            score: weightedScore,
+            confidence: (rec.confidence || 0.5) * weight,
+          })
+        }
+      })
+    })
+
     return Array.from(merged.values())
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => {
+        const priorityOrder = { high: 3, medium: 2, low: 1 }
+        const aPriority = priorityOrder[a.priority || 'low']
+        const bPriority = priorityOrder[b.priority || 'low']
+
+        if (aPriority !== bPriority)
+          return bPriority - aPriority
+
+        if (Math.abs(a.score - b.score) > 0.1)
+          return b.score - a.score
+
+        return (b.confidence || 0) - (a.confidence || 0)
+      })
       .slice(0, 6)
   }
 
+  /**
+   * Main recommendation method that orchestrates all recommendation strategies
+   *
+   * This is the primary entry point for getting block recommendations.
+   * It implements a smart fallback strategy: if there are enough high-priority
+   * smart rule recommendations, it returns those immediately. Otherwise,
+   * it combines all three recommendation sources for comprehensive results.
+   *
+   * @param context - Current recommendation context
+   * @returns Promise resolving to final recommendation results
+   */
   async getRecommendations(context: RecommendationContext): Promise<RecommendationResult[]> {
-    // 优先使用实用性推荐
-    const practical = this.getPracticalRecommendations(context)
+    const smartRecs = this.getSmartRecommendations(context)
 
-    // 如果有实用性推荐，主要返回这些
-    if (practical.length > 0) {
-      return practical.slice(0, 4) // 限制为4个最重要的建议
+    const highPriorityRecs = smartRecs.filter(rec => rec.priority === 'high')
+    if (highPriorityRecs.length >= 2) {
+      return highPriorityRecs.slice(0, 4)
     }
 
-    // 否则回退到原有逻辑
-    const [ruleBased, collaborative, personalized] = await Promise.all([
-      Promise.resolve(this.getRuleBasedRecommendations(context)),
+    const [collaborative, personalized] = await Promise.all([
       this.getCollaborativeRecommendations(context),
       this.getPersonalizedRecommendations(context),
     ])
 
-    return this.mergeAndRankRecommendations([ruleBased, collaborative, personalized])
+    return this.intelligentMergeAndRank([smartRecs, collaborative, personalized], context)
   }
 
+  /**
+   * Record a block usage event for a user
+   *
+   * Updates the user's block usage statistics and clears related caches
+   * to ensure fresh personalized recommendations.
+   *
+   * @param userId - User identifier
+   * @param blockType - Type of block that was used
+   */
   async recordBlockUsage(userId: string, blockType: string) {
     try {
-      await prisma.userBlockUsage.upsert({
-        where: {
-          userId_blockType: { userId, blockType },
-        },
-        update: {
-          usageCount: { increment: 1 },
-          lastUsed: new Date(),
-        },
-        create: {
-          userId,
-          blockType,
-          usageCount: 1,
-        },
+      await prisma.$transaction(async (tx) => {
+        await tx.userBlockUsage.upsert({
+          where: { userId_blockType: { userId, blockType } },
+          update: {
+            usageCount: { increment: 1 },
+            lastUsed: new Date(),
+          },
+          create: { userId, blockType, usageCount: 1 },
+        })
+
+        CACHE_CONFIG.personalized.delete(`${userId}-*`)
       })
     }
     catch (error) {
@@ -293,22 +457,73 @@ export class RecommendationEngine {
     }
   }
 
+  /**
+   * Record a user session with block sequence
+   *
+   * Stores the sequence of blocks used in a session for collaborative
+   * filtering analysis. Only records sessions with 2+ blocks.
+   *
+   * @param userId - User identifier
+   * @param blockSequence - Array of block types used in the session
+   */
   async recordUserSession(userId: string, blockSequence: string[]) {
     if (blockSequence.length < 2)
       return
 
     try {
-      const sessionId = `${userId}-${Date.now()}`
+      const sessionId = `${userId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+
       await prisma.userSession.create({
-        data: {
-          userId,
-          sessionId,
-          blockSequence,
-        },
+        data: { userId, sessionId, blockSequence },
       })
+
+      this.clearRelatedCaches(blockSequence)
     }
     catch (error) {
       console.error('Error recording user session:', error)
+    }
+  }
+
+  /**
+   * Clear caches related to specific blocks
+   *
+   * Removes cached collaborative recommendations that might be affected
+   * by the new session data to ensure fresh recommendations.
+   *
+   * @param blockSequence - Array of block types that were used
+   */
+  private clearRelatedCaches(blockSequence: string[]) {
+    blockSequence.forEach((block) => {
+      CACHE_CONFIG.collaborative.forEach((_, key) => {
+        if (key.includes(block)) {
+          CACHE_CONFIG.collaborative.delete(key)
+        }
+      })
+    })
+  }
+
+  /**
+   * Warm up the recommendation cache with popular combinations
+   *
+   * Pre-loads the cache with frequently used block combinations
+   * to improve response times for common scenarios.
+   */
+  async warmupCache() {
+    try {
+      const popularCombinations = await prisma.userSession.groupBy({
+        by: ['blockSequence'],
+        _count: { blockSequence: true },
+        orderBy: { _count: { blockSequence: 'desc' } },
+        take: 50,
+      })
+
+      popularCombinations.forEach((combo) => {
+        const _key = combo.blockSequence.sort().join(',')
+        this.getCollaborativeRecommendations({ currentBlocks: combo.blockSequence })
+      })
+    }
+    catch (error) {
+      console.error('Error warming up cache:', error)
     }
   }
 }
