@@ -50,7 +50,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const { title, description, content, tags, flowData, category, isFavorite } = await request.json()
+    const { title, description, content, tags, flowData, category, isFavorite, isDraft } = await request.json()
 
     // Get current user session
     const session = await getServerSession(authOptions)
@@ -79,6 +79,7 @@ export async function PUT(
         flowData,
         category,
         isFavorite,
+        isDraft,
         updatedAt: new Date(),
       },
       include: {

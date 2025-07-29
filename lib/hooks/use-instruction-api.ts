@@ -42,7 +42,7 @@ export function useInstructionApi() {
     return response.json()
   }, [])
 
-  const updateInstruction = useCallback(async (instruction: Instruction) => {
+  const updateInstruction = useCallback(async (instruction: Partial<Instruction> & { id: string }) => {
     const response = await fetch(`/api/instructions/${instruction.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

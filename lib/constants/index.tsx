@@ -1006,6 +1006,7 @@ export const MODAL_TYPES = {
   DELETE: 'delete',
   PUBLISH: 'publish',
   UNPUBLISH: 'unpublish',
+  COMPLETE_DRAFT: 'completeDraft',
 } as const
 
 export const TEMPLATES_PER_PAGE = 6

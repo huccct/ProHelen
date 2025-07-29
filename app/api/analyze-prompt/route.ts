@@ -71,6 +71,11 @@ You are an expert in prompt engineering following the structured 5-category syst
 - If user writes in English, respond entirely in English
 - Maintain professional terminology appropriate for the detected language
 
+## CRITICAL: Impact values must be in English
+- Always use "high", "medium", or "low" for impact values
+- Do NOT translate impact values to the user's language
+- Keep impact values consistent in English regardless of user's language
+
 ## 5-Category Framework:
 1. **Role & Context** - AI identity, background, work environment
    - role_definition, context_setting, personality_traits, subject_focus
@@ -107,7 +112,7 @@ First, identify the primary language of the user's request. Then ensure ALL gene
 5. What output format is implied? (output_format)
 6. What thinking approach is needed? (step_by_step, creative_thinking)
 
-Return JSON with this structure (content language must match user's input language):
+Return JSON with this structure (content language must match user's input language, BUT impact values must be in English):
 {
   "detectedLanguage": "zh-CN" | "en-US",
   "extractedBlocks": [
@@ -122,7 +127,7 @@ Return JSON with this structure (content language must match user's input langua
     {
       "type": "output_format", 
       "reason": "Adding structured output format would improve response quality and usability",
-      "impact": "high"
+      "impact": "high"  // MUST be "high", "medium", or "low" in English
     }
   ],
   "missingEssentials": ["communication_style"],

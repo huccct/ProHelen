@@ -17,7 +17,7 @@ import {
 import { GRID_CONFIG, MODAL_TYPES } from '@/lib/constants'
 import { useInstructionApi } from '@/lib/hooks/use-instruction-api'
 import { useInstructionData } from '@/lib/hooks/use-instruction-data'
-import { Clock, Edit, Globe, Heart, HeartOff, MoreVertical, Share, Sparkles, Unlink } from 'lucide-react'
+import { CheckCircle, Clock, Copy, Edit, Globe, Heart, HeartOff, MoreVertical, Share, Unlink } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -107,6 +107,7 @@ interface InstructionMenuProps {
   onToggleFavorite: () => void
   onPublish: () => void
   onUnpublish: () => void
+  onCompleteDraft: () => void
   onDelete: () => void
 }
 
@@ -117,6 +118,7 @@ const InstructionMenu = memo<InstructionMenuProps>(({
   onToggleFavorite,
   onPublish,
   onUnpublish,
+  onCompleteDraft,
   onDelete,
 }) => {
   const { t } = useTranslation()
@@ -133,7 +135,16 @@ const InstructionMenu = memo<InstructionMenuProps>(({
           <Edit className="mr-2 h-4 w-4" />
           {t('myInstructions.edit')}
         </DropdownMenuItem>
+
+        {instruction.isDraft && (
+          <DropdownMenuItem className="cursor-pointer hover:bg-muted focus:bg-muted" onClick={onCompleteDraft}>
+            <CheckCircle className="mr-2 h-4 w-4" />
+            {t('myInstructions.completeDraft')}
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuItem className="cursor-pointer hover:bg-muted focus:bg-muted" onClick={onDuplicate}>
+          <Copy className="mr-2 h-4 w-4" />
           {t('myInstructions.duplicate')}
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer hover:bg-muted focus:bg-muted" onClick={onToggleFavorite}>
@@ -183,6 +194,7 @@ interface InstructionCardProps {
   onEdit: (instruction: Instruction) => void
   onDuplicate: (instruction: Instruction) => void
   onToggleFavorite: (instruction: Instruction) => void
+  onCompleteDraft: (instruction: Instruction) => void
   onShowModal: (type: string, instruction: Instruction) => void
 }
 
@@ -192,6 +204,7 @@ const InstructionCard = memo<InstructionCardProps>(({
   onEdit,
   onDuplicate,
   onToggleFavorite,
+  onCompleteDraft,
   onShowModal,
 }) => {
   const { t } = useTranslation()
@@ -202,6 +215,7 @@ const InstructionCard = memo<InstructionCardProps>(({
   const handlePublish = useCallback(() => onShowModal(MODAL_TYPES.PUBLISH, instruction), [onShowModal, instruction])
   const handleUnpublish = useCallback(() => onShowModal(MODAL_TYPES.UNPUBLISH, instruction), [onShowModal, instruction])
   const handleDelete = useCallback(() => onShowModal(MODAL_TYPES.DELETE, instruction), [onShowModal, instruction])
+  const handleCompleteDraft = useCallback(() => onCompleteDraft(instruction), [onCompleteDraft, instruction])
 
   return (
     <Card
@@ -235,6 +249,7 @@ const InstructionCard = memo<InstructionCardProps>(({
               onToggleFavorite={handleToggleFavorite}
               onPublish={handlePublish}
               onUnpublish={handleUnpublish}
+              onCompleteDraft={handleCompleteDraft}
               onDelete={handleDelete}
             />
           </div>
@@ -257,7 +272,6 @@ const InstructionCard = memo<InstructionCardProps>(({
                 {new Date(instruction.updatedAt).toLocaleDateString()}
               </div>
               <div className="flex items-center">
-                <Sparkles className="h-3 w-3 mr-1" />
                 {t('myInstructions.usedTimes', { count: instruction.usageCount })}
               </div>
             </CardFooter>
@@ -275,7 +289,6 @@ const InstructionCard = memo<InstructionCardProps>(({
             {new Date(instruction.updatedAt).toLocaleDateString()}
           </div>
           <div className="flex items-center gap-1">
-            <Sparkles className="h-3 w-3" />
             {instruction.usageCount}
           </div>
         </div>
@@ -465,6 +478,14 @@ export const InstructionGrid = memo<InstructionGridProps>(({
   const handlePublish = useCallback(async (instruction: Instruction) => {
     try {
       await api.publishInstruction(instruction.id)
+
+      if (instruction.isDraft) {
+        await api.updateInstruction({
+          ...instruction,
+          isDraft: false,
+        })
+      }
+
       toast.success(t('myInstructions.instructionPublished'))
       refreshCurrentPage()
     }
@@ -492,6 +513,21 @@ export const InstructionGrid = memo<InstructionGridProps>(({
     }
   }, [api, t, refreshCurrentPage, hideModal])
 
+  const handleCompleteDraft = useCallback(async (instruction: Instruction) => {
+    try {
+      await api.updateInstruction({
+        ...instruction,
+        isDraft: false,
+      })
+      toast.success(t('myInstructions.draftCompleted'))
+      refreshCurrentPage()
+    }
+    catch (error) {
+      console.error('Error completing draft:', error)
+      toast.error(t('myInstructions.completeDraftFailed'))
+    }
+  }, [api, t, refreshCurrentPage])
+
   const handleModalConfirm = useCallback(() => {
     if (!modalState.instruction)
       return
@@ -506,8 +542,11 @@ export const InstructionGrid = memo<InstructionGridProps>(({
       case MODAL_TYPES.UNPUBLISH:
         handleUnpublish(modalState.instruction)
         break
+      case MODAL_TYPES.COMPLETE_DRAFT:
+        handleCompleteDraft(modalState.instruction)
+        break
     }
-  }, [modalState, handleDelete, handlePublish, handleUnpublish])
+  }, [modalState, handleDelete, handlePublish, handleUnpublish, handleCompleteDraft])
 
   if (loading) {
     return (
@@ -561,6 +600,7 @@ export const InstructionGrid = memo<InstructionGridProps>(({
             onEdit={handleEdit}
             onDuplicate={handleDuplicate}
             onToggleFavorite={handleToggleFavorite}
+            onCompleteDraft={handleCompleteDraft}
             onShowModal={showModal}
           />
         ))}
@@ -601,6 +641,17 @@ export const InstructionGrid = memo<InstructionGridProps>(({
         description={t('myInstructions.unpublishInstruction.description')}
         confirmText={t('myInstructions.unpublishInstruction.confirm')}
         cancelText={t('myInstructions.unpublishInstruction.cancel')}
+        variant="default"
+      />
+
+      <ConfirmModal
+        isOpen={modalState.isOpen && modalState.type === MODAL_TYPES.COMPLETE_DRAFT}
+        onClose={hideModal}
+        onConfirm={handleModalConfirm}
+        title={t('myInstructions.completeDraftInstruction.title')}
+        description={t('myInstructions.completeDraftInstruction.description')}
+        confirmText={t('myInstructions.completeDraftInstruction.confirm')}
+        cancelText={t('myInstructions.completeDraftInstruction.cancel')}
         variant="default"
       />
     </div>

@@ -619,6 +619,9 @@ const resources = {
           confirm: 'Unpublish',
           cancel: 'Cancel',
         },
+        completeDraft: 'Complete Draft',
+        draftCompleted: 'Draft Completed',
+        completeDraftFailed: 'Complete Draft Failed',
       },
 
       builder: {
@@ -2094,6 +2097,9 @@ const resources = {
         publishFailed: '发布失败，请重试',
         instructionUnpublished: '指令已从模板库取消发布',
         unpublishFailed: '取消发布失败，请重试',
+        completeDraft: '完成草稿',
+        draftCompleted: '草稿已完成',
+        completeDraftFailed: '完成草稿失败',
 
         deleteInstruction: {
           title: '删除指令',
