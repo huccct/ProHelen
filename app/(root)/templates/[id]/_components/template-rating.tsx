@@ -1,10 +1,11 @@
 'use client'
 
 import type { Review } from '@/types/templates'
+import { ConfirmModal } from '@/components/confirm-modal'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { Star } from 'lucide-react'
+import { Star, Trash2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,6 +27,7 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
   const [hasUserReviewed, setHasUserReviewed] = useState(false)
   const [reviews, setReviews] = useState<Review[]>([])
   const [showAllReviews, setShowAllReviews] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
   const fetchReviews = async () => {
     try {
@@ -60,6 +62,21 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
     }
   }
 
+  const validateComment = (text: string): boolean => {
+    if (text.length > 1000)
+      return false
+
+    const scriptPattern = /<script|javascript:|on\w+\s*=|data:text\/html/i
+    if (scriptPattern.test(text))
+      return false
+
+    const specialCharRatio = (text.match(/[^\w\s\u4E00-\u9FFF]/g) || []).length / text.length
+    if (specialCharRatio > 0.5)
+      return false
+
+    return true
+  }
+
   useEffect(() => {
     fetchReviews()
     if (session?.user?.id) {
@@ -75,6 +92,11 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
 
     if (userRating === 0) {
       toast.error(t('templateDetail.selectRating'))
+      return
+    }
+
+    if (comment.trim() && !validateComment(comment.trim())) {
+      toast.error(t('templateDetail.invalidComment'))
       return
     }
 
@@ -114,6 +136,50 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
     finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleDeleteReview = async () => {
+    if (!session?.user?.id) {
+      toast.error(t('templateDetail.signInToDelete'))
+      return
+    }
+
+    if (!hasUserReviewed) {
+      toast.error(t('templateDetail.noReviewToDelete'))
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/templates/${templateId}/reviews`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (response.ok) {
+        toast.success(t('templateDetail.reviewDeleted'))
+        setHasUserReviewed(false)
+        setUserRating(0)
+        setComment('')
+        fetchReviews()
+      }
+      else {
+        throw new Error('Failed to delete review')
+      }
+    }
+    catch (error) {
+      toast.error(t('templateDetail.deleteFailed'))
+      console.error('Error deleting review:', error)
+    }
+  }
+
+  const showDeleteConfirmModal = () => {
+    setShowDeleteModal(true)
+  }
+
+  const hideDeleteConfirmModal = () => {
+    setShowDeleteModal(false)
   }
 
   const renderStarRating = (rating: number, interactive = false, size = 'w-5 h-5') => {
@@ -219,13 +285,16 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
                     />
                   </div>
 
-                  <Button
-                    onClick={handleSubmitReview}
-                    disabled={isSubmitting || userRating === 0}
-                    className="w-full bg-muted hover:bg-muted/80 text-foreground border border-border cursor-pointer"
-                  >
-                    {isSubmitting ? t('templateDetail.submitting') : hasUserReviewed ? t('templateDetail.updateReview') : t('templateDetail.submitReview')}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleSubmitReview}
+                      disabled={isSubmitting || userRating === 0}
+                      className="flex-1 bg-muted hover:bg-muted/80 text-foreground border border-border cursor-pointer"
+                    >
+                      {isSubmitting ? t('templateDetail.submitting') : hasUserReviewed ? t('templateDetail.updateReview') : t('templateDetail.submitReview')}
+                    </Button>
+
+                  </div>
                 </div>
               </div>
             )
@@ -250,9 +319,21 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
                         {review.user.name || review.user.email.split('@')[0]}
                       </span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
-                      {formatTimeAgo(review.createdAt)}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        {formatTimeAgo(review.createdAt)}
+                      </span>
+                      {session?.user?.id === review.userId && (
+                        <Button
+                          onClick={showDeleteConfirmModal}
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 text-red-500 hover:bg-red-500 hover:text-white cursor-pointer"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                   {review.comment && (
                     <p className="text-sm text-foreground mt-2">{review.comment}</p>
@@ -275,6 +356,17 @@ export function TemplateRating({ templateId, currentRating, ratingCount }: Templ
           </div>
         )}
       </CardContent>
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={hideDeleteConfirmModal}
+        onConfirm={handleDeleteReview}
+        title={t('templateDetail.deleteReview.title')}
+        description={t('templateDetail.deleteReview.description')}
+        confirmText={t('templateDetail.deleteReview.confirm')}
+        cancelText={t('templateDetail.deleteReview.cancel')}
+        variant="destructive"
+      />
     </Card>
   )
 }

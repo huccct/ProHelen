@@ -33,6 +33,7 @@ export interface Review {
   id: string
   rating: number
   comment?: string
+  userId: string
   user: {
     name?: string
     email: string

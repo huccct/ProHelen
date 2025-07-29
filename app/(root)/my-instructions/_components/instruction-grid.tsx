@@ -1,6 +1,7 @@
 'use client'
 
 import type { Instruction, InstructionGridProps, ModalState } from '@/types/my-instructions'
+import { ConfirmModal } from '@/components/confirm-modal'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
@@ -22,7 +23,6 @@ import { useRouter } from 'next/navigation'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ConfirmModal } from './confirm-modal'
 
 const SkeletonCard = memo(() => (
   <Card className="bg-card border-border animate-pulse">

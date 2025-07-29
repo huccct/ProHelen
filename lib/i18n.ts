@@ -565,6 +565,16 @@ const resources = {
           year: 'year',
           years: 'years',
         },
+        signInToDelete: 'Please sign in to delete your review',
+        noReviewToDelete: 'No review to delete',
+        reviewDeleted: 'Review deleted successfully',
+        deleteFailed: 'Failed to delete review',
+        deleteReview: {
+          title: 'Delete Review',
+          description: 'Are you sure you want to delete this review? This action cannot be undone.',
+          confirm: 'Delete',
+          cancel: 'Cancel',
+        },
       },
 
       myInstructions: {
@@ -2061,6 +2071,16 @@ const resources = {
           months: '个月',
           year: '年',
           years: '年',
+        },
+        signInToDelete: '请登录后删除您的评价',
+        noReviewToDelete: '没有可删除的评价',
+        reviewDeleted: '评价删除成功',
+        deleteFailed: '删除评价失败',
+        deleteReview: {
+          title: '删除评价',
+          description: '您确定要删除这条评价吗？此操作无法撤销。',
+          confirm: '删除',
+          cancel: '取消',
         },
       },
 

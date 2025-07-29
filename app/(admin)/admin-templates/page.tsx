@@ -32,11 +32,9 @@ export default function TemplatesPage() {
       if (!response.ok)
         throw new Error('Export failed')
 
-      // 获取文件名
       const contentDisposition = response.headers.get('content-disposition')
       const filename = contentDisposition?.split('filename=')[1] || 'templates.csv'
 
-      // 下载文件
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
