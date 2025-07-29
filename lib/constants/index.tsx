@@ -994,3 +994,16 @@ export const TEMPLATE_BLOCKS = {
   creative_assistant: ['role_definition', 'personality_traits', 'creative_thinking', 'output_format', 'feedback_style'],
   step_by_step_guide: ['role_definition', 'context_setting', 'step_by_step', 'output_format', 'error_handling'],
 } as const
+
+export const GRID_CONFIG = {
+  PAGE_SIZE: 6,
+  MAX_VISIBLE_TAGS: 3,
+  MAX_LIST_TAGS: 2,
+  PAGINATION_ELLIPSIS_THRESHOLD: 2,
+} as const
+
+export const MODAL_TYPES = {
+  DELETE: 'delete',
+  PUBLISH: 'publish',
+  UNPUBLISH: 'unpublish',
+} as const

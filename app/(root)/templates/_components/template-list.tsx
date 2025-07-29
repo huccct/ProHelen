@@ -1,5 +1,6 @@
 'use client'
 
+import type { PaginationInfo, Template } from '@/types/templates'
 import type { TemplateCategory } from '../page'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,38 +23,9 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-export interface Template {
-  id: string
-  title: string
-  description: string
-  category: string
-  useCases: string[]
-  content?: string
-  overview?: string
-  features?: string[]
-  examples?: { title: string, content: string }[]
-  tags?: string[]
-  rating?: number
-  ratingCount?: number
-  usageCount?: number
-  _count?: {
-    reviews: number
-    favorites: number
-  }
-  createdAt?: string
-  isPremium?: boolean
-}
-
 interface TemplateListProps {
   searchQuery: string
   category: TemplateCategory
-}
-
-interface PaginationInfo {
-  total: number
-  limit: number
-  offset: number
-  hasMore: boolean
 }
 
 export function TemplateList({ searchQuery, category }: TemplateListProps) {
@@ -124,7 +96,6 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
     catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load templates')
 
-      // 记录错误
       Sentry.captureException(err, {
         extra: {
           category,
@@ -161,7 +132,6 @@ export function TemplateList({ searchQuery, category }: TemplateListProps) {
   }
 
   const handleTemplateClick = (template: Template) => {
-    // 记录模板点击
     Sentry.addBreadcrumb({
       category: 'user-action',
       message: 'Template clicked',
