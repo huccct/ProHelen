@@ -12,7 +12,6 @@
   [🌐 Live Demo](https://prohelen.dev) · [📖 Documentation](#features) · [⚡ Quick Start](#quick-start)
 </div>
 
----
 
 ## ✨ What is ProHelen?
 
@@ -35,7 +34,6 @@ Transform complex AI prompt engineering into **visual building blocks**. No codi
 | 🧠 **Thinking & Logic** | Reasoning processes | Step-by-step, analysis |
 | 🚀 **Skills & Development** | Professional growth | Learning, improvement |
 
----
 
 ## 🚀 Quick Start
 
@@ -57,7 +55,6 @@ pnpm dev
 
 Visit [localhost:3000](http://localhost:3000) 🎉
 
----
 
 ## 🛠️ Built With
 
@@ -65,7 +62,6 @@ Visit [localhost:3000](http://localhost:3000) 🎉
 **Backend**: Prisma · PostgreSQL · NextAuth.js  
 **UI/UX**: Radix UI · Framer Motion · React Flow  
 
----
 
 ## 📁 Project Structure
 
@@ -79,20 +75,13 @@ ProHelen/
 └── prisma/       # Database schema
 ```
 
----
 
 ## 🤝 Contributing
 
 Contributions welcome! Check our [Contributing Guide](CONTRIBUTING.md) for details.
 
----
 
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
----
-
-<div align="center">
-  <sub>Built with ❤️ by the ProHelen team</sub>
-</div>
