@@ -1187,3 +1187,22 @@ export const BLOCK_DEFINITIONS: Record<string, BlockDefinition> = {
     tags: ['career', 'professional'],
   },
 } as const
+
+export const ANIMATION_CONFIG_HOME = {
+  easeInOutQuint: [0.86, 0, 0.07, 1] as const,
+  duration: {
+    short: 0.3,
+    medium: 0.8,
+    long: 1.2,
+  },
+  typing: {
+    zh: { speed: 120, delete: 60, pause: 2500, restart: 800 },
+    en: { speed: 80, delete: 40, pause: 2000, restart: 600 },
+  },
+} as const
+
+export const SCROLL_CONFIG_HOME = {
+  threshold: 0.5,
+  bottomOffset: 300,
+  cursorBlinkRate: 530,
+} as const
