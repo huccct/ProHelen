@@ -13,6 +13,7 @@ export function ThemeToggle() {
       size="sm"
       onClick={toggleTheme}
       className="w-9 h-9 p-0 hover:bg-muted cursor-pointer"
+      aria-label="Toggle theme"
     >
       <span className="sr-only">Toggle theme</span>
       {theme === 'dark'
