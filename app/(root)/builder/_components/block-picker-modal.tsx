@@ -283,7 +283,10 @@ export const BlockPickerModal = memo<BlockPickerModalProps>(({
   const handleDragStart = useCallback((event: React.DragEvent, type: string) => {
     event.dataTransfer.setData('application/reactflow', type)
     event.dataTransfer.effectAllowed = 'move'
-  }, [])
+    // Close the modal so the canvas can receive the onDrop event
+    // Defer to next tick to avoid interrupting the drag gesture
+    setTimeout(() => onOpenChange(false), 0)
+  }, [onOpenChange])
 
   const handleBlockClick = useCallback((type: string) => {
     onAddNode(type)
