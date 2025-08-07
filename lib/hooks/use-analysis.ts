@@ -71,6 +71,11 @@ export function useAnalysis(userPrompt: string) {
     catch (error) {
       console.error('Error analyzing prompt:', error)
       toast.error(error instanceof Error ? error.message : t('builder.analyzer.errors.analysisFailed'))
+
+      // Clear all progress timeouts on error
+      progressTimeoutsRef.current.forEach(timeout => clearTimeout(timeout))
+      progressTimeoutsRef.current = []
+
       setState(prev => ({
         ...prev,
         isAnalyzing: false,
